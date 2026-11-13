@@ -90,7 +90,7 @@ class AppOpenManager @Inject constructor(
     }
 
     /** Call when Home first becomes visible after startup; this avoids covering splash and onboarding. */
-    fun onHomeVisible(eligible: Boolean = true) = runOnMain {
+    fun onHomeVisible(eligible: Boolean = true): Unit = runOnMain {
         if (!coldStartHomePending) return@runOnMain
         coldStartHomePending = false
         if (!eligible) return@runOnMain skip("cold start: trip starting or active")
@@ -99,7 +99,7 @@ class AppOpenManager @Inject constructor(
     }
 
     /** Called after Remote Config or UMP resolves: load if we can. */
-    fun onAdConfigurationReady() = runOnMain { fetchAd() }
+    fun onAdConfigurationReady(): Unit = runOnMain { fetchAd() }
 
     private fun opportunity(source: String, allowGrace: Boolean) {
         val reason = blockReason()
@@ -154,7 +154,7 @@ class AppOpenManager @Inject constructor(
     // ---------------------------------------------------------------- loading
 
     /** Loads an ad ahead of time if none is ready or loading. Safe to call any time; duplicates are dropped. */
-    fun fetchAd() = runOnMain {
+    fun fetchAd(): Unit = runOnMain {
         expireIfStale()
         val model = config.appOpen()
         if (!AdGate.adsUnlocked.value || !config.canRequestAds() || !model.isAdEnabled || model.adAppOpenId.isEmpty()) return@runOnMain
@@ -208,10 +208,10 @@ class AppOpenManager @Inject constructor(
         }
     }
 
-    private val retry = Runnable { if (state == AdState.Failed || state == AdState.NoFill) { state = AdState.NotInitialized; fetchAd() } }
+    private val retry: Runnable = Runnable { if (state == AdState.Failed || state == AdState.NoFill) { state = AdState.NotInitialized; fetchAd() } }
 
     /** Network back: try again, with a fresh retry budget. */
-    fun onNetworkAvailable() = runOnMain {
+    fun onNetworkAvailable(): Unit = runOnMain {
         if (state == AdState.Failed || state == AdState.NoFill) { failures = 0; state = AdState.NotInitialized }
         fetchAd()
     }
