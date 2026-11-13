@@ -94,7 +94,7 @@ class InterstitialManager @Inject constructor(
     }
 
     /** Reserves a slot before the SDK starts; the callbacks only release or fill that slot. */
-    private fun requestOne(context: Context, model: InterstitialAdModel, placement: String, reason: String): Boolean {
+    private fun requestOne(context: Context, model: InterstitialAdModel, placement: String, reason: String, attempt: Int = 0): Boolean {
         if (!canLoad(context, model)) {
             Log.d(TAG, "[$placement] request skipped ($reason): not eligible")
             return false
@@ -120,7 +120,14 @@ class InterstitialManager @Inject constructor(
                                     onLoadFailed(model.adInterstitialId)
                                     Log.w(TAG, "[$placement] load failed: ${adError.message}")
                                     analytics.adFailedToLoad("interstitial", placement, adError.code.toString())
-                                    // No retry here. The next show call refills the slot.
+                                    // A couple of spaced-out retries, so one failed request (a slow network at launch) does
+                                    // not leave the placement empty until the next show call. Kept short to respect AdMob.
+                                    if (attempt < MAX_RETRIES) {
+                                        main.postDelayed(
+                                            { requestOne(appContext, model, placement, "retry ${attempt + 1}", attempt + 1) },
+                                            RETRY_BASE_MS * (1L shl attempt),
+                                        )
+                                    }
                                 }
                             }
                         },
@@ -220,5 +227,9 @@ class InterstitialManager @Inject constructor(
         }
     }
 
-    private companion object { const val TAG = "InterstitialManager" }
+    private companion object {
+        const val TAG = "InterstitialManager"
+        const val MAX_RETRIES = 2
+        const val RETRY_BASE_MS = 10_000L
+    }
 }

@@ -47,41 +47,29 @@ fun HistoryNativeAd(
     val internetConnected = rememberInternetConnected()
     if (!model.isAdEnabled || model.adNativeId.isBlank() || !internetConnected || !activity.isNetworkConnected()) return
 
-    var loaded by remember { mutableStateOf(false) }
-    val adRef = remember { arrayOfNulls<NativeAd>(1) }
+    // A native ad preloaded at startup shows instantly; otherwise one is requested now.
+    val cached = remember(model.adNativeId) { NativeAdCache.take(model.adNativeId) }
+    var loaded by remember { mutableStateOf(cached != null) }
+    val adRef = remember { arrayOf(cached) }
     val disposed = remember { AtomicBoolean(false) }
     DisposableEffect(activity, model.adNativeId) {
         disposed.set(false)
-        AdMobInitializer.initializeAdmob(activity) {
-            if (disposed.get() || activity.isFinishing || activity.isDestroyed) return@initializeAdmob
-            val request = NativeAdRequest.Builder(
-                model.adNativeId,
-                listOf(NativeAd.NativeAdType.NATIVE),
-            ).build()
-            NativeAdLoader.load(request, object : NativeAdLoaderCallback {
-                override fun onNativeAdLoaded(nativeAd: NativeAd) {
-                    if (disposed.get() || activity.isFinishing || activity.isDestroyed) {
-                        nativeAd.destroy()
-                        return
-                    }
-                    nativeAd.adEventCallback = object : NativeAdEventCallback {
-                        override fun onAdImpression() { analytics.adShown("native", "history") }
-                        override fun onAdClicked() { analytics.adClicked("native", "history") }
-                    }
+        if (adRef[0] == null) {
+            NativeAdCache.load(activity.applicationContext, model.adNativeId, analytics) { nativeAd ->
+                if (disposed.get() || activity.isFinishing || activity.isDestroyed) {
+                    nativeAd.destroy()
+                } else {
                     adRef[0] = nativeAd
-                    analytics.adLoaded("native", "history")
-                    activity.runOnUiThread { if (!disposed.get()) loaded = true else nativeAd.destroy() }
+                    loaded = true
                 }
-
-                override fun onAdFailedToLoad(adError: LoadAdError) {
-                    analytics.adFailedToLoad("native", "history", adError.code.toString())
-                }
-            })
+            }
         }
         onDispose {
             disposed.set(true)
             adRef[0]?.destroy()
             adRef[0] = null
+            // Have the next one ready for the next visit.
+            NativeAdCache.preload(activity.applicationContext, model, analytics)
         }
     }
 
@@ -95,6 +83,72 @@ fun HistoryNativeAd(
             )
         }
     }
+}
+
+/**
+ * Keeps one native ad ready so the History list shows it with no wait. Native ads are used within an hour of loading,
+ * as AdMob recommends; an older one is dropped and replaced.
+ */
+object NativeAdCache {
+    private val main = android.os.Handler(android.os.Looper.getMainLooper())
+    private var ad: NativeAd? = null
+    private var adUnit: String? = null
+    private var loadedAtMs = 0L
+    private var loading = false
+
+    /** Loads one ad for [model] in the background if none is ready. */
+    fun preload(context: android.content.Context, model: NativeAdModel, analytics: AdAnalytics) {
+        if (!model.isAdEnabled || model.adNativeId.isBlank()) return
+        main.post {
+            if (fresh(model.adNativeId) || loading || !context.isNetworkConnected()) return@post
+            load(context, model.adNativeId, analytics) { loaded ->
+                ad?.destroy()
+                ad = loaded; adUnit = model.adNativeId; loadedAtMs = android.os.SystemClock.elapsedRealtime()
+            }
+        }
+    }
+
+    /** The ready ad for [adUnitId], removed from the cache, or null. Main thread only. */
+    fun take(adUnitId: String): NativeAd? {
+        if (!fresh(adUnitId)) return null
+        return ad.also { ad = null; adUnit = null }
+    }
+
+    private fun fresh(adUnitId: String): Boolean {
+        val current = ad ?: return false
+        if (adUnit != adUnitId || android.os.SystemClock.elapsedRealtime() - loadedAtMs > MAX_AGE_MS) {
+            current.destroy(); ad = null; adUnit = null
+            return false
+        }
+        return true
+    }
+
+    /** One request; [onLoaded] runs on the main thread. Failures are only reported to analytics. */
+    fun load(context: android.content.Context, adUnitId: String, analytics: AdAnalytics, onLoaded: (NativeAd) -> Unit) {
+        loading = true
+        AdMobInitializer.initializeAdmob(context) {
+            val request = NativeAdRequest.Builder(adUnitId, listOf(NativeAd.NativeAdType.NATIVE)).build()
+            runCatching {
+                NativeAdLoader.load(request, object : NativeAdLoaderCallback {
+                    override fun onNativeAdLoaded(nativeAd: NativeAd) {
+                        nativeAd.adEventCallback = object : NativeAdEventCallback {
+                            override fun onAdImpression() { analytics.adShown("native", "history") }
+                            override fun onAdClicked() { analytics.adClicked("native", "history") }
+                        }
+                        analytics.adLoaded("native", "history")
+                        main.post { loading = false; onLoaded(nativeAd) }
+                    }
+
+                    override fun onAdFailedToLoad(adError: LoadAdError) {
+                        analytics.adFailedToLoad("native", "history", adError.code.toString())
+                        main.post { loading = false }
+                    }
+                })
+            }.onFailure { main.post { loading = false } }
+        }
+    }
+
+    private const val MAX_AGE_MS = 60 * 60 * 1000L
 }
 
 private fun createNativeAdView(context: android.content.Context, ad: NativeAd?): NativeAdView {

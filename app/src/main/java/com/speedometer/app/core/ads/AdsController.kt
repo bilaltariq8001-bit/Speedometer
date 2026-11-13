@@ -19,18 +19,31 @@ class AdsController @Inject constructor(
     private val main = Handler(Looper.getMainLooper())
     @Volatile private var inFlight = false
 
-    /** Called once from the Application class: starts watching for the app returning to the front, and fetches Remote Config. */
+    @Volatile private var app: Application? = null
+
+    /**
+     * Called once from the Application class. Ads used to wait for Remote Config (up to 10 s) and for the first ad request
+     * before the SDK even started. Now, for a user who already gave consent, the SDK starts and the first ads load right
+     * away with the cached/default config; Remote Config refreshes the values in parallel.
+     */
     fun init(app: Application) {
+        this.app = app
         appOpen.start(app)
+        if (config.canRequestAds()) {
+            AdMobInitializer.initializeAdmob(app) {}
+            preloadIfAllowed(app)
+        }
         config.fetch {
             preloadIfAllowed(app)
             appOpen.onAdConfigurationReady()
         }
+        watchNetwork(app)
     }
 
     /** Called when UMP has answered (from MainActivity). Ads may load from here on, if consent allows. */
     fun onConsentResolved(app: Application, canRequestAds: Boolean) {
         config.setCanRequestAds(canRequestAds)
+        if (canRequestAds) AdMobInitializer.initializeAdmob(app) {}
         preloadIfAllowed(app)
         appOpen.onAdConfigurationReady()
     }
@@ -38,11 +51,34 @@ class AdsController @Inject constructor(
     /** Shows the startup app-open ad once the splash/setup flow reaches Home. */
     fun onHomeVisible(eligible: Boolean = true) = appOpen.onHomeVisible(eligible)
 
+    /** Starts loading [placement]'s interstitial as soon as its screen opens, so it is ready when the user leaves. */
+    fun warmUp(context: android.content.Context, placement: String) {
+        if (config.canRequestAds()) interstitial.preload(context.applicationContext, placement)
+    }
+
     private fun preloadIfAllowed(app: Application) {
         if (!config.canRequestAds()) return
         interstitial.preload(app, PRELOAD_PLACEMENT)
         appOpen.fetchAd()
+        NativeAdCache.preload(app, config.native(NATIVE_PLACEMENT), analytics)
     }
+
+    /** When the phone gets internet back, fill whatever could not load while it was offline. */
+    private fun watchNetwork(app: Application) {
+        runCatching {
+            val cm = app.getSystemService(android.content.Context.CONNECTIVITY_SERVICE) as android.net.ConnectivityManager
+            cm.registerDefaultNetworkCallback(object : android.net.ConnectivityManager.NetworkCallback() {
+                override fun onCapabilitiesChanged(network: android.net.Network, caps: android.net.NetworkCapabilities) {
+                    if (caps.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED)) {
+                        main.removeCallbacks(reload)
+                        main.postDelayed(reload, NETWORK_SETTLE_MS)
+                    }
+                }
+            })
+        }
+    }
+
+    private val reload = Runnable { app?.let { preloadIfAllowed(it) } }
 
     /**
      * Click (forward) interstitial: shows the ad for [placement] if allowed, then runs [onDismiss] exactly once. The user
@@ -81,5 +117,7 @@ class AdsController @Inject constructor(
     private companion object {
         const val PRELOAD_PLACEMENT = "trip_saved_click"
         const val IN_FLIGHT_TIMEOUT_MS = 8_000L
+        const val NATIVE_PLACEMENT = "history"
+        const val NETWORK_SETTLE_MS = 1_500L
     }
 }

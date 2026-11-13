@@ -308,8 +308,23 @@ fun RouteMap(
 private const val MIN_CAMERA_FOLLOW_INTERVAL_MS = 1000L
 private const val MIN_CAMERA_FOLLOW_DISTANCE_M = 2.0
 
+@Volatile private var ambientCacheSet = false
+
 private fun createMapView(context: Context): MapView {
     MapLibre.getInstance(context)
+    // Keep a bigger tile cache so the streets around places the user has driven still draw when the phone is offline.
+    if (!ambientCacheSet) {
+        ambientCacheSet = true
+        runCatching {
+            org.maplibre.android.offline.OfflineManager.getInstance(context.applicationContext).setMaximumAmbientCacheSize(
+                AMBIENT_CACHE_BYTES,
+                object : org.maplibre.android.offline.OfflineManager.FileSourceCallback {
+                    override fun onSuccess() = Unit
+                    override fun onError(message: String) = Unit
+                },
+            )
+        }
+    }
     return MapView(context).also { v ->
         v.setOnTouchListener { view, event ->
             if (event.actionMasked == android.view.MotionEvent.ACTION_DOWN) view.parent?.requestDisallowInterceptTouchEvent(true)
@@ -336,6 +351,7 @@ private const val FOLLOW_EASE_MS = 600
 private const val FLY_MS = 700
 private const val MAX_RASTER_ZOOM = 19.0
 private const val FIT_PADDING = 80
+private const val AMBIENT_CACHE_BYTES = 200L * 1024 * 1024
 
 private fun downsample(points: List<LatLng>, max: Int = 1000): List<LatLng> {
     if (points.size <= max) return points

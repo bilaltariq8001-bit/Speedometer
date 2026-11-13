@@ -29,6 +29,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.libraries.ads.mobile.sdk.banner.AdSize
@@ -44,7 +45,7 @@ import com.speedometer.app.core.common.isNetworkConnected
 import com.speedometer.app.core.common.rememberInternetConnected
 import com.speedometer.app.core.designsystem.Surface1
 
-private enum class BannerState { Loading, Shown, Hidden }
+private enum class BannerState { Loading, Waiting, Shown, Hidden }
 
 /**
  * A screen with one banner slot. The Remote Config keys of [slot] decide whether the ad is on (`<slot>_in_screen_ad_enabled`)
@@ -85,11 +86,14 @@ private fun BannerSlot(slot: String, model: InScreenAdModel, modifier: Modifier)
         }
     }
     LaunchedEffect(slot, model.adBannerId) {
+        // After the timeout the placeholder folds away, but the request keeps going: a banner that arrives late still
+        // shows, instead of being thrown away (the old code hid it for good, so slow networks never saw a banner).
         kotlinx.coroutines.delay(AD_LOAD_UI_TIMEOUT_MS)
-        if (state == BannerState.Loading) state = BannerState.Hidden
+        if (state == BannerState.Loading) state = BannerState.Waiting
     }
 
-    Box(modifier.fillMaxWidth().height(heightDp), contentAlignment = Alignment.Center) {
+    val slotHeight = if (state == BannerState.Waiting) 0.dp else heightDp
+    Box(modifier.fillMaxWidth().height(slotHeight), contentAlignment = Alignment.Center) {
         // The factory runs once, so recomposition never sends a second request.
         AndroidView(
             modifier = Modifier.fillMaxWidth(),
@@ -170,4 +174,4 @@ private fun BannerShimmer(height: Dp) {
     Box(Modifier.fillMaxWidth().height(height).alpha(alpha).background(Surface1))
 }
 
-private const val AD_LOAD_UI_TIMEOUT_MS = 6_000L
+private const val AD_LOAD_UI_TIMEOUT_MS = 4_000L

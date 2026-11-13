@@ -301,6 +301,8 @@ fun AppNavHost() {
             )
         }
         framed(Routes.Home) {
+            // Have the Trips click ad loading while Home is open, so opening Trips never waits on it.
+            androidx.compose.runtime.LaunchedEffect(Unit) { activity?.let { adsVm.ads.warmUp(it, "history_open_click") } }
             Column(Modifier.fillMaxSize()) {
                 Box(Modifier.weight(1f)) {
                     HomeScreen(
@@ -351,6 +353,7 @@ fun AppNavHost() {
         framed(Routes.Results) {
             val goHome = { nav.popBackStack(Routes.Home, inclusive = false); Unit }
             val back = rememberBackPressAd("results_back", leave = goHome)
+            androidx.compose.runtime.LaunchedEffect(Unit) { activity?.let { adsVm.ads.warmUp(it, "trip_saved_click") } }
             ResultsScreen(
                 onClose = back,
                 onSaved = {

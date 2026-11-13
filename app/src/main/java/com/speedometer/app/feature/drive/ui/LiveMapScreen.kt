@@ -81,8 +81,15 @@ fun LiveMapScreen(onBack: () -> Unit, onEnd: () -> Unit, vm: LiveDriveViewModel 
     val tripHere = trip.let { vm.here() }?.let { LatLng(it.lat, it.lon) }
     // Before the trip has a position of its own, the map still opens on the phone's last known one, not on the whole world.
     var lastKnown by remember { mutableStateOf<LatLng?>(null) }
+    // Offline the trip's first GPS fix can take a while (no assisted GPS), so show the phone's cached position at once,
+    // then keep asking for a fresh one until the trip has its own. Neither step needs internet.
     androidx.compose.runtime.LaunchedEffect(tripHere == null) {
-        if (tripHere == null) vm.lastKnownPoint()?.let { lastKnown = LatLng(it.lat, it.lon) }
+        if (tripHere != null) return@LaunchedEffect
+        vm.lastKnownPoint()?.let { lastKnown = LatLng(it.lat, it.lon) }
+        while (true) {
+            vm.freshPoint()?.let { lastKnown = LatLng(it.lat, it.lon) }
+            kotlinx.coroutines.delay(FRESH_RETRY_MS)
+        }
     }
     val here = tripHere ?: lastKnown
     // The path runs on to the current position, so it never trails behind the dot between two recorded route points.
@@ -255,6 +262,8 @@ fun NextZoneCard(zone: NextZone, currentLimitKmh: Float?, unit: com.speedometer.
         }
     }
 }
+
+private const val FRESH_RETRY_MS = 5_000L
 
 private const val CENTRE_ICON = "M12 9a3 3 0 1 0 0 6a3 3 0 0 0 0-6 M12 4a8 8 0 1 0 0 16a8 8 0 0 0 0-16 M12 2v3M12 19v3M2 12h3M19 12h3"
 

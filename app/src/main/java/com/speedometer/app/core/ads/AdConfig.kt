@@ -141,6 +141,6 @@ class AdConfig @Inject constructor(@ApplicationContext private val context: Cont
         const val TEST_NATIVE_AD_UNIT_ID = "ca-app-pub-3940256099942544/2247696110"
         const val KEY_CAN_REQUEST_ADS = "can_request_ads"
         const val FETCH_INTERVAL_S = 3600L
-        const val FETCH_TIMEOUT_MS = 10_000L
+        const val FETCH_TIMEOUT_MS = 5_000L
     }
 }

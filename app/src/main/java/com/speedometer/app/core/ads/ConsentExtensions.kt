@@ -14,12 +14,14 @@ import com.speedometer.app.core.common.isNetworkConnected
  */
 @MainThread
 fun Activity.showGDPRScreen(onScreenShown: (Boolean, Boolean) -> Unit) {
+    val consentInfo = UserMessagingPlatform.getConsentInformation(this)
+    // Offline (or on an error) keep the answer the user already gave. Reporting "false" here used to switch ads off
+    // until the next online cold start, so ads looked slow or missing after any offline launch.
     if (!isNetworkConnected()) {
-        onScreenShown(false, false)
+        onScreenShown(false, consentInfo.canRequestAds())
         return
     }
     val params = ConsentRequestParameters.Builder().setTagForUnderAgeOfConsent(false).build()
-    val consentInfo = UserMessagingPlatform.getConsentInformation(this)
     consentInfo.requestConsentInfoUpdate(
         this,
         params,
@@ -40,6 +42,6 @@ fun Activity.showGDPRScreen(onScreenShown: (Boolean, Boolean) -> Unit) {
                 onScreenShown(false, consentInfo.canRequestAds())
             }
         },
-        { onScreenShown(false, false) },
+        { onScreenShown(false, consentInfo.canRequestAds()) },
     )
 }
