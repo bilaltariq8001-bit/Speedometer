@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
@@ -20,7 +22,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.core.content.ContextCompat
 import com.speedometer.app.core.ads.AdGate
 import com.speedometer.app.core.ads.AdsViewModel
-import com.speedometer.app.core.ads.ScreenWithBanner
+import com.speedometer.app.core.ads.AppBanner
+import com.speedometer.app.core.ads.bannerOnTop
 import com.speedometer.app.core.ads.rememberBackPressAd
 import com.speedometer.app.core.analytics.AnalyticsViewModel
 import com.speedometer.app.core.autodetect.StartRequest
@@ -119,20 +122,19 @@ private fun RouteFrame(route: String, content: @Composable () -> Unit) {
     ) { content() }
 }
 
-/** Every application destination gets a full-width adaptive bottom banner except Settings. */
+/**
+ * A destination in its frame. The banner is no longer inside each screen: one [AppBanner] below (or above) the NavHost
+ * serves every screen, so navigating keeps the loaded ad instead of creating a new AdView and request per screen.
+ */
 private fun androidx.navigation.NavGraphBuilder.framed(
     route: String,
     arguments: List<androidx.navigation.NamedNavArgument> = emptyList(),
     content: @Composable (androidx.navigation.NavBackStackEntry) -> Unit,
 ) = composable(route, arguments = arguments) { entry ->
-    RouteFrame(route) {
-        if (route != Routes.Settings) {
-            ScreenWithBanner("bottom_banner") { content(entry) }
-        } else {
-            content(entry)
-        }
-    }
+    RouteFrame(route) { content(entry) }
 }
+
+private const val BANNER_SLOT = "bottom_banner"
 private val BACK_STRIP_HEIGHT = 52.dp
 
 private fun NavHostController.goClearing(route: String, from: String) =
@@ -234,9 +236,28 @@ fun AppNavHost() {
         }
     }
     // The nav host fills the window; the bar or rail is drawn over it and the host is padded to clear it.
+    // One banner for the whole app (see AppBanner). While it takes space it owns the gesture-bar (or status-bar) inset, so
+    // the screens above it do not pad for it a second time.
+    val bannerConfigVersion by adsVm.ads.config.version.collectAsStateWithLifecycle()
+    val bannerTop = remember(bannerConfigVersion) { adsVm.ads.bannerOnTop(BANNER_SLOT) }
+    var bannerShown by remember { mutableStateOf(false) }
+    val bannerVisible = AdGate.bannerAllowedOn(route) && s.onboardingDone
+    val banner: @Composable () -> Unit = {
+        AppBanner(adsVm.ads, BANNER_SLOT, bannerVisible, bannerTop) { bannerShown = it }
+    }
     Box(Modifier.fillMaxSize().background(Bg)) {
     Column(Modifier.fillMaxSize()) {
-    Box(Modifier.weight(1f)) {
+    if (bannerTop) banner()
+    Box(
+        Modifier.weight(1f).then(
+            when {
+                !bannerShown -> Modifier
+                bannerTop -> Modifier.consumeWindowInsets(WindowInsets.statusBars)
+                else -> Modifier.consumeWindowInsets(WindowInsets.navigationBars)
+            },
+        ),
+    ) {
+    androidx.compose.runtime.CompositionLocalProvider(com.speedometer.app.core.ads.LocalBannerBelow provides (bannerShown && !bannerTop)) {
     NavHost(
         nav, startDestination = startDest,
         enterTransition = { transitions.enter(this) }, exitTransition = { transitions.exit(this) },
@@ -301,6 +322,8 @@ fun AppNavHost() {
             )
         }
         framed(Routes.Home) {
+            // Have the Trips click ad loading while Home is open, so opening Trips never waits on it.
+            androidx.compose.runtime.LaunchedEffect(Unit) { activity?.let { adsVm.ads.warmUp(it, "history_open_click") } }
             Column(Modifier.fillMaxSize()) {
                 Box(Modifier.weight(1f)) {
                     HomeScreen(
@@ -351,6 +374,7 @@ fun AppNavHost() {
         framed(Routes.Results) {
             val goHome = { nav.popBackStack(Routes.Home, inclusive = false); Unit }
             val back = rememberBackPressAd("results_back", leave = goHome)
+            androidx.compose.runtime.LaunchedEffect(Unit) { activity?.let { adsVm.ads.warmUp(it, "trip_saved_click") } }
             ResultsScreen(
                 onClose = back,
                 onSaved = {
@@ -424,6 +448,7 @@ fun AppNavHost() {
             ReplayScreen(onBack = back)
         }
     }
+    }
 
     if (showBottom) {
         BottomBar(
@@ -476,6 +501,7 @@ fun AppNavHost() {
     // Location switched off while in the app: ask to turn it on. Home has its own, and the setup screens do not need it yet.
     if (route != null && route !in noLocationPromptRoutes) com.speedometer.app.feature.permissions.ui.LocationOffPrompt()
     }
+    if (!bannerTop) banner()
     }
     }
 }

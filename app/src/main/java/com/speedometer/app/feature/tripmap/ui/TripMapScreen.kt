@@ -137,7 +137,9 @@ fun TripMapScreen(onBack: () -> Unit, onOpenTrip: (Long) -> Unit, vm: TripMapVie
         val landscape = layout.isLandscape
         val maxSheet = minOf(SHEET_MAX, maxHeight * 0.8f)
         // The gesture or navigation bar takes room at the bottom of the sheet, so the sheet is that much taller.
-        val navInset = with(androidx.compose.ui.platform.LocalDensity.current) { androidx.compose.foundation.layout.WindowInsets.navigationBars.getBottom(this).toDp() }
+        // When the app banner sits below this screen it already clears the gesture bar.
+        val bannerBelow = com.speedometer.app.core.ads.LocalBannerBelow.current
+        val navInset = if (bannerBelow) 0.dp else with(androidx.compose.ui.platform.LocalDensity.current) { androidx.compose.foundation.layout.WindowInsets.navigationBars.getBottom(this).toDp() }
         RouteMap(
             lines = u.trips.sortedBy { it.trip.id == selectedId }
                 .flatMap { t -> tripLines(t, u.heatmap, dim = selectedTrip != null && t !== selectedTrip, selected = t === selectedTrip) },

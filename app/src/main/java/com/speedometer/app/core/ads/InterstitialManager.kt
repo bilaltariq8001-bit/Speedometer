@@ -78,7 +78,7 @@ class InterstitialManager @Inject constructor(
     }
 
     private fun canLoad(context: Context, model: InterstitialAdModel): Boolean =
-        config.canRequestAds() && context.isNetworkConnected() && model.isAdEnabled && model.adInterstitialId.isNotEmpty()
+        AdGate.adsUnlocked.value && config.canRequestAds() && context.isNetworkConnected() && model.isAdEnabled && model.adInterstitialId.isNotEmpty()
 
     private fun canShow(activity: Activity, model: InterstitialAdModel): Boolean =
         activity is LifecycleOwner && activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) &&
@@ -94,12 +94,15 @@ class InterstitialManager @Inject constructor(
     }
 
     /** Reserves a slot before the SDK starts; the callbacks only release or fill that slot. */
-    private fun requestOne(context: Context, model: InterstitialAdModel, placement: String, reason: String): Boolean {
+    private fun requestOne(context: Context, model: InterstitialAdModel, placement: String, reason: String, attempt: Int = 0): Boolean {
         if (!canLoad(context, model)) {
             Log.d(TAG, "[$placement] request skipped ($reason): not eligible")
             return false
         }
-        if (!reserveLoadSlot(model.adInterstitialId)) return false
+        if (!reserveLoadSlot(model.adInterstitialId)) {
+            AdLog.d("interstitial", "[$placement] duplicate load prevented (cache full or loading)")
+            return false
+        }
         val appContext = context.applicationContext
         AdMobInitializer.initializeAdmob(appContext) {
             onMain {
@@ -107,20 +110,31 @@ class InterstitialManager @Inject constructor(
                     onLoadFailed(model.adInterstitialId)
                     return@onMain
                 }
+                val started = AdLog.requestStarted("interstitial", placement)
                 try {
                     InterstitialAd.load(
                         AdRequest.Builder(model.adInterstitialId).build(),
                         object : AdLoadCallback<InterstitialAd> {
                             override fun onAdLoaded(ad: InterstitialAd) {
-                                onMain { onLoaded(model.adInterstitialId, ad); analytics.adLoaded("interstitial", placement) }
+                                onMain {
+                                    AdLog.loaded("interstitial", placement, started)
+                                    onLoaded(model.adInterstitialId, ad); analytics.adLoaded("interstitial", placement)
+                                }
                             }
 
                             override fun onAdFailedToLoad(adError: LoadAdError) {
                                 onMain {
                                     onLoadFailed(model.adInterstitialId)
-                                    Log.w(TAG, "[$placement] load failed: ${adError.message}")
+                                    AdLog.failed("interstitial", placement, started, adError.code.toString(), adError.message)
                                     analytics.adFailedToLoad("interstitial", placement, adError.code.toString())
-                                    // No retry here. The next show call refills the slot.
+                                    // A couple of spaced-out retries, so one failed request (a slow network at launch) does
+                                    // not leave the placement empty until the next show call. Kept short to respect AdMob.
+                                    if (attempt < MAX_RETRIES) {
+                                        main.postDelayed(
+                                            { requestOne(appContext, model, placement, "retry ${attempt + 1}", attempt + 1) },
+                                            RETRY_BASE_MS * (1L shl attempt),
+                                        )
+                                    }
                                 }
                             }
                         },
@@ -142,6 +156,7 @@ class InterstitialManager @Inject constructor(
         onMain {
             eligibleClicks++
             if (!canShow(activity, model) || showPending) {
+                AdLog.skipped("interstitial", "[$placement] not eligible (consent/onboarding/offline/disabled/another ad/trip saving)")
                 onDismiss()
                 return@onMain
             }
@@ -151,10 +166,12 @@ class InterstitialManager @Inject constructor(
                 requestOne(activity, model, placement, "show call warmup")
             }
             if (!passesCapping(model)) {
+                AdLog.skipped("interstitial", "[$placement] capped")
                 onDismiss()
                 return@onMain
             }
             if (matchingCached == null) {
+                AdLog.skipped("interstitial", "[$placement] no ad ready yet")
                 onDismiss()
                 return@onMain
             }
@@ -220,5 +237,9 @@ class InterstitialManager @Inject constructor(
         }
     }
 
-    private companion object { const val TAG = "InterstitialManager" }
+    private companion object {
+        const val TAG = "InterstitialManager"
+        const val MAX_RETRIES = 2
+        const val RETRY_BASE_MS = 10_000L
+    }
 }

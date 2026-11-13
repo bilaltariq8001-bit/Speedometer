@@ -124,6 +124,9 @@ class LiveDriveViewModel @Inject constructor(
     /** The phone's last known position, for centring the live map before the trip has a position of its own. */
     suspend fun lastKnownPoint() = current.last()
 
+    /** A fresh position from GPS or the fused provider, whichever answers first; works offline. */
+    suspend fun freshPoint() = current.get()
+
     fun setMeterStyle(style: MeterStyle) { viewModelScope.launch { settingsRepo.setMeterStyle(style) } }
     fun setUnit(unit: SpeedUnit) { viewModelScope.launch { settingsRepo.setUnit(unit) } }
 

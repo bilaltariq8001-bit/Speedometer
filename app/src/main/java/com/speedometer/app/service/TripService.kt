@@ -57,6 +57,7 @@ class TripService : Service() {
     @Inject lateinit var alerts: GuardAlerts
     @Inject lateinit var settingsRepo: SettingsRepository
     @Inject lateinit var savedTrips: SavedTripsRepository
+    @Inject lateinit var currentLocation: com.speedometer.app.core.location.CurrentLocation
 
     @Volatile private var zones: List<ZoneEntity> = emptyList()
     @Volatile private var settingsNow = Settings()
@@ -119,6 +120,8 @@ class TripService : Service() {
      */
     private fun handle(loc: Location, fromGps: Boolean) {
         val now = SystemClock.elapsedRealtime()
+        // Remember every position (throttled) so the map can show the user instantly next time, even offline.
+        currentLocation.remember(loc)
         val gpsGrade = fromGps || (loc.hasSpeed() && loc.hasAccuracy() && loc.accuracy <= FUSED_GPS_GRADE_M)
         if (BuildConfig.DEBUG) {
             android.util.Log.d(

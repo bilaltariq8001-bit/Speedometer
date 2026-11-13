@@ -28,6 +28,8 @@ fun rememberBackPressAd(
     val ads = hiltViewModel<AdsViewModel>().ads
     val internalBack by rememberUpdatedState(onInternalBack)
     val currentLeave by rememberUpdatedState(leave)
+    // Load this screen's back ad while the user is on the screen, so it is ready the moment they press Back.
+    androidx.compose.runtime.LaunchedEffect(placement) { ads.warmUp(context, placement) }
 
     val onBackPress: () -> Unit = remember(placement, ads, context) {
         {

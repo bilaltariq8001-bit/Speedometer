@@ -16,7 +16,10 @@ import kotlinx.coroutines.launch
 object AdMobInitializer {
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var attempted = false
-    private var ready = false
+    @Volatile private var ready = false
+
+    /** True once the SDK has started (or failed to); ad requests made now go out at once. */
+    val isReady: Boolean get() = ready
     private val pending = mutableListOf<() -> Unit>()
 
     fun initializeAdmob(context: Context, onResult: () -> Unit) {
@@ -26,6 +29,8 @@ object AdMobInitializer {
             if (attempted) return
             attempted = true
         }
+        val started = AdLog.now()
+        AdLog.d("sdk", "MobileAds.initialize start")
         val appContext = context.applicationContext
         scope.launch {
             try {
@@ -36,7 +41,10 @@ object AdMobInitializer {
                     )
                 }
                 val config = InitializationConfig.Builder(appContext.getString(R.string.admob_app_id)).build()
-                MobileAds.initialize(appContext, config) { release() }
+                MobileAds.initialize(appContext, config) {
+                    AdLog.d("sdk", "MobileAds ready in ${AdLog.now() - started}ms")
+                    release()
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "MobileAds initialization failed", e)
                 release() // let callers carry on; their own checks stop a request that cannot be made
