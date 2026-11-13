@@ -17,7 +17,12 @@ result = {"label": LABEL, "phases": {}, "notes": []}
 
 
 def sh(cmd, check=False, timeout=60):
-    p = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=timeout)
+    try:
+        p = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        result["notes"].append(f"timeout: {cmd}")
+        subprocess.run("adb reconnect offline; adb wait-for-device", shell=True, timeout=120)
+        return ""
     if check and p.returncode != 0:
         raise RuntimeError(f"{cmd}: {p.stderr}")
     return p.stdout
@@ -96,6 +101,12 @@ def launch():
     adb(f"monkey -p {PKG} -c android.intent.category.LAUNCHER 1")
 
 
+def save():
+    with open(f"{OUT}/{LABEL}.json", "w") as f:
+        json.dump(result, f, indent=2)
+    print("RESULT " + LABEL + " " + json.dumps(result), flush=True)
+
+
 def first_after(ts, t0):
     later = [t for t in ts if t >= t0]
     return (later[0] - t0) if later else None
@@ -141,6 +152,7 @@ result["phases"]["onboarding"] = {
     "ad_shows_during_onboarding": len(events(onb, "ads_shown")),
     "banner_requests_during_onboarding": len(perf(onb, "banner: request start")),
 }
+save()
 shot("02-onboarding-done")
 
 # ------------------------------------------------------------------ 3. first Home after onboarding
@@ -151,6 +163,7 @@ result["phases"]["first_home_after_onboarding"] = {
     "app_open_shown": len(events(lines, "ads_shown", "app_open")),
     "app_open_preloaded_ms": first_after(events(lines, "ads_loaded", "app_open"), t_home),
 }
+save()
 shot("03-home")
 dismiss_system_dialogs()
 
@@ -170,6 +183,7 @@ result["phases"]["navigation"] = {
     "banner_requests": len(perf(lines, "banner: request start")),
     "duplicate_loads_prevented": len(perf(lines, "duplicate load prevented")),
 }
+save()
 shot("04-after-navigation")
 
 # ------------------------------------------------------------------ 5. back from background
@@ -185,6 +199,7 @@ result["phases"]["return_from_background"] = {
     "app_open_shown_after_ms": first_after(events(lines, "ads_shown", "app_open"), t_fg),
     "app_open_shows": len(events(lines, "ads_shown", "app_open")),
 }
+save()
 adb("input keyevent KEYCODE_BACK")  # close the ad if it is up
 time.sleep(2)
 
@@ -198,6 +213,7 @@ result["phases"]["quick_minimise_reopen_x3"] = {
     "app_open_shows": len(events(lines, "ads_shown", "app_open")),
     "app_open_loads": len(events(lines, "ads_loaded", "app_open")),
 }
+save()
 adb("input keyevent KEYCODE_BACK"); time.sleep(2)
 
 # ------------------------------------------------------------------ 4. normal cold launch
@@ -214,6 +230,7 @@ result["phases"]["cold_launch"] = {
     "app_open_shown_ms": first_after(events(lines, "ads_shown", "app_open"), t_cold),
     "sdk_ready": [t for _, tag, t in lines if tag == "AdPerf" and "MobileAds ready" in t][:1],
 }
+save()
 adb("input keyevent KEYCODE_BACK"); time.sleep(2)
 
 # ------------------------------------------------------------------ 12. rotation
@@ -237,6 +254,7 @@ result["phases"]["slow_network_cold_launch"] = {
     "app_open_shown_ms": first_after(events(lines, "ads_shown", "app_open"), t_slow),
     "home_visible": screen_has("Insights"),
 }
+save()
 sh("adb emu network speed full"); sh("adb emu network delay none")
 adb("input keyevent KEYCODE_BACK"); time.sleep(2)
 
@@ -258,6 +276,7 @@ result["phases"]["offline_then_online"] = {
     "banner_loaded_after_network_back_ms": first_after(events(lines, "ads_loaded", "banner"), t_on),
     "load_failures": len(events(lines, "ads_failed")),
 }
+save()
 
 # ------------------------------------------------------------------ crashes over the whole run
 all_lines = logcat_since(t0)
