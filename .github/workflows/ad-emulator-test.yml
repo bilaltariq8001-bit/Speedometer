@@ -1,7 +1,6 @@
 name: Ad emulator test
+# Manual only: the hosted emulator is not yet stable enough to drive this app's onboarding.
 on:
-  push:
-    branches: ['fix/**']
   workflow_dispatch:
 jobs:
   emulator:
