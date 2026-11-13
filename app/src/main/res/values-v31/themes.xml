@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Speedometer" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#0B0E11</item>
+        <item name="android:statusBarColor">#0B0E11</item>
+        <item name="android:navigationBarColor">#0D1218</item>
+        <item name="android:windowSplashScreenBackground">#0B0E11</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
+    </style>
+</resources>

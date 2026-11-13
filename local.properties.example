@@ -1,0 +1,3 @@
+sdk.dir=
+# Optional: raster tile server for the maps, with {z}/{x}/{y}. Defaults to OpenStreetMap (light use only).
+TILE_URL=

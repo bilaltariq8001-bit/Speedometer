@@ -1,0 +1,62 @@
+{
+  "app": "Speedometer",
+  "package": "com.speedometer.app",
+  "limitations": [
+    "Events show what users did and which technical failures happened; they cannot prove WHY someone left or uninstalled.",
+    "A first-time user stays first-time until they save their first trip. Someone who reinstalls is counted as first-time again, because the counters live on the phone.",
+    "People who already had the app before analytics was added start as returning (they finished onboarding before).",
+    "No location, route or personal data is ever sent. Trip length is only sent as a bucket (under_1m, 1_to_5m, 5_to_30m, over_30m).",
+    "Debug builds print events in Logcat and send nothing; only release-style builds send events, and only when google-services.json is in the app.",
+    "Audiences are prospective: they fill after they are created, allow 24 to 48 hours."
+  ],
+  "flows": [
+    { "id": "onboarding", "name": "Onboarding", "description": "language, five intro pages, vehicle setup", "cohorts": ["first_time"] },
+    { "id": "trips", "name": "Trips", "description": "starting, recording and saving a trip", "cohorts": ["first_time", "returning"] },
+    { "id": "limit", "name": "Speed limit alert", "description": "setting a limit and going over it", "cohorts": ["first_time", "returning"] },
+    { "id": "personalise", "name": "Meter and vehicle", "description": "changing the meter style or the vehicle", "cohorts": ["returning"] },
+    { "id": "ads", "name": "Ads", "description": "banner, interstitial and app-open ads", "cohorts": ["all"] }
+  ],
+  "user_properties": [
+    { "name": "user_cohort", "values": ["first_time", "returning"], "meaning": "first_time until the first trip is saved, returning afterwards", "set_by": "Analytics.refreshUserProperties (AnalyticsStateStore)" },
+    { "name": "app_language", "values": [], "meaning": "language code of the phone or app", "set_by": "Analytics.refreshUserProperties" },
+    { "name": "onboarding_state", "values": ["not_started", "in_progress", "completed"], "meaning": "onboarding progress", "set_by": "Analytics.onboardingStep / onboardingCompleted" }
+  ],
+  "events": [
+    { "name": "screen_enter", "params": ["screen"], "trigger": "every screen change in AppNavHost" },
+    { "name": "app_foregrounded", "params": [], "trigger": "app comes to the front (ProcessLifecycleOwner)" },
+    { "name": "app_backgrounded", "params": [], "trigger": "app goes to the background (ProcessLifecycleOwner)" },
+    { "name": "onboarding_started", "params": [], "trigger": "first intro page shown" },
+    { "name": "onboarding_step_viewed", "params": ["step"], "trigger": "each intro page (1 to 5)" },
+    { "name": "onboarding_skipped", "params": ["step"], "trigger": "Skip pressed before the last page" },
+    { "name": "onboarding_completed", "params": [], "trigger": "Finish setup on the vehicle screen" },
+    { "name": "trip_started", "params": ["vehicle"], "trigger": "trip goes from idle to recording" },
+    { "name": "trip_paused", "params": [], "trigger": "recording trip paused" },
+    { "name": "trip_resumed", "params": [], "trigger": "paused trip resumed" },
+    { "name": "trip_save_success", "params": ["duration_bucket"], "trigger": "Save pressed on Results" },
+    { "name": "trip_discarded", "params": [], "trigger": "Discard confirmed on Results" },
+    { "name": "speed_limit_changed", "params": ["limit_kmh"], "trigger": "speed limit saved in Settings" },
+    { "name": "limit_alert_fired", "params": ["level"], "trigger": "speed goes over the limit (once per time over)" },
+    { "name": "meter_style_changed", "params": ["style"], "trigger": "gauge style saved" },
+    { "name": "vehicle_changed", "params": ["vehicle"], "trigger": "vehicle picked" },
+    { "name": "ads_loaded", "params": ["format", "placement"], "trigger": "an ad finished loading" },
+    { "name": "ads_failed", "params": ["format", "placement", "error_code"], "trigger": "an ad failed to load" },
+    { "name": "ads_shown", "params": ["format", "placement"], "trigger": "an ad was shown" },
+    { "name": "ads_clicked", "params": ["format", "placement"], "trigger": "an ad was clicked" }
+  ],
+  "audiences": [
+    { "name": "First-time: Onboarding In Progress", "flow": "onboarding", "cohort": "first_time", "membership_days": 7, "goal": "new users who started the intro but have not finished setup", "conditions": [ { "type": "user_property", "name": "onboarding_state", "value": "in_progress" } ] },
+    { "name": "First-time: Skipped Onboarding", "flow": "onboarding", "cohort": "first_time", "membership_days": 7, "goal": "new users who skipped the intro and may not understand the app yet", "conditions": [ { "type": "event", "name": "onboarding_skipped" } ] },
+    { "name": "First-time: Started a Trip", "flow": "trips", "cohort": "first_time", "membership_days": 7, "goal": "new users who started a trip but have not saved one yet", "conditions": [ { "type": "event", "name": "trip_started" } ] },
+    { "name": "Returning: Saved Trips", "flow": "trips", "cohort": "returning", "membership_days": 30, "goal": "users who saved at least one trip: the active core users", "conditions": [ { "type": "event", "name": "trip_save_success" } ] },
+    { "name": "Returning: Discarded Trips", "flow": "trips", "cohort": "returning", "membership_days": 30, "goal": "users who threw trips away, a sign of GPS or recording problems", "conditions": [ { "type": "event", "name": "trip_discarded" } ] },
+    { "name": "First-time: Set a Speed Limit", "flow": "limit", "cohort": "first_time", "membership_days": 7, "goal": "new users who discovered the speed limit alert", "conditions": [ { "type": "event", "name": "speed_limit_changed" } ] },
+    { "name": "Returning: Limit Alert Fired", "flow": "limit", "cohort": "returning", "membership_days": 30, "goal": "users who actually went over their limit", "conditions": [ { "type": "event", "name": "limit_alert_fired" } ] },
+    { "name": "Returning: Changed Meter Style", "flow": "personalise", "cohort": "returning", "membership_days": 30, "goal": "users who personalise the app", "conditions": [ { "type": "event", "name": "meter_style_changed" } ] },
+    { "name": "All: Ad Clicked", "flow": "ads", "cohort": "all", "membership_days": 30, "goal": "users who click ads, to compare ad placements", "conditions": [ { "type": "event", "name": "ads_clicked" } ] },
+    { "name": "All: Ad Load Failures", "flow": "ads", "cohort": "all", "membership_days": 7, "goal": "users whose ads fail to load, to find fill or network problems", "conditions": [ { "type": "event", "name": "ads_failed" } ] }
+  ],
+  "funnels": [
+    { "name": "Onboarding", "window_minutes": 30, "steps": [ { "event": "onboarding_started" }, { "event": "onboarding_completed" } ] },
+    { "name": "First trip", "window_minutes": 1440, "steps": [ { "event": "onboarding_completed" }, { "event": "trip_started" }, { "event": "trip_save_success" } ] }
+  ]
+}

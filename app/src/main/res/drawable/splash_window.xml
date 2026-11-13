@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Window background before Android 12 (and while the app starts): the dark app background with the mark and name centred. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/splash_bg" />
+    <item android:width="340dp" android:height="340dp" android:gravity="center">
+        <bitmap android:src="@drawable/splash_logo" android:gravity="fill" />
+    </item>
+</layer-list>

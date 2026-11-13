@@ -1,0 +1,30 @@
+package com.speedometer.app.core.navigation
+
+/** String routes (type-safe routes need the serialization plugin, which is not approved yet). */
+object Routes {
+    const val Splash = "splash"
+    const val Language = "language"
+    const val LanguageChange = "language_change"
+    const val Onboarding = "onboarding"
+    const val Vehicle = "vehicle"
+    const val Home = "home"
+    const val Zones = "zones"
+    const val GaugeStyle = "gauges"
+    const val MeterPreview = "meterpreview/{style}"
+    fun meterPreview(style: String) = "meterpreview/$style"
+    const val VehicleMeters = "vehiclemeters"
+    const val LiveShare = "share"
+    const val GpsStatus = "gps"
+    const val LiveMap = "livemap"
+    const val Hud = "hud"
+    const val TripMap = "tripmap?id={id}&range={range}"
+    fun tripMap(id: Long = -1L, range: String = "week") = "tripmap?id=$id&range=$range"
+    const val Replay = "replay/{id}"
+    fun replay(id: Long) = "replay/$id"
+    const val Results = "results"
+    const val History = "history"
+    const val Insights = "insights"
+    const val Settings = "settings"
+    const val Live = "live"
+    fun live() = "live"
+}
