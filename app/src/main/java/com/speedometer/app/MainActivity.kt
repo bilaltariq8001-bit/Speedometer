@@ -48,6 +48,12 @@ class MainActivity : ComponentActivity() {
         setContent { SpeedometerTheme { AppNavHost() } }
     }
 
+    /** Any touch counts as "the user is using the app": a late app-open ad never jumps in after it. */
+    override fun dispatchTouchEvent(ev: android.view.MotionEvent): Boolean {
+        if (ev.actionMasked == android.view.MotionEvent.ACTION_DOWN) com.speedometer.app.core.ads.AdGate.markUserInteraction()
+        return super.dispatchTouchEvent(ev)
+    }
+
     override fun onResume() {
         super.onResume()
         AppVisibility.set(true)

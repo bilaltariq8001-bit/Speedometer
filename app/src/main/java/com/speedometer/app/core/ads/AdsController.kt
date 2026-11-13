@@ -5,6 +5,7 @@ import android.app.Application
 import android.os.Handler
 import android.os.Looper
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,7 +16,9 @@ class AdsController @Inject constructor(
     val interstitial: InterstitialManager,
     private val appOpen: AppOpenManager,
     val analytics: com.speedometer.app.core.analytics.AdAnalytics,
+    private val settings: com.speedometer.app.core.data.SettingsRepository,
 ) {
+    private val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.SupervisorJob() + kotlinx.coroutines.Dispatchers.Main.immediate)
     private val main = Handler(Looper.getMainLooper())
     @Volatile private var inFlight = false
 
@@ -29,10 +32,19 @@ class AdsController @Inject constructor(
     fun init(app: Application) {
         this.app = app
         appOpen.start(app)
-        if (config.canRequestAds()) {
-            AdMobInitializer.initializeAdmob(app) {}
-            preloadIfAllowed(app)
+        // Onboarding state comes from the settings store (a few ms). Until it says "done", nothing loads: setup stays ad-free.
+        scope.launch {
+            settings.settings.collect { s ->
+                val wasUnlocked = AdGate.adsUnlocked.value
+                AdGate.onOnboardingState(s.onboardingDone)
+                if (!wasUnlocked && AdGate.adsUnlocked.value) {
+                    AdLog.d("ads", "onboarding done: ads unlocked")
+                    preloadIfAllowed(app)
+                }
+            }
         }
+        // Start the SDK now for a user who already consented, so it is ready long before the first request.
+        if (config.canRequestAds()) AdMobInitializer.initializeAdmob(app) {}
         config.fetch {
             preloadIfAllowed(app)
             appOpen.onAdConfigurationReady()
@@ -53,11 +65,11 @@ class AdsController @Inject constructor(
 
     /** Starts loading [placement]'s interstitial as soon as its screen opens, so it is ready when the user leaves. */
     fun warmUp(context: android.content.Context, placement: String) {
-        if (config.canRequestAds()) interstitial.preload(context.applicationContext, placement)
+        if (config.canRequestAds() && AdGate.adsUnlocked.value) interstitial.preload(context.applicationContext, placement)
     }
 
     private fun preloadIfAllowed(app: Application) {
-        if (!config.canRequestAds()) return
+        if (!config.canRequestAds() || !AdGate.adsUnlocked.value) return
         interstitial.preload(app, PRELOAD_PLACEMENT)
         appOpen.fetchAd()
         NativeAdCache.preload(app, config.native(NATIVE_PLACEMENT), analytics)
@@ -78,7 +90,10 @@ class AdsController @Inject constructor(
         }
     }
 
-    private val reload = Runnable { app?.let { preloadIfAllowed(it) } }
+    private val reload = Runnable {
+        app?.let { preloadIfAllowed(it) }
+        appOpen.onNetworkAvailable()
+    }
 
     /**
      * Click (forward) interstitial: shows the ad for [placement] if allowed, then runs [onDismiss] exactly once. The user

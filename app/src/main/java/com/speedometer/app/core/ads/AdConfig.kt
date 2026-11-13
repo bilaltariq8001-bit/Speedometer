@@ -41,7 +41,18 @@ class AdConfig @Inject constructor(@ApplicationContext private val context: Cont
 
     fun setCanRequestAds(value: Boolean) {
         prefs.edit().putBoolean(KEY_CAN_REQUEST_ADS, value).apply()
+        _consent.value = canRequestAds()
     }
+
+    private val _consent = kotlinx.coroutines.flow.MutableStateFlow(canRequestAds())
+
+    /** [canRequestAds] as state, so a banner waiting on a fresh install starts the moment consent allows it. */
+    val consent: kotlinx.coroutines.flow.StateFlow<Boolean> = _consent
+
+    private val _version = kotlinx.coroutines.flow.MutableStateFlow(0)
+
+    /** Bumped each time fresh Remote Config values are active, so screens re-read their ad settings. */
+    val version: kotlinx.coroutines.flow.StateFlow<Int> = _version
 
     // ---------------------------------------------------------------- fetching
 
@@ -50,7 +61,15 @@ class AdConfig @Inject constructor(@ApplicationContext private val context: Cont
         val rc = remote ?: return onDone()
         var done = false
         val main = Handler(Looper.getMainLooper())
-        val finish = { if (!done) { done = true; onDone() } }
+        val started = AdLog.now()
+        val finish = {
+            if (!done) {
+                done = true
+                AdLog.d("config", "Remote Config ready after ${AdLog.now() - started}ms")
+                _version.value = _version.value + 1
+                onDone()
+            }
+        }
         main.postDelayed(finish, FETCH_TIMEOUT_MS)
         runCatching { rc.fetchAndActivate().addOnCompleteListener { main.post(finish) } }.onFailure { finish() }
     }

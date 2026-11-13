@@ -1,0 +1,45 @@
+name: Ad emulator test
+on:
+  push:
+    branches: ['fix/**']
+  workflow_dispatch:
+jobs:
+  emulator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build after (this branch)
+        run: chmod +x gradlew && ./gradlew --no-daemon assembleDebug && cp app/build/outputs/apk/debug/app-debug.apk after.apk
+      - name: Build before (original upload)
+        run: |
+          git worktree add ../before 1e238c9
+          cd ../before && chmod +x gradlew && ./gradlew --no-daemon assembleDebug && cp app/build/outputs/apk/debug/app-debug.apk $GITHUB_WORKSPACE/before.apk
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
+      - name: Run on emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          script: |
+            mkdir -p results
+            python3 scripts/ad_emulator_test.py before.apk before results || true
+            python3 scripts/ad_emulator_test.py after.apk after results || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ad-emulator-results
+          path: results/
