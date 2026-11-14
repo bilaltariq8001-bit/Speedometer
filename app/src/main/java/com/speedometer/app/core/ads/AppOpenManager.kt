@@ -114,6 +114,9 @@ class AppOpenManager @Inject constructor(
             showAd(activity, ad, source)
             return
         }
+        // Cold start: the process is new, so no ad can be cached yet. Start the load now if it has not begun (Remote Config
+        // or SDK init may still be pending) and wait for it, instead of skipping the launch ad outright.
+        if (allowGrace && state != AdState.Loading) fetchAd()
         if (allowGrace && state == AdState.Loading) {
             // Only on cold start, only briefly, and cancelled by any touch or navigation (see [stillInGrace]).
             graceUntilMs = AdLog.now() + COLD_START_GRACE_MS
@@ -280,7 +283,7 @@ class AppOpenManager @Inject constructor(
 
     private companion object {
         const val MAX_AGE_MS = 4 * 60 * 60 * 1000L
-        const val COLD_START_GRACE_MS = 1_500L
+        const val COLD_START_GRACE_MS = 4_000L
         const val MAX_RETRIES = 3
         const val RETRY_BASE_MS = 30_000L
         const val SUPPRESSED = "returning from a system screen"
