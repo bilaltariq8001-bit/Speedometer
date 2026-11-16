@@ -40,7 +40,10 @@ object AdMobInitializer {
                         RequestConfiguration.Builder().setTestDeviceIds(listOf(testDeviceId)).build(),
                     )
                 }
-                val config = InitializationConfig.Builder(appContext.getString(R.string.admob_app_id)).build()
+                val config = InitializationConfig.Builder(appContext.getString(R.string.admob_app_id))
+                    // No AdMob "native ad validator" popup over native ads (it only appears on test ads).
+                    .setNativeValidatorDisabled()
+                    .build()
                 MobileAds.initialize(appContext, config) {
                     AdLog.d("sdk", "MobileAds ready in ${AdLog.now() - started}ms")
                     release()
