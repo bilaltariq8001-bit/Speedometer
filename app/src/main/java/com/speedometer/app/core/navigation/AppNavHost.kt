@@ -112,14 +112,28 @@ private const val ALERT_RETURN_MS = 10_000L
 private fun RouteFrame(route: String, content: @Composable () -> Unit) {
     val fullBleed = route in fullBleedRoutes
     val secondary = route == Routes.History || route == Routes.Insights || route == Routes.Settings
+    // Room for the banner depends only on this screen's own route, so it stays fixed while screens change.
+    val banner = com.speedometer.app.core.ads.LocalBannerReserve.current
+    val reserve = banner.available && com.speedometer.app.core.ads.AdGate.bannerAllowedOn(route)
+    val bannerBelow = reserve && !banner.onTop
     Box(
         Modifier.fillMaxSize()
+            .then(
+                when {
+                    // The banner sits over the screen's edge with the system bar inset, so the screen clears both.
+                    reserve && banner.onTop -> Modifier.windowInsetsPadding(WindowInsets.statusBars.only(WindowInsetsSides.Top)).padding(top = banner.height)
+                    bannerBelow -> Modifier.windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Bottom)).padding(bottom = banner.height)
+                    else -> Modifier
+                },
+            )
             .then(
                 if (fullBleed) Modifier
                 else Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Bottom)),
             )
             .then(if (secondary) Modifier.padding(top = BACK_STRIP_HEIGHT) else Modifier),
-    ) { content() }
+    ) {
+        androidx.compose.runtime.CompositionLocalProvider(com.speedometer.app.core.ads.LocalBannerBelow provides bannerBelow) { content() }
+    }
 }
 
 /**
@@ -240,24 +254,19 @@ fun AppNavHost() {
     // the screens above it do not pad for it a second time.
     val bannerConfigVersion by adsVm.ads.config.version.collectAsStateWithLifecycle()
     val bannerTop = remember(bannerConfigVersion) { adsVm.ads.bannerOnTop(BANNER_SLOT) }
-    var bannerShown by remember { mutableStateOf(false) }
+    var bannerAvailable by remember { mutableStateOf(false) }
+    var bannerHeight by remember { mutableStateOf(0.dp) }
     val bannerVisible = AdGate.bannerAllowedOn(route) && s.onboardingDone
     val banner: @Composable () -> Unit = {
-        AppBanner(adsVm.ads, BANNER_SLOT, bannerVisible, bannerTop) { bannerShown = it }
+        AppBanner(adsVm.ads, BANNER_SLOT, bannerVisible, bannerTop) { a, h -> bannerAvailable = a; bannerHeight = h }
     }
+    val bannerReserve = com.speedometer.app.core.ads.BannerReserve(bannerAvailable && s.onboardingDone, bannerHeight, bannerTop)
     Box(Modifier.fillMaxSize().background(Bg)) {
     Column(Modifier.fillMaxSize()) {
-    if (bannerTop) banner()
-    Box(
-        Modifier.weight(1f).then(
-            when {
-                !bannerShown -> Modifier
-                bannerTop -> Modifier.consumeWindowInsets(WindowInsets.statusBars)
-                else -> Modifier.consumeWindowInsets(WindowInsets.navigationBars)
-            },
-        ),
-    ) {
-    androidx.compose.runtime.CompositionLocalProvider(com.speedometer.app.core.ads.LocalBannerBelow provides (bannerShown && !bannerTop)) {
+    // The banner is drawn over the screens (see the end of this function), and each screen reserves its room in RouteFrame.
+    // The container never changes size when the banner comes or goes, which made screens scale during navigation.
+    Box(Modifier.weight(1f)) {
+    androidx.compose.runtime.CompositionLocalProvider(com.speedometer.app.core.ads.LocalBannerReserve provides bannerReserve) {
     NavHost(
         nav, startDestination = startDest,
         enterTransition = { transitions.enter(this) }, exitTransition = { transitions.exit(this) },
@@ -501,8 +510,8 @@ fun AppNavHost() {
     // Location switched off while in the app: ask to turn it on. Home has its own, and the setup screens do not need it yet.
     if (route != null && route !in noLocationPromptRoutes) com.speedometer.app.feature.permissions.ui.LocationOffPrompt()
     }
-    if (!bannerTop) banner()
     }
+    Box(Modifier.fillMaxWidth().align(if (bannerTop) Alignment.TopCenter else Alignment.BottomCenter)) { banner() }
     }
 }
 

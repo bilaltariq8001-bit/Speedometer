@@ -54,6 +54,12 @@ import com.speedometer.app.core.designsystem.Surface1
 /** True while the app banner sits below the screens and owns the gesture-bar inset (screens then add no room for it). */
 val LocalBannerBelow = androidx.compose.runtime.compositionLocalOf { false }
 
+/** The room the app banner needs, when one is available: each screen whose route shows the banner reserves it itself. */
+@androidx.compose.runtime.Immutable
+data class BannerReserve(val available: Boolean = false, val height: androidx.compose.ui.unit.Dp = androidx.compose.ui.unit.Dp(0f), val onTop: Boolean = false)
+
+val LocalBannerReserve = androidx.compose.runtime.staticCompositionLocalOf { BannerReserve() }
+
 fun AdsController.bannerOnTop(slot: String): Boolean = config.inScreen(slot).isBannerTop
 
 /**
@@ -77,7 +83,7 @@ fun AppBanner(
     slot: String,
     visible: Boolean,
     onTop: Boolean,
-    onShownChange: (Boolean) -> Unit,
+    onAvailableChange: (available: Boolean, height: androidx.compose.ui.unit.Dp) -> Unit,
 ) {
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() } ?: return
@@ -103,9 +109,12 @@ fun AppBanner(
     }
 
     val state = holder.state
-    val takesSpace = enabled && visible && (state == AdState.Ready || (state == AdState.Loading && !holder.loadingTooLong))
-    val currentOnShown by rememberUpdatedState(onShownChange)
-    LaunchedEffect(takesSpace) { currentOnShown(takesSpace) }
+    // Whether a banner exists to show, whatever the screen. Screens reserve room from this and their own route, so a screen
+    // never changes size because another screen is being navigated to.
+    val available = enabled && (state == AdState.Ready || (state == AdState.Loading && !holder.loadingTooLong))
+    val takesSpace = available && visible
+    val currentOnAvailable by rememberUpdatedState(onAvailableChange)
+    LaunchedEffect(available, slotHeight) { currentOnAvailable(available, slotHeight) }
 
     if (!enabled) return
     val insets = if (onTop) Modifier.statusBarsPadding() else Modifier.navigationBarsPadding()
