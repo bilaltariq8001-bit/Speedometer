@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -50,7 +51,7 @@ class TripMapViewModel @Inject constructor(
             all.filter { it.startMs >= sinceMs }.map { MappedTrip(it, it.routePoints()) }.filter { it.points.size >= 2 }
         }
         TripMapUi(h, shown, s.unit, tripId != -1L)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+    }.flowOn(kotlinx.coroutines.Dispatchers.Default).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     fun toggleHeatmap() = heatmap.update { !it }
 }

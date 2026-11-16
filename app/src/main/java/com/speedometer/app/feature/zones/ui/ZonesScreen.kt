@@ -1,5 +1,6 @@
 package com.speedometer.app.feature.zones.ui
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -61,7 +62,7 @@ private fun zoneColor(index: Int): Color = if (index % 2 == 0) Amber else Ice
 /** Saved Zones, from design/Zones.dc.html. Zones override the map limit while you are inside one. */
 @Composable
 fun ZonesScreen(onBack: () -> Unit, vm: ZonesViewModel = hiltViewModel()) {
-    val ui by vm.ui.collectAsState()
+    val ui by vm.ui.collectAsStateWithLifecycle()
     val u = ui ?: return
     var adding by rememberSaveable { mutableStateOf(false) }
     val gate = com.speedometer.app.feature.permissions.ui.rememberLocationGate()

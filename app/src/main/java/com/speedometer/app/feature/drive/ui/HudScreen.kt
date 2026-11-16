@@ -1,5 +1,6 @@
 package com.speedometer.app.feature.drive.ui
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -62,9 +63,9 @@ private const val DIM_ALPHA = 0.45f
  */
 @Composable
 fun HudScreen(onExit: () -> Unit, vm: LiveDriveViewModel = hiltViewModel()) {
-    val trip by vm.trip.collectAsState()
-    val settings by vm.settings.collectAsState()
-    val nextZone by vm.nextZone.collectAsState()
+    val trip by vm.trip.collectAsStateWithLifecycle()
+    val settings by vm.settings.collectAsStateWithLifecycle()
+    val nextZone by vm.nextZone.collectAsStateWithLifecycle()
     var mirror by rememberSaveable { mutableStateOf(true) }
     var dim by rememberSaveable { mutableStateOf(false) }
     val unit = settings.unit

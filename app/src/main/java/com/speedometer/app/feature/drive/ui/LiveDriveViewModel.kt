@@ -10,6 +10,8 @@ import com.speedometer.app.core.trip.ZeroToHundred
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.distinctUntilChanged
 import java.time.LocalDate
 import java.time.ZoneId
 import com.speedometer.app.core.data.SettingsRepository
@@ -50,14 +52,15 @@ class LiveDriveViewModel @Inject constructor(
     suspend fun lastSeenPlace(): String? = trips.route().lastOrNull()?.let { places.at(it.lat, it.lon) }
 
     /** The nearest saved zone ahead within 400 m, or null. "Ahead" is judged by distance only, not by heading. */
-    val nextZone: StateFlow<NextZone?> = combine(trips.state, zonesRepo.zones) { _, zones ->
+    // Recomputed only when a new route point lands (not on every state tick), off the main thread.
+    val nextZone: StateFlow<NextZone?> = combine(trips.state.map { it.routeSize }.distinctUntilChanged(), zonesRepo.zones) { _, zones ->
         val here = trips.route().lastOrNull() ?: return@combine null
         zones.filter { it.enabled }
             .map { z -> z to (com.speedometer.app.core.trip.GeoMath.distanceM(here.lat, here.lon, z.lat, z.lon) - z.radiusM) }
             .filter { (_, edge) -> edge > 0 && edge <= NEXT_ZONE_WITHIN_M }
             .minByOrNull { it.second }
             ?.let { (z, edge) -> NextZone(z.name, z.limitKmh, edge.toInt()) }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+    }.distinctUntilChanged().flowOn(kotlinx.coroutines.Dispatchers.Default).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
     val loadedSettings: StateFlow<Settings?> = settingsRepo.settings
         .map<Settings, Settings?> { it }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
@@ -77,10 +80,14 @@ class LiveDriveViewModel @Inject constructor(
     val zeroTo100Sec: StateFlow<Int?> = _zeroTo100Sec.asStateFlow()
 
     /** Highest speed today across saved trips and the current trip, km/h. */
-    val topTodayKmh: StateFlow<Float> = combine(saved.trips, trips.state) { all, s ->
+    // The saved trips are scanned once per change of the trip list, not on every GPS tick; the live part is one maxOf.
+    private val savedTopToday = saved.trips.map { all ->
         val startOfDay = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-        maxOf(s.maxKmh, all.filter { it.startMs >= startOfDay }.maxOfOrNull { it.maxKmh } ?: 0f)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0f)
+        all.filter { it.startMs >= startOfDay }.maxOfOrNull { it.maxKmh } ?: 0f
+    }.flowOn(kotlinx.coroutines.Dispatchers.Default)
+    val topTodayKmh: StateFlow<Float> = combine(savedTopToday, trips.state.map { it.maxKmh }.distinctUntilChanged()) { saved, live ->
+        maxOf(live, saved)
+    }.distinctUntilChanged().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0f)
 
     /** Speeds of the last 60 seconds, oldest first, for the live graph. */
     private val _history = MutableStateFlow<List<Float>>(emptyList())

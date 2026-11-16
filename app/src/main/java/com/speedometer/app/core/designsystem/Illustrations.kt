@@ -1,5 +1,6 @@
 package com.speedometer.app.core.designsystem
 
+import androidx.compose.runtime.remember
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -116,7 +117,8 @@ fun ScoreIllustration(modifier: Modifier = Modifier, progress: Float = 1f) {
 fun StrokeIcon(
     pathData: String, color: Color, modifier: Modifier = Modifier, size: Dp = 32.dp, box: Float = 32f, filled: Boolean = false,
 ) {
-    val path = PathParser().parsePathString(pathData).toPath()
+    // Parsing SVG path data is costly and used to run on every recomposition of every icon; parse each string once.
+    val path = remember(pathData) { parsedIconPath(pathData) }
     Canvas(modifier.size(size)) {
         val sc = this.size.width / box
         withTransform({ scale(sc, sc, Offset.Zero) }) {
@@ -125,3 +127,9 @@ fun StrokeIcon(
         }
     }
 }
+
+/** Parsed icon paths by their path data. Icons use a fixed set of strings, so this stays small. Main thread only. */
+private val iconPathCache = HashMap<String, androidx.compose.ui.graphics.Path>()
+
+internal fun parsedIconPath(pathData: String): androidx.compose.ui.graphics.Path =
+    iconPathCache.getOrPut(pathData) { PathParser().parsePathString(pathData).toPath() }

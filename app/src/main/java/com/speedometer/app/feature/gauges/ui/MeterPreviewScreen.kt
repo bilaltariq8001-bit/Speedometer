@@ -1,5 +1,6 @@
 package com.speedometer.app.feature.gauges.ui
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -67,7 +68,7 @@ internal fun demoSpeed(t: Float): Float =
  */
 @Composable
 fun MeterPreviewScreen(initial: MeterStyle, onBack: () -> Unit, vm: GaugeStyleViewModel = hiltViewModel()) {
-    val unit by vm.unit.collectAsState()
+    val unit by vm.unit.collectAsStateWithLifecycle()
     var style by androidx.compose.runtime.saveable.rememberSaveable(initial) { androidx.compose.runtime.mutableStateOf(initial) }
     var t by remember { mutableFloatStateOf(0f) }
     var history by remember { androidx.compose.runtime.mutableStateOf(emptyList<Float>()) }

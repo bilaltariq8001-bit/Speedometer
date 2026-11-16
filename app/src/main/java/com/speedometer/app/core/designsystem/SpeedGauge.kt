@@ -43,7 +43,9 @@ fun SpeedGauge(
 ) {
     val context = LocalContext.current
     val target = (speedKmh / maxKmh).coerceIn(0f, 1f)
-    val progress = animateFloatAsState(
+    // Kept as State and read inside onDrawBehind: animation frames only redraw, and the drawWithCache block (ticks,
+    // gradients, measured labels) is no longer rebuilt on every frame.
+    val progressState = animateFloatAsState(
         targetValue = target,
         animationSpec = if (com.speedometer.app.core.navigation.NavTransitions.reduceMotion(context)) {
             snap()
@@ -51,7 +53,7 @@ fun SpeedGauge(
             spring(dampingRatio = 0.82f, stiffness = 145f)
         },
         label = "gaugeProgress",
-    ).value
+    )
     val labels = rememberTextMeasurer()
 
     Box(modifier.fillMaxWidth()) {
@@ -103,6 +105,7 @@ fun SpeedGauge(
                     }
 
                     onDrawBehind {
+                        val progress = progressState.value
                         val outer = size.minDimension * 0.48f
                         val trackRadius = outer * 0.78f
                         val trackStroke = outer * 0.065f

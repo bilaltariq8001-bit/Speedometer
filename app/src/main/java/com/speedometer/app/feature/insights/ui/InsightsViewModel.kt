@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -30,7 +31,7 @@ class InsightsViewModel @Inject constructor(private val savedTrips: SavedTripsRe
 
     val insights: StateFlow<Insights?> = saved.trips
         .map { InsightsCalculator.compute(it, LocalDate.now()) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+        .flowOn(kotlinx.coroutines.Dispatchers.Default).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     /** Saved trips grouped by the day they started, for the day sheet opened from a bar. */
     val tripsByDay: StateFlow<Map<LocalDate, List<TripEntity>>> = saved.trips
@@ -39,7 +40,7 @@ class InsightsViewModel @Inject constructor(private val savedTrips: SavedTripsRe
             list.groupBy { Instant.ofEpochMilli(it.startMs).atZone(zone).toLocalDate() }
                 .mapValues { (_, trips) -> trips.sortedBy { it.startMs } }
         }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyMap())
+        .flowOn(kotlinx.coroutines.Dispatchers.Default).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyMap())
 
     val unit: StateFlow<SpeedUnit> = settings.settings
         .map { it.unit }

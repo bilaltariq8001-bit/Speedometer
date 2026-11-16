@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -53,7 +54,7 @@ class HistoryViewModel @Inject constructor(
         }
         val shown = all.filter { it.startMs >= since && (!f || it.score < FLAG_BELOW_SCORE) }
         HistoryUi(r, f, all.isNotEmpty(), shown, shown.sumOf { it.distanceKm.toDouble() }.toFloat(), s.unit)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+    }.flowOn(kotlinx.coroutines.Dispatchers.Default).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     fun setRange(r: Range) {
         range.update { r }

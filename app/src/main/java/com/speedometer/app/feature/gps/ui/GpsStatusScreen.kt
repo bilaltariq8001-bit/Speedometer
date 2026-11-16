@@ -1,5 +1,6 @@
 package com.speedometer.app.feature.gps.ui
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.Canvas
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.foundation.background
@@ -63,7 +64,7 @@ private fun cn0Color(cn0: Float) = if (cn0 >= STRONG_CN0) Ok else if (cn0 >= OK_
 /** GPS status, from design/GpsStatus.dc.html, read live from the platform's GNSS status. */
 @Composable
 fun GpsStatusScreen(onBack: () -> Unit, vm: GpsStatusViewModel = hiltViewModel()) {
-    val s by vm.snapshot.collectAsState()
+    val s by vm.snapshot.collectAsStateWithLifecycle()
     val gate = com.speedometer.app.feature.permissions.ui.rememberLocationGate()
     val context = androidx.compose.ui.platform.LocalContext.current
     androidx.compose.runtime.LaunchedEffect(Unit) {

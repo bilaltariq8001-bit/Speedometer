@@ -113,7 +113,7 @@ private fun StatBox(label: String, value: String, modifier: Modifier) {
 @Composable
 fun SportsMeter(d: MeterData, modifier: Modifier = Modifier) {
     var mode by rememberSaveable { mutableIntStateOf(1) }
-    val progress = animatedMeterFraction(d.speedKmh / COUPE_MAX_KMH)
+    val progress by animatedMeterFraction(d.speedKmh / COUPE_MAX_KMH)
     val labels = rememberTextMeasurer()
     Column(modifier.widthIn(max = 560.dp).fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         androidx.compose.foundation.layout.BoxWithConstraints(Modifier.widthIn(max = 340.dp).fillMaxWidth().aspectRatio(340f / 300f), contentAlignment = Alignment.TopCenter) {
@@ -220,7 +220,7 @@ fun SportsMeter(d: MeterData, modifier: Modifier = Modifier) {
 @Composable
 fun BikeMeter(d: MeterData, modifier: Modifier = Modifier) {
     var mode by rememberSaveable { mutableIntStateOf(1) }
-    val progress = animatedMeterFraction(d.speedKmh / BIKE_MAX_KMH)
+    val progress by animatedMeterFraction(d.speedKmh / BIKE_MAX_KMH)
     Column(modifier.widthIn(max = 560.dp).fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Column {
             Canvas(Modifier.fillMaxWidth().height(44.dp)) {

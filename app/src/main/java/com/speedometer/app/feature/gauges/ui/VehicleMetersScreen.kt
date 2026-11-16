@@ -1,5 +1,6 @@
 package com.speedometer.app.feature.gauges.ui
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -65,7 +66,7 @@ private val stockModels = listOf(
 /** Choose a vehicle-specific meter layout. Previewing is separate from applying the selection. */
 @Composable
 fun VehicleMetersScreen(onBack: () -> Unit, onOpenCluster: (MeterStyle) -> Unit, vm: GaugeStyleViewModel = hiltViewModel()) {
-    val saved by vm.style.collectAsState()
+    val saved by vm.style.collectAsStateWithLifecycle()
     var pickedStyle by androidx.compose.runtime.saveable.rememberSaveable(saved) {
         mutableStateOf(stockModels.firstOrNull { it.style == saved }?.style ?: stockModels.first().style)
     }

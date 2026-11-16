@@ -1,5 +1,6 @@
 package com.speedometer.app.feature.replay.ui
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -66,8 +67,8 @@ private fun clock(startMs: Long, plusSec: Int) =
 /** Trip Replay, from design/Replay.dc.html: route, speed line to scrub, play controls and Moments. */
 @Composable
 fun ReplayScreen(onBack: () -> Unit, vm: ReplayViewModel = hiltViewModel()) {
-    val ui by vm.ui.collectAsState()
-    val missing by vm.tripMissing.collectAsState()
+    val ui by vm.ui.collectAsStateWithLifecycle()
+    val missing by vm.tripMissing.collectAsStateWithLifecycle()
     val u = ui
 
     ScrollPage {

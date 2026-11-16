@@ -1,5 +1,6 @@
 package com.speedometer.app.feature.results.ui
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
@@ -90,9 +91,9 @@ fun ResultsScreen(
     onSavedDone: () -> Unit,
     vm: ResultsViewModel = hiltViewModel(),
 ) {
-    val ui by vm.ui.collectAsState()
+    val ui by vm.ui.collectAsStateWithLifecycle()
     val r = ui ?: return
-    val saveState by vm.saveState.collectAsState()
+    val saveState by vm.saveState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val exporter = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/csv")) { uri ->
         val csv = vm.exportCsv()
@@ -323,8 +324,7 @@ private fun FromToRow(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Canvas(Modifier.size(width = 36.dp, height = 44.dp)) {
                 val sc = size.width / 24f
-                val pin = androidx.compose.ui.graphics.vector.PathParser()
-                    .parsePathString("M12 23s8-7.2 8-13.2A8 8 0 0 0 4 9.8C4 15.8 12 23 12 23z").toPath()
+                val pin = com.speedometer.app.core.designsystem.parsedIconPath("M12 23s8-7.2 8-13.2A8 8 0 0 0 4 9.8C4 15.8 12 23 12 23z")
                 drawContext.canvas.save()
                 drawContext.canvas.scale(sc, sc)
                 drawPath(pin, color)

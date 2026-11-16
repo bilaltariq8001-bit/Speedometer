@@ -41,6 +41,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.drawText
 import kotlin.math.roundToInt
+import androidx.compose.ui.layout.layout
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import com.speedometer.app.R
 import com.speedometer.app.core.data.MeterStyle
 import com.speedometer.app.core.designsystem.Amber
@@ -90,7 +93,9 @@ private const val LED_RANGE_SHARE = 0.75f
 private const val ACCEL_RANGE = 4f
 
 @Composable
-internal fun animatedMeterFraction(value: Float): Float {
+internal fun animatedMeterFraction(value: Float): androidx.compose.runtime.State<Float> {
+    // Returns the State, not its value: meters read it with `by` inside their draw blocks, so each animation frame only
+    // redraws the canvas instead of recomposing the whole meter (text measuring, brushes, layout) 60 times a second.
     val context = LocalContext.current
     return animateFloatAsState(
         targetValue = value.coerceIn(0f, 1f),
@@ -100,7 +105,7 @@ internal fun animatedMeterFraction(value: Float): Float {
             spring(dampingRatio = 0.88f, stiffness = 220f)
         },
         label = "meterFill",
-    ).value
+    )
 }
 
 @Composable
@@ -170,7 +175,7 @@ fun DialMeter(d: MeterData, modifier: Modifier = Modifier) {
 
 @Composable
 fun LedMeter(d: MeterData, modifier: Modifier = Modifier) {
-    val progress = animatedMeterFraction(d.speedKmh / (d.maxKmh * LED_RANGE_SHARE))
+    val progress by animatedMeterFraction(d.speedKmh / (d.maxKmh * LED_RANGE_SHARE))
     Column(
         modifier.widthIn(max = 560.dp).fillMaxWidth()
             .background(com.speedometer.app.core.designsystem.Surface1, RoundedCornerShape(28.dp))
@@ -212,7 +217,7 @@ fun LedMeter(d: MeterData, modifier: Modifier = Modifier) {
 
 @Composable
 fun BarMeter(d: MeterData, modifier: Modifier = Modifier) {
-    val frac = animatedMeterFraction(d.speedKmh / d.maxKmh)
+    val fracState = animatedMeterFraction(d.speedKmh / d.maxKmh)
     val accel = d.accelMs2.coerceIn(-ACCEL_RANGE, ACCEL_RANGE)
     val mag = kotlin.math.abs(accel) / ACCEL_RANGE * 0.5f
     Column(
@@ -234,7 +239,13 @@ fun BarMeter(d: MeterData, modifier: Modifier = Modifier) {
                 .background(Color(0xFF10151A), RoundedCornerShape(14.dp)),
         ) {
             Box(
-                Modifier.fillMaxWidth(frac).fillMaxHeight()
+                Modifier.fillMaxHeight()
+                    // Width set in the layout phase from the animated value, so the bar grows without recomposing.
+                    .layout { measurable, constraints ->
+                        val w = (constraints.maxWidth * fracState.value.coerceIn(0f, 1f)).roundToInt()
+                        val p = measurable.measure(constraints.copy(minWidth = w, maxWidth = w))
+                        layout(p.width, p.height) { p.place(0, 0) }
+                    }
                     .background(
                         Brush.horizontalGradient(
                             listOf(if (d.over) Danger.copy(alpha = 0.72f) else Amber.copy(alpha = 0.72f), if (d.over) Danger else Amber),
@@ -263,7 +274,7 @@ fun BarMeter(d: MeterData, modifier: Modifier = Modifier) {
 
 @Composable
 fun RingsMeter(d: MeterData, modifier: Modifier = Modifier) {
-    val progress = animatedMeterFraction(d.speedKmh / d.maxKmh)
+    val progress by animatedMeterFraction(d.speedKmh / d.maxKmh)
     Box(modifier.widthIn(max = 420.dp).fillMaxWidth().aspectRatio(1f), contentAlignment = Alignment.Center) {
         Canvas(Modifier.fillMaxWidth().aspectRatio(1f)) {
             // Radii 140 / 112 / 84 in the design's 340 box.
@@ -417,26 +428,27 @@ private const val NEON_SWEEP_DEG = 270f
 @Composable
 fun NeonDialMeter(d: MeterData, modifier: Modifier = Modifier) {
     val frac = (d.speedKmh / d.maxKmh).coerceIn(0f, 1f)
-    val shown = androidx.compose.animation.core.animateFloatAsState(
+    // Read in the Canvas only, so the needle animation redraws without recomposing.
+    val pos by androidx.compose.animation.core.animateFloatAsState(
         frac, androidx.compose.animation.core.spring(dampingRatio = 0.88f, stiffness = 220f), label = "needle",
-    ).value
-    val pos = shown
+    )
     val labels = androidx.compose.ui.text.rememberTextMeasurer()
-    val readout = labels.measure(
+    val over = d.over
+    val readout = remember(d.speedText, over, labels) { labels.measure(
         d.speedText,
         androidx.compose.ui.text.TextStyle(
-            color = if (d.over) Danger else Ok,
+            color = if (over) Danger else Ok,
             fontFamily = com.speedometer.app.core.designsystem.DisplayFamily,
             fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
             fontSize = 52.sp,
             letterSpacing = (-1.5).sp,
             fontFeatureSettings = "tnum",
         ),
-    )
-    val unitReadout = labels.measure(
+    ) }
+    val unitReadout = remember(d.unit, labels) { labels.measure(
         d.unit,
         androidx.compose.ui.text.TextStyle(color = TextMuted, fontSize = 14.sp),
-    )
+    ) }
     val needleColor = Ice
     Box(modifier.widthIn(max = 420.dp).fillMaxWidth().aspectRatio(1f), contentAlignment = Alignment.Center) {
         Canvas(Modifier.fillMaxSize()) {

@@ -1,5 +1,6 @@
 package com.speedometer.app.feature.settings.ui
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.semantics.Role
@@ -61,7 +62,7 @@ private val units = listOf(SpeedUnit.Kmh, SpeedUnit.Mph, SpeedUnit.Ms)
  */
 @Composable
 fun SettingsScreen(onZones: () -> Unit, onGaugeStyle: () -> Unit, onLanguage: () -> Unit, vm: SettingsViewModel = hiltViewModel()) {
-    val s by vm.settings.collectAsState()
+    val s by vm.settings.collectAsStateWithLifecycle()
     val settings = s ?: return
     val context = androidx.compose.ui.platform.LocalContext.current
     val setAutoDetect = rememberAutoDetectSwitch(vm::hasActivityPermission) { vm.setAutoDetect(it) }

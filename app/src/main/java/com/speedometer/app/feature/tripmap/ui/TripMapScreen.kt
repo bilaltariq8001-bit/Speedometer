@@ -1,5 +1,6 @@
 package com.speedometer.app.feature.tripmap.ui
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -112,7 +113,7 @@ private fun tripLines(t: MappedTrip, heatmap: Boolean, dim: Boolean, selected: B
 /** Trip map, from design/TrackerMap.dc.html: saved trip(s) on map, coloured by score or speed. */
 @Composable
 fun TripMapScreen(onBack: () -> Unit, onOpenTrip: (Long) -> Unit, vm: TripMapViewModel = hiltViewModel()) {
-    val ui by vm.ui.collectAsState()
+    val ui by vm.ui.collectAsStateWithLifecycle()
     val u = ui ?: return
     val mi = u.unit == SpeedUnit.Mph
 

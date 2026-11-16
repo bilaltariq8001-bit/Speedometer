@@ -1,5 +1,6 @@
 package com.speedometer.app.feature.insights.ui
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.mutableStateOf
@@ -59,9 +60,9 @@ private val LANDSCAPE_MAX_WIDTH = 1000.dp
 /** Insights, from design/Insights.dc.html, read from saved trips of the last 7 days. */
 @Composable
 fun InsightsScreen(vm: InsightsViewModel = hiltViewModel()) {
-    val data by vm.insights.collectAsState()
-    val byDay by vm.tripsByDay.collectAsState()
-    val unit by vm.unit.collectAsState()
+    val data by vm.insights.collectAsStateWithLifecycle()
+    val byDay by vm.tripsByDay.collectAsStateWithLifecycle()
+    val unit by vm.unit.collectAsStateWithLifecycle()
     var openDay by rememberSaveable { mutableStateOf<String?>(null) }
     val i = data ?: return
 

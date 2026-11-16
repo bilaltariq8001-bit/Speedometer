@@ -1,5 +1,6 @@
 package com.speedometer.app.feature.share.ui
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -72,7 +73,7 @@ private val Field = Color(0xFF0B0E11)
 fun LiveShareScreen(onBack: () -> Unit, vm: LiveShareViewModel = hiltViewModel()) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val ui by vm.ui.collectAsState()
+    val ui by vm.ui.collectAsStateWithLifecycle()
     val gate = rememberLocationGate()
     gate.dialogs()
     val s = ui.session

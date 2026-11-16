@@ -121,7 +121,15 @@ dependencies {
     implementation(libs.firebase.config)
     implementation(libs.firebase.analytics)
     implementation("androidx.lifecycle:lifecycle-process:2.8.7")
+    // Installs the baseline profiles (the app's own and the ones Compose ships) on sideloaded installs too, so code runs
+    // AOT-compiled from the first launch instead of interpreted. Play installs them by itself.
+    implementation("androidx.profileinstaller:profileinstaller:1.4.1")
     debugImplementation(libs.compose.ui.tooling)
 
     testImplementation(libs.junit)
+}
+
+composeCompiler {
+    // Classes the compiler cannot prove immutable but which are never mutated here, so composables taking them can skip.
+    stabilityConfigurationFile = rootProject.layout.projectDirectory.file("compose_stability.conf")
 }

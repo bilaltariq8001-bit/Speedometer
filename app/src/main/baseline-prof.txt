@@ -1,0 +1,4 @@
+# Baseline profile: the app's own code is compiled ahead of time at install, which speeds up cold start and removes
+# first-run jank on screens (JIT warm-up). Compose, Navigation and Lifecycle ship their own profiles, merged in by AGP.
+HSPLcom/speedometer/app/**;->**(**)**
+Lcom/speedometer/app/**;

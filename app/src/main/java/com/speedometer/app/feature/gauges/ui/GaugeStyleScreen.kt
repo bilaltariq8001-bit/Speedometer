@@ -1,5 +1,6 @@
 package com.speedometer.app.feature.gauges.ui
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -78,7 +79,7 @@ fun GaugeStyleScreen(
     onBack: () -> Unit, onVehicleMeters: () -> Unit, onPreview: (MeterStyle) -> Unit,
     vm: GaugeStyleViewModel = hiltViewModel(),
 ) {
-    val saved by vm.style.collectAsState()
+    val saved by vm.style.collectAsStateWithLifecycle()
     var picked by androidx.compose.runtime.saveable.rememberSaveable(saved) { mutableStateOf(saved) }
 
     ScrollPage(bottom = {

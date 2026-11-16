@@ -1,5 +1,6 @@
 package com.speedometer.app.feature.history.ui
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -94,7 +95,7 @@ fun HistoryScreen(
     onReplay: (Long) -> Unit,
     vm: HistoryViewModel = hiltViewModel(),
 ) {
-    val ui by vm.ui.collectAsState()
+    val ui by vm.ui.collectAsStateWithLifecycle()
     val u = ui ?: return
     var selected by rememberSaveable { mutableStateOf<Long?>(null) }
     val mi = u.unit == SpeedUnit.Mph
@@ -110,10 +111,50 @@ fun HistoryScreen(
     if (rememberLayout().isLandscape && u.trips.isNotEmpty()) {
         HistoryLandscape(u, onViewMap, onReplay, selected, showNativeAd, nativeAd, ads.analytics, onSelect = { selected = it })
     } else {
-        ScrollPage {
-            HistoryTopBar(u, mi, onViewMap)
-            HistoryFilterSection(u, vm)
-            HistoryTripList(u, { selected = it }, showNativeAd, nativeAd, ads.analytics)
+        // A lazy list: only the rows on screen are composed, so a long "All" history opens and scrolls without jank.
+        val contentMax = rememberLayout().contentMax
+        val today = remember { LocalDate.now() }
+        val onSelect: (Long) -> Unit = { selected = it }
+        androidx.compose.foundation.layout.Column(Modifier.fillMaxSize().background(Bg).navigationBarsPadding()) {
+            androidx.compose.foundation.lazy.LazyColumn(
+                Modifier.weight(1f).fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                item(key = "header", contentType = "header") {
+                    androidx.compose.foundation.layout.Column(Modifier.widthIn(max = contentMax).fillMaxWidth()) {
+                        HistoryTopBar(u, mi, onViewMap)
+                        HistoryFilterSection(u, vm)
+                    }
+                }
+                if (u.trips.isEmpty()) {
+                    item(key = "empty", contentType = "empty") {
+                        Box(
+                            Modifier.widthIn(max = contentMax).fillMaxWidth().padding(vertical = 48.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(stringResource(R.string.no_trips_yet), style = bodyStyle(15, color = TextSoft), textAlign = TextAlign.Center)
+                        }
+                    }
+                } else {
+                    val last = u.trips.lastIndex
+                    u.trips.forEachIndexed { index, t ->
+                        item(key = t.id, contentType = "trip") {
+                            Box(
+                                Modifier.widthIn(max = contentMax).fillMaxWidth()
+                                    .padding(start = 20.dp, end = 20.dp, top = if (index == 0) 16.dp else 12.dp, bottom = if (index == last && !(showNativeAd && last <= 1)) 16.dp else 0.dp),
+                            ) { TripRow(t, u.unit, today) { onSelect(t.id) } }
+                        }
+                        if (showNativeAd && (index == 1 || (u.trips.size == 1 && index == 0))) {
+                            item(key = "native_ad", contentType = "ad") {
+                                Box(
+                                    Modifier.widthIn(max = contentMax).fillMaxWidth()
+                                        .padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = if (index == last) 16.dp else 0.dp),
+                                ) { HistoryNativeAd(nativeAd, ads.analytics) }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -316,14 +357,15 @@ private fun HistoryLandscape(
                     pluralStringResource(R.plurals.trip_count, u.trips.size, u.trips.size),
                 Modifier.padding(top = 2.dp), style = bodyStyle(13),
             )
-            Column(
-                Modifier.padding(top = 12.dp, end = 12.dp).verticalScroll(rememberScrollState()),
+            androidx.compose.foundation.lazy.LazyColumn(
+                Modifier.padding(top = 12.dp, end = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                u.trips.forEach { t ->
+                items(u.trips.size, key = { u.trips[it].id }, contentType = { "trip" }) { i ->
+                    val t = u.trips[i]
                     LandscapeTripRow(t, current, t.id == selectedId, u.unit, today) { onSelect(t.id) }
                 }
-                if (showNativeAd) HistoryNativeAd(nativeAd, analytics)
+                if (showNativeAd) item(key = "native_ad", contentType = "ad") { HistoryNativeAd(nativeAd, analytics) }
             }
         }
         Column(Modifier.weight(1f).fillMaxHeight().padding(start = 8.dp, end = 20.dp, top = 16.dp, bottom = 16.dp)) {
