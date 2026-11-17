@@ -226,6 +226,22 @@
     <key>history_open_click_inter_counter_enabled</key>
     <value>true</value>
   </entry>
+  <entry>
+    <key>insights_open_click_inter_id</key>
+    <value>ca-app-pub-3940256099942544/1033173712</value>
+  </entry>
+  <entry>
+    <key>insights_open_click_inter_enabled</key>
+    <value>true</value>
+  </entry>
+  <entry>
+    <key>insights_open_click_inter_should_load</key>
+    <value>true</value>
+  </entry>
+  <entry>
+    <key>insights_open_click_inter_counter_enabled</key>
+    <value>true</value>
+  </entry>
 
   
   <entry>

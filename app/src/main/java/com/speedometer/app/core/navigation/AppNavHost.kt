@@ -152,6 +152,13 @@ private fun androidx.navigation.NavGraphBuilder.framed(
 private const val BANNER_SLOT = "bottom_banner"
 private val BACK_STRIP_HEIGHT = 52.dp
 
+/** Remote Config prefix of the click interstitial shown before opening a tab, or null for tabs without one. */
+private fun tabClickPlacement(route: String): String? = when (route) {
+    Routes.History -> "history_open_click"
+    Routes.Insights -> "insights_open_click"
+    else -> null
+}
+
 private fun NavHostController.goClearing(route: String, from: String) =
     navigate(route) { popUpTo(from) { inclusive = true } }
 
@@ -169,10 +176,19 @@ fun AppNavHost() {
         if (tripPhase.tripActive() && target in setOf(Routes.History, Routes.Insights, Routes.Settings)) {
             AppMessages.show(tripNavigationBlockedMessage, MessageKind.Info)
         } else {
-            nav.navigate(target) {
-                popUpTo(Routes.Home) { saveState = true }
-                launchSingleTop = true
-                restoreState = true
+            val go = {
+                nav.navigate(target) {
+                    popUpTo(Routes.Home) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+            // Trips and Insights tabs: click interstitial first, then the tab opens (right away if no ad is shown).
+            val placement = tabClickPlacement(target)
+            if (placement != null && activity != null && nav.currentDestination?.route != target) {
+                adsVm.ads.showClickAd(activity, placement) { go() }
+            } else {
+                go()
             }
         }
     }
@@ -186,6 +202,10 @@ fun AppNavHost() {
         AdGate.currentRoute = route
         if (route != null) analytics.screenEnter(route.substringBefore('?').substringBefore('/'))
         if (route == Routes.Home) adsVm.ads.onHomeVisible(!StartRequest.pending && !tripPhase.tripActive())
+        // Keep the Trips and Insights tab ads loading on the main screens, so a tab tap never waits on one.
+        if (route == Routes.Home || route == Routes.History || route == Routes.Insights || route == Routes.Settings) {
+            activity?.let { a -> listOf(Routes.History, Routes.Insights).filter { it != route }.forEach { t -> tabClickPlacement(t)?.let { adsVm.ads.warmUp(a, it) } } }
+        }
     }
     // First launch with analytics: someone who already finished onboarding is an existing user and starts as returning.
     LaunchedEffect(settings != null) { if (settings != null) analytics.seed(s.onboardingDone) }
@@ -332,16 +352,12 @@ fun AppNavHost() {
             )
         }
         framed(Routes.Home) {
-            // Have the Trips click ad loading while Home is open, so opening Trips never waits on it.
-            androidx.compose.runtime.LaunchedEffect(Unit) { activity?.let { adsVm.ads.warmUp(it, "history_open_click") } }
             Column(Modifier.fillMaxSize()) {
                 Box(Modifier.weight(1f)) {
                     HomeScreen(
                         onEndTrip = { nav.navigate(Routes.Results) { popUpTo(Routes.Home) } },
                         onHistory = {
-                            // Click interstitial when opening Trips from Home. Never during a trip (that opens nothing anyway).
-                            val open = { select(Routes.History) }
-                            if (activity != null && !tripPhase.tripActive()) adsVm.ads.showClickAd(activity, "history_open_click", open) else open()
+                            select(Routes.History)
                         },
                         onInsights = { select(Routes.Insights) },
                         onSettings = { select(Routes.Settings) },
