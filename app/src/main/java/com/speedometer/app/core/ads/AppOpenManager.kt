@@ -27,19 +27,17 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * App-open ad. One ad is kept loaded ahead of time, so it can show the instant an opportunity comes:
- *  - opportunities: the first Home frame of a cold start, and every return from the background;
- *  - if the ad is not ready at that moment, the opportunity is skipped (no waiting, no late ad over a screen the user is
- *    already using) and loading carries on for the next one. Cold start alone allows a short grace, [COLD_START_GRACE_MS],
- *    which any touch or screen change ends;
- *  - never during onboarding, never on the cold start that follows a fresh onboarding, never until consent allows ads;
+ * App-open ad, shown on every launch and every return from the background.
+ *  - launch: once Home appears after a fresh MainActivity (cold start, or reopening after backing out); resume: every
+ *    time the app comes back to the foreground;
+ *  - one ad is kept loaded ahead of time. If it is still loading at that moment, the opportunity stays open for up to
+ *    [WAIT_FOR_AD_MS] and the ad shows the moment it loads;
+ *  - never during onboarding/setup screens, never until consent allows ads;
  *  - never while a trip is recording, paused, or being saved, nor on live trip screens ([AdGate]);
  *  - never when returning from the system (permission dialog, settings, share): [AdGate.suppressNextAppOpen];
- *  - never while another full-screen ad is on screen, nor inside the shared full-screen cooldown;
- *  - only on [MainActivity], only while the app is in the foreground (a background show is an AdMob policy violation);
+ *  - never on top of another full-screen ad; only on [MainActivity], only while the app is in the foreground;
  *  - an ad older than 4 hours is dropped and replaced; failed loads retry with backoff; the next ad loads after a dismissal.
- * Everything runs on the main thread (SDK callbacks are posted there), so no state is touched from two threads.
- * It can be switched off remotely with `app_open_enabled`.
+ * Everything runs on the main thread. It can be switched off remotely with `app_open_enabled`.
  */
 @Singleton
 class AppOpenManager @Inject constructor(
@@ -57,13 +55,12 @@ class AppOpenManager @Inject constructor(
     private var requestStartedMs = 0L
     private var failures = 0
     private var currentActivity: Activity? = null
-    private var isColdStart = true
-    private var coldStartHomePending = false
+    /** Set when MainActivity is created fresh (process cold start, or reopened after back-exit): show once Home appears. */
+    private var launchHomePending = false
 
-    /** An opportunity that is still open: cold-start grace only. Holds the time it ends. */
-    private var graceUntilMs = 0L
-    private var graceTouchMs = 0L
-    private var graceRoute: String? = null
+    /** An open opportunity waiting for the ad to finish loading. Holds the time it gives up. */
+    private var pendingUntilMs = 0L
+    private var pendingSource = ""
 
     fun start(app: Application) {
         app.registerActivityLifecycleCallbacks(this)
@@ -73,81 +70,87 @@ class AppOpenManager @Inject constructor(
     // ---------------------------------------------------------------- opportunities
 
     override fun onStart(owner: LifecycleOwner) {
-        // Wait until the splash/setup flow reaches Home before showing on a cold launch.
-        if (isColdStart) {
-            isColdStart = false
-            coldStartHomePending = true
-            return
-        }
-        // Back from the background. The activity is about to resume; decide there, with the activity in hand.
-        main.post { opportunity("foreground", allowGrace = false) }
+        // A fresh launch is handled when Home appears (splash/setup stay ad-free).
+        if (launchHomePending) return
+        // Back from the background.
+        main.post { opportunity("resume") }
     }
 
     override fun onStop(owner: LifecycleOwner) {
-        graceUntilMs = 0L
+        cancelPending()
         // Keep an ad ready for the next return.
         main.post { fetchAd() }
     }
 
-    /** Call when Home first becomes visible after startup; this avoids covering splash and onboarding. */
+    /** Call when Home becomes visible; shows the launch ad once per fresh launch. */
     fun onHomeVisible(eligible: Boolean = true): Unit = runOnMain {
-        if (!coldStartHomePending) return@runOnMain
-        coldStartHomePending = false
-        if (!eligible) return@runOnMain skip("cold start: trip starting or active")
-        if (AdGate.onboardingDoneAtLaunch != true) return@runOnMain skip("cold start right after onboarding")
-        opportunity("cold start", allowGrace = true)
+        if (!launchHomePending) return@runOnMain
+        launchHomePending = false
+        if (!eligible) return@runOnMain skip("launch: trip starting or active")
+        opportunity("launch")
     }
 
     /** Called after Remote Config or UMP resolves: load if we can. */
     fun onAdConfigurationReady(): Unit = runOnMain { fetchAd() }
 
-    private fun opportunity(source: String, allowGrace: Boolean) {
-        val reason = blockReason()
-        if (reason != null) {
-            if (reason != SUPPRESSED) fetchAd()
-            return skip("$source: $reason")
-        }
-        expireIfStale()
-        val activity = currentActivity as? MainActivity ?: return skip("$source: no MainActivity")
-        val ad = appOpenAd
-        if (state == AdState.Ready && ad != null) {
-            showAd(activity, ad, source)
-            return
-        }
-        // Cold start: the process is new, so no ad can be cached yet. Start the load now if it has not begun (Remote Config
-        // or SDK init may still be pending) and wait for it, instead of skipping the launch ad outright.
-        if (allowGrace && state != AdState.Loading) fetchAd()
-        if (allowGrace && state == AdState.Loading) {
-            // Only on cold start, only briefly, and cancelled by any touch or navigation (see [stillInGrace]).
-            graceUntilMs = AdLog.now() + COLD_START_GRACE_MS
-            graceTouchMs = AdGate.lastTouchMs
-            graceRoute = AdGate.currentRoute
-            AdLog.d("app_open", "$source: ad still loading, waiting up to ${COLD_START_GRACE_MS}ms")
-            main.postDelayed({ if (graceUntilMs != 0L && !stillInGrace()) { graceUntilMs = 0L; skip("$source: not ready in time") } }, COLD_START_GRACE_MS)
-            return
-        }
-        skip("$source: ad not ready (state=$state)")
-        fetchAd()
+    /**
+     * Shows the ad now if it is ready. If it is still loading (or ads are still being unlocked/consented a few ms after
+     * launch), keeps the opportunity open for up to [WAIT_FOR_AD_MS] and shows the moment it is ready. Gives up if the
+     * app goes to the background, a trip starts, or the user moves to a screen where app-open ads never show.
+     */
+    private fun opportunity(source: String) {
+        if (AdGate.consumeAppOpenSuppression()) return skip("$source: $SUPPRESSED")
+        pendingSource = source
+        pendingUntilMs = AdLog.now() + WAIT_FOR_AD_MS
+        main.removeCallbacks(checkPending)
+        checkPending.run()
     }
 
-    private fun stillInGrace(): Boolean =
-        graceUntilMs != 0L && AdLog.now() <= graceUntilMs && AdGate.lastTouchMs == graceTouchMs && AdGate.currentRoute == graceRoute
+    private val checkPending: Runnable = object : Runnable {
+        override fun run() {
+            if (pendingUntilMs == 0L) return
+            val source = pendingSource
+            hardBlockReason()?.let { cancelPending(); return skip("$source: $it") }
+            expireIfStale()
+            val ad = appOpenAd
+            val activity = currentActivity as? MainActivity
+            if (softBlockReason() == null && state == AdState.Ready && ad != null && activity != null) {
+                cancelPending()
+                return showAd(activity, ad, source)
+            }
+            if (AdLog.now() >= pendingUntilMs) {
+                cancelPending()
+                return skip("$source: not ready in ${WAIT_FOR_AD_MS}ms (state=$state, ${softBlockReason() ?: "ok"})")
+            }
+            if (state != AdState.Loading) fetchAd()
+            main.postDelayed(this, POLL_MS)
+        }
+    }
 
-    /** Why an app-open ad may not show right now, or null when it may. */
-    private fun blockReason(): String? {
-        if (AdGate.consumeAppOpenSuppression()) return SUPPRESSED
+    private fun cancelPending() {
+        pendingUntilMs = 0L
+        main.removeCallbacks(checkPending)
+    }
+
+    /** Never show in these cases; the opportunity is dropped. */
+    private fun hardBlockReason(): String? {
         val model = config.appOpen()
         return when {
-            !AdGate.adsUnlocked.value -> "onboarding not finished"
-            !config.canRequestAds() -> "no consent yet"
             !model.isAdEnabled || model.adAppOpenId.isEmpty() -> "disabled by Remote Config"
             !ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED) -> "app in background"
             tripActive() || AdGate.tripSaving -> "trip active or saving"
-            AdGate.isRestrictedRoute() -> "restricted screen ${AdGate.currentRoute}"
-            AdGate.fullScreenAdVisible || state == AdState.Showing -> "another full-screen ad is showing"
-            AdGate.sinceLastFullScreenAdMs() < config.interstitialCooldownSec * 1000L -> "inside full-screen cooldown"
+            AdGate.currentRoute != null && AdGate.isRestrictedRoute() -> "restricted screen ${AdGate.currentRoute}"
             else -> null
         }
+    }
+
+    /** Not yet: these clear on their own within moments (settings read, consent, another ad closing). */
+    private fun softBlockReason(): String? = when {
+        !AdGate.adsUnlocked.value -> "onboarding state not read yet"
+        !config.canRequestAds() -> "no consent yet"
+        AdGate.currentRoute == null -> "no screen yet"
+        AdGate.fullScreenAdVisible || state == AdState.Showing -> "another full-screen ad is showing"
+        else -> null
     }
 
     private fun tripActive() = trips.state.value.phase.let { it == TripPhase.Recording || it == TripPhase.Paused }
@@ -189,19 +192,14 @@ class AppOpenManager @Inject constructor(
         failures = 0
         AdLog.loaded("app_open", "app_open", requestStartedMs)
         analytics.adLoaded("app_open", "app_open")
-        // Cold-start grace still open and the user has not touched anything: show now. Otherwise keep it for next time.
-        if (stillInGrace()) {
-            graceUntilMs = 0L
-            val activity = currentActivity as? MainActivity
-            if (activity != null && blockReason() == null) showAd(activity, ad, "cold start (within grace)")
-        }
+        // An opportunity is waiting for this ad: show it now.
+        if (pendingUntilMs != 0L) { main.removeCallbacks(checkPending); checkPending.run() }
     }
 
     private fun onFailed(code: String, message: String?) {
         state = if (AdLog.isNoFill(code)) AdState.NoFill else AdState.Failed
         AdLog.failed("app_open", "app_open", requestStartedMs, code, message)
         analytics.adFailedToLoad("app_open", "app_open", code)
-        graceUntilMs = 0L
         // Backoff: 30 s, 60 s, 120 s, then wait for the next natural trigger (foreground, network back).
         if (failures < MAX_RETRIES) {
             val delay = RETRY_BASE_MS * (1L shl failures) * (if (state == AdState.NoFill) 2 else 1)
@@ -276,16 +274,25 @@ class AppOpenManager @Inject constructor(
     override fun onActivityStarted(activity: Activity) { if (activity !is AdActivity) currentActivity = activity }
     override fun onActivityResumed(activity: Activity) { if (activity !is AdActivity) currentActivity = activity }
     override fun onActivityDestroyed(activity: Activity) { if (currentActivity === activity) currentActivity = null }
-    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) { if (activity !is AdActivity) currentActivity = activity }
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+        if (activity is AdActivity) return
+        currentActivity = activity
+        // Fresh MainActivity (cold start, or reopened after the user backed out): it starts on the splash, so wait for Home.
+        if (activity is MainActivity && savedInstanceState == null) {
+            launchHomePending = true
+            AdGate.currentRoute = null
+        }
+    }
     override fun onActivityPaused(activity: Activity) = Unit
     override fun onActivityStopped(activity: Activity) = Unit
     override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) = Unit
 
     private companion object {
         const val MAX_AGE_MS = 4 * 60 * 60 * 1000L
-        const val COLD_START_GRACE_MS = 4_000L
+        const val WAIT_FOR_AD_MS = 6_000L
+        const val POLL_MS = 200L
         const val MAX_RETRIES = 3
-        const val RETRY_BASE_MS = 30_000L
+        const val RETRY_BASE_MS = 10_000L
         const val SUPPRESSED = "returning from a system screen"
     }
 }
