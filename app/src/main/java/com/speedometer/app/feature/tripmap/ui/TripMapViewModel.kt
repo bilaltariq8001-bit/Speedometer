@@ -44,7 +44,7 @@ class TripMapViewModel @Inject constructor(
         viewModelScope.launch { saved.removeLegacyDemoTrips() }
     }
 
-    val ui: StateFlow<TripMapUi?> = combine(saved.trips, heatmap, settings.settings) { all, h, s ->
+    val ui: StateFlow<TripMapUi?> = combine(saved.tripsWithRoutes, heatmap, settings.settings) { all, h, s ->
         val shown = if (tripId != -1L) {
             all.filter { it.id == tripId }.map { MappedTrip(it, it.routePoints()) }.filter { it.points.size >= 2 }
         } else {

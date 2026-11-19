@@ -62,4 +62,8 @@ class HistoryViewModel @Inject constructor(
     }
     fun toggleFlagged() = flagged.update { !it }
     fun delete(id: Long) = viewModelScope.launch { saved.delete(id) }
+
+    /** One trip's route, read only when its map is shown (the list itself carries no routes). */
+    suspend fun routeOf(id: Long): List<com.speedometer.app.core.trip.RoutePoint> =
+        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { saved.get(id)?.routePoints().orEmpty() }
 }

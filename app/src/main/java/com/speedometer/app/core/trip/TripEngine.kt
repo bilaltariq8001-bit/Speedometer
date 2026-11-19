@@ -82,6 +82,16 @@ class TripEngine {
     /** Snapshot of the route recorded so far. */
     fun route(): List<RoutePoint> = synchronized(routePoints) { routePoints.toList() }
 
+    /** Route points from index [start] on (a copy of only the new part), for screens that extend a line point by point. */
+    fun routeFrom(start: Int): List<RoutePoint> = synchronized(routePoints) {
+        if (start >= routePoints.size) emptyList() else routePoints.subList(start.coerceAtLeast(0), routePoints.size).toList()
+    }
+
+    /** Number of route points recorded so far. */
+    fun routeCount(): Int = synchronized(routePoints) { routePoints.size }
+
+    fun routeFirst(): RoutePoint? = synchronized(routePoints) { routePoints.firstOrNull() }
+
     /** The first and the latest position of this trip from any source (GPS, or Wi-Fi and mobile network), for the map and From / To. */
     @Volatile var firstKnown: RoutePoint? = null
         private set

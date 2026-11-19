@@ -71,6 +71,26 @@ class InterstitialManager @Inject constructor(
     private fun releaseLoadSlot(adUnitId: String) {
         val pending = pendingLoads[adUnitId] ?: return
         if (pending <= 1) pendingLoads.remove(adUnitId) else pendingLoads[adUnitId] = pending - 1
+        // One load at a time: start the next queued placement now that this one is done.
+        main.post { drainQueue() }
+    }
+
+    // ---------------------------------------------------------------- one load at a time
+
+    /**
+     * Placements waiting for their turn. Loading several interstitials at once (each builds a WebView) made the app stutter
+     * on mid-range phones, at launch and on every screen that warms ads, so requests now go out one after another.
+     */
+    private val queue = ArrayDeque<Pair<Context, String>>()
+
+    private fun loadInFlight(): Boolean = pendingLoads.values.any { it > 0 }
+
+    private fun drainQueue() {
+        if (loadInFlight()) return
+        while (queue.isNotEmpty()) {
+            val (ctx, placement) = queue.removeFirst()
+            if (requestOne(ctx, config.interstitial(placement), placement, "queued")) return
+        }
     }
 
     private fun onMain(block: () -> Unit) {
@@ -97,6 +117,12 @@ class InterstitialManager @Inject constructor(
     private fun requestOne(context: Context, model: InterstitialAdModel, placement: String, reason: String, attempt: Int = 0): Boolean {
         if (!canLoad(context, model)) {
             Log.d(TAG, "[$placement] request skipped ($reason): not eligible")
+            return false
+        }
+        if (loadInFlight() && (pendingLoads[model.adInterstitialId] ?: 0) == 0) {
+            val alreadyReady = cachedAds.count { it.adUnitId == model.adInterstitialId } >= maxCachedAds
+            if (!alreadyReady && queue.none { it.second == placement }) queue.addLast(context.applicationContext to placement)
+            AdLog.d("interstitial", "[$placement] queued behind another load")
             return false
         }
         if (!reserveLoadSlot(model.adInterstitialId)) {

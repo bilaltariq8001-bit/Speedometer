@@ -111,7 +111,7 @@ fun HistoryScreen(
     }
 
     if (rememberLayout().isLandscape && u.trips.isNotEmpty()) {
-        HistoryLandscape(u, onViewMap, onReplay, selected, showNativeAd, nativeAd, ads.analytics, onSelect = { selected = it })
+        HistoryLandscape(u, onViewMap, onReplay, selected, showNativeAd, nativeAd, ads.analytics, loadRoute = vm::routeOf, onSelect = { selected = it })
     } else {
         // A lazy list: only the rows on screen are composed, so a long "All" history opens and scrolls without jank.
         val contentMax = rememberLayout().contentMax
@@ -343,12 +343,16 @@ private fun HistoryLandscape(
     showNativeAd: Boolean,
     nativeAd: com.speedometer.app.core.ads.NativeAdModel,
     analytics: com.speedometer.app.core.analytics.AdAnalytics,
+    loadRoute: suspend (Long) -> List<com.speedometer.app.core.trip.RoutePoint>,
     onSelect: (Long) -> Unit,
 ) {
     val current = u.trips.firstOrNull { it.id == selectedId } ?: u.trips.first()
     val today = LocalDate.now()
-    val points = remember(current.id) { current.routePoints() }
-    val line = remember(points) { points.map { LatLng(it.lat, it.lon) } }
+    // The route is read for the selected trip only, off the main thread. Null while it loads, so "no route" never flashes.
+    val line by androidx.compose.runtime.produceState<List<LatLng>?>(null, current.id) {
+        value = null
+        value = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) { loadRoute(current.id).map { LatLng(it.lat, it.lon) } }
+    }
 
     Row(Modifier.fillMaxSize().background(Bg)) {
         Column(Modifier.width(380.dp).fillMaxHeight().padding(start = 20.dp, top = 16.dp)) {
@@ -378,10 +382,13 @@ private fun HistoryLandscape(
         }
         Column(Modifier.weight(1f).fillMaxHeight().padding(start = 8.dp, end = 20.dp, top = 16.dp, bottom = 16.dp)) {
             Box(Modifier.weight(1f).fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(Surface1)) {
-                if (line.size >= 2) {
+                val l = line
+                if (l == null) {
+                    Unit
+                } else if (l.size >= 2) {
                     RouteMap(
-                        lines = listOf(MapLine(line, Amber)),
-                        dots = listOf(MapDot(line.first(), Ok, 6f), MapDot(line.last(), TextPrimary, 6f)),
+                        lines = remember(l) { listOf(MapLine(l, Amber)) },
+                        dots = remember(l) { listOf(MapDot(l.first(), Ok, 6f), MapDot(l.last(), TextPrimary, 6f)) },
                         modifier = Modifier.fillMaxSize(),
                     )
                 } else {
@@ -389,7 +396,7 @@ private fun HistoryLandscape(
                 }
             }
             Row(Modifier.padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                if (line.size >= 2) {
+                if ((line?.size ?: 0) >= 2) {
                     Box(
                         Modifier.weight(1f).height(48.dp).clip(RoundedCornerShape(24.dp)).background(Amber)
                             .clickable(role = Role.Button) { onReplay(current.id) },

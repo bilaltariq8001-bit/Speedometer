@@ -175,7 +175,7 @@ fun LiveDriveScreen(
         }
 
         if (!meterInline && layout.isTablet) {
-            val line = remember(trip.routeSize) { vm.route().map { org.maplibre.android.geometry.LatLng(it.lat, it.lon) } }
+            val line = remember(trip.routeSize) { vm.routeLine() }
             val routeLines = remember(line) { listOf(MapLine(line, Amber)) }
             val currentDotPoint = line.lastOrNull()
             val currentDotKey = currentDotPoint?.let { it.latitude to it.longitude }

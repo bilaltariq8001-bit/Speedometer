@@ -146,6 +146,21 @@ class LiveDriveViewModel @Inject constructor(
     /** Route recorded so far, for the live map. */
     fun route() = trips.route()
 
+    private val lineCache = ArrayList<org.maplibre.android.geometry.LatLng>()
+
+    /**
+     * The live route as map points. Only the points added since the last call are converted; before, the whole route was
+     * copied and converted on the main thread on every GPS fix, which got slower the longer the trip ran.
+     */
+    fun routeLine(): List<org.maplibre.android.geometry.LatLng> {
+        val count = trips.routeCount()
+        // A new trip started: its route is shorter, or it begins somewhere else.
+        val first = trips.routeFirst()
+        if (count < lineCache.size || (lineCache.isNotEmpty() && (first == null || first.lat != lineCache[0].latitude || first.lon != lineCache[0].longitude))) lineCache.clear()
+        trips.routeFrom(lineCache.size).forEach { lineCache.add(org.maplibre.android.geometry.LatLng(it.lat, it.lon)) }
+        return ArrayList(lineCache)
+    }
+
     fun pause() = trips.pause()
     fun resume() = trips.resume()
     fun end() { trips.finish() }

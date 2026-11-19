@@ -64,6 +64,16 @@ interface TripDao {
     @Query("SELECT * FROM trips ORDER BY startMs DESC")
     fun observeAll(): Flow<List<TripEntity>>
 
+    /**
+     * Every trip without its route blob (route reads as empty). Lists, Insights and Home only need the numbers; reading
+     * every route (often hundreds of KB each) on every change was the main cost of opening those screens.
+     */
+    @Query(
+        "SELECT id, title, startMs, durationSec, distanceKm, maxKmh, avgKmh, score, hardBrakes, secondsOver, peakGuard, " +
+            "x'' AS route, vehicle FROM trips ORDER BY startMs DESC",
+    )
+    fun observeSummaries(): Flow<List<TripEntity>>
+
     @Query("SELECT * FROM trips WHERE id = :id")
     suspend fun get(id: Long): TripEntity?
 
@@ -174,7 +184,11 @@ class SavedTripsRepository @Inject constructor(
     private val dao: TripDao,
     @ApplicationContext private val context: Context,
 ) {
-    val trips: Flow<List<TripEntity>> = dao.observeAll()
+    /** Saved trips without their routes (see [TripDao.observeSummaries]); use [get] or [tripsWithRoutes] for a route. */
+    val trips: Flow<List<TripEntity>> = dao.observeSummaries()
+
+    /** Saved trips with their routes, only for the screens that draw them (the trips map). */
+    val tripsWithRoutes: Flow<List<TripEntity>> = dao.observeAll()
 
     suspend fun get(id: Long): TripEntity? = dao.get(id)
 
@@ -185,7 +199,7 @@ class SavedTripsRepository @Inject constructor(
     suspend fun removeLegacyDemoTrips() {
         val prefs = context.getSharedPreferences(CLEANUP_PREFS, Context.MODE_PRIVATE)
         if (prefs.getBoolean(KEY_TRIPS, false)) return
-        val list = try { dao.observeAll().first() } catch (e: Exception) { return }
+        val list = try { dao.observeSummaries().first() } catch (e: Exception) { return }
         list.filter { it.title in LEGACY_DEMO_TRIPS }.forEach { dao.delete(it.id) }
         prefs.edit().putBoolean(KEY_TRIPS, true).apply()
     }

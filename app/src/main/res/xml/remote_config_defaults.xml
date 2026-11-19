@@ -433,7 +433,7 @@
   
   <entry>
     <key>interstitial_cache_size</key>
-    <value>2</value>
+    <value>1</value>
   </entry>
   <entry>
     <key>is_interstitial_time_capping_enabled</key>

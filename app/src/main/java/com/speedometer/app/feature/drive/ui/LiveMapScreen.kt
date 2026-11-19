@@ -76,7 +76,7 @@ fun LiveMapScreen(onBack: () -> Unit, onEnd: () -> Unit, vm: LiveDriveViewModel 
     val settings by vm.settings.collectAsStateWithLifecycle()
     val unit = settings.unit
     val mi = settings.mph
-    val line = remember(trip.routeSize) { vm.route().map { LatLng(it.lat, it.lon) } }
+    val line = remember(trip.routeSize) { vm.routeLine() }
     // The position shows even before the first GPS fix has made a route point: the latest position from any source.
     val tripHere = trip.let { vm.here() }?.let { LatLng(it.lat, it.lon) }
     // Before the trip has a position of its own, the map still opens on the phone's last known one, not on the whole world.

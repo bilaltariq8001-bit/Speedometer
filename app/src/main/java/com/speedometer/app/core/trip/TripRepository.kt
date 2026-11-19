@@ -21,6 +21,9 @@ class TripRepository @Inject constructor() {
     }
 
     fun route(): List<RoutePoint> = engine.route()
+    fun routeFrom(start: Int): List<RoutePoint> = engine.routeFrom(start)
+    fun routeCount(): Int = engine.routeCount()
+    fun routeFirst(): RoutePoint? = engine.routeFirst()
 
     /** The route to save: the recorded GPS points, plus the first and last known positions when the GPS route lacks them, so a short trip still has a line to draw (at least two points when any position is known). */
     /** The vehicle chosen when this trip started (a Vehicle name); it is saved with the trip and cannot change during it. */
