@@ -89,6 +89,12 @@ class AdConfig @Inject constructor(@ApplicationContext private val context: Cont
     val interstitialCooldownSec: Long get() = long("interstitial_cooldown_seconds")
     val interstitialClickCap: Long get() = long("interstitial_click_cap")
 
+    /**
+     * Tab interstitials (Trips, Insights, Settings): true shows one on every tap when an ad is ready; false applies the
+     * shared cooldown and click cap. Note: an ad on every tap risks AdMob's "interstitial after every action" policy.
+     */
+    val tabInterAlways: Boolean get() = boolean("tab_inter_always")
+
     /** Completed trips before Start trip shows an interstitial (3: the ad starts on the 4th trip). */
     val startTripInterAfterTrips: Long get() = long("start_trip_inter_after_trips").takeIf { it > 0 } ?: 3L
 

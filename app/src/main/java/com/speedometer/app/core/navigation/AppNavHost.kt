@@ -162,6 +162,7 @@ private val BACK_STRIP_HEIGHT = 52.dp
 private fun tabClickPlacement(route: String): String? = when (route) {
     Routes.History -> "history_open_click"
     Routes.Insights -> "insights_open_click"
+    Routes.Settings -> "settings_open_click"
     else -> null
 }
 
@@ -189,11 +190,12 @@ fun AppNavHost() {
                     restoreState = true
                 }
             }
-            // Trips and Insights tabs: a capped interstitial (shared cooldown + click cap, AdMob policy: not on every tap),
-            // then the tab opens (right away when capped or no ad is ready).
+            // Trips, Insights and Settings tabs: the interstitial first, then the screen (right away if no ad is ready).
+            // Remote Config `tab_inter_always` = true shows it on every tap; false applies the shared cooldown + click cap.
+            // Each tab is switched on or off with `<placement>_inter_enabled`.
             val placement = tabClickPlacement(target)
             if (placement != null && activity != null && nav.currentDestination?.route != target) {
-                adsVm.ads.showClickAdBehind(activity, placement, { go() })
+                adsVm.ads.showClickAdBehind(activity, placement, { go() }, always = adsVm.ads.config.tabInterAlways)
             } else {
                 go()
             }
@@ -214,7 +216,7 @@ fun AppNavHost() {
         // A quick second navigation cancels this wait, so passing through a screen requests nothing.
         kotlinx.coroutines.delay(AD_WARM_AFTER_NAV_MS)
         if (route == Routes.Home || route == Routes.History || route == Routes.Insights || route == Routes.Settings) {
-            activity?.let { a -> listOf(Routes.History, Routes.Insights).filter { it != route }.forEach { t -> tabClickPlacement(t)?.let { adsVm.ads.warmUp(a, it) } } }
+            activity?.let { a -> listOf(Routes.History, Routes.Insights, Routes.Settings).filter { it != route }.forEach { t -> tabClickPlacement(t)?.let { adsVm.ads.warmUp(a, it) } } }
         }
     }
     // First launch with analytics: someone who already finished onboarding is an existing user and starts as returning.
