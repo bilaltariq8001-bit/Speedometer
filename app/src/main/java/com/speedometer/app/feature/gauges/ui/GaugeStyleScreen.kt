@@ -89,13 +89,15 @@ fun GaugeStyleScreen(
                 onClick = { vm.save(picked, onBack) },
             )
         }
-    }) {
-        Row(Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+    }, top = {
+        // Fixed title bar: stays at the top while the gauge list scrolls under it.
+        Row(Modifier.fillMaxWidth().background(Bg).padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.size(48.dp).clickable(role = Role.Button, onClick = onBack), contentAlignment = Alignment.Center) {
                 StrokeIcon("M15 5l-7 7 7 7", TextPrimary, size = 24.dp, box = 24f)
             }
             Text(stringResource(R.string.more_gauge_style), Modifier.padding(start = 4.dp), style = displayStyle(22, FontWeight.SemiBold))
         }
+    }) {
         Text(stringResource(R.string.gauge_intro), Modifier.padding(start = 20.dp, end = 20.dp, top = 4.dp), style = bodyStyle(14))
         Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             MeterStyle.entries.filter { it.generic && it != MeterStyle.Led }.chunked(2).forEach { rowItems ->

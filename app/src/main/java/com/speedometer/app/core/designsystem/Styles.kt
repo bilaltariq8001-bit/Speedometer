@@ -66,10 +66,15 @@ fun ScrollPage(
     bottom: @Composable () -> Unit = {},
     /** Widest the content gets; defaults to the layout's single-column width. */
     maxWidth: Dp? = null,
+    /** Fixed header (title bar with back button) that stays put while the content scrolls. */
+    top: @Composable () -> Unit = {},
     content: @Composable ColumnScope.() -> Unit,
 ) {
     // Above the gesture or navigation bar. On the tab screens the bar already took that room, so nothing is added there.
     Column(modifier.fillMaxSize().background(Bg).navigationBarsPadding()) {
+        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+            Column(Modifier.widthIn(max = maxWidth ?: rememberLayout().contentMax).fillMaxWidth()) { top() }
+        }
         Column(
             Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,

@@ -180,6 +180,22 @@ private fun MoreRow(label: Int, value: String?, first: Boolean = false, onClick:
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(stringResource(label), Modifier.weight(1f), style = bodyStyle(16, FontWeight.Medium, TextPrimary))
-        if (value != null) Text(value, style = bodyStyle(14, color = TextMuted))
+        if (value != null) {
+            // Current choice as a chip, so the row reads as a selector the user can tap to change.
+            Text(
+                value,
+                Modifier.padding(start = 8.dp).clip(RoundedCornerShape(50))
+                    .background(com.speedometer.app.core.designsystem.Amber.copy(alpha = 0.14f))
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                style = bodyStyle(13, FontWeight.SemiBold, com.speedometer.app.core.designsystem.Amber),
+                maxLines = 1,
+            )
+        }
+        if (onClick != null) {
+            com.speedometer.app.core.designsystem.StrokeIcon(
+                "M9 6l6 6-6 6", TextMuted, size = 20.dp, box = 24f,
+                modifier = Modifier.padding(start = 8.dp),
+            )
+        }
     }
 }
