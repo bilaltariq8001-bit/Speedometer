@@ -4,6 +4,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
@@ -67,6 +68,16 @@ fun InsightsScreen(vm: InsightsViewModel = hiltViewModel()) {
     val i = data ?: return
 
     val landscape = rememberLayout().isLandscape
+    val ads = androidx.hilt.navigation.compose.hiltViewModel<com.speedometer.app.core.ads.AdsViewModel>().ads
+    val consent by ads.config.consent.collectAsStateWithLifecycle()
+    val nativeAd = remember { ads.config.native("insights") }
+    // The native card sits under the cards, in the empty state too. It draws nothing until an ad has loaded.
+    val insightsNative: @Composable () -> Unit = {
+        if (consent) com.speedometer.app.core.ads.NativeAdCard(
+            nativeAd, ads.analytics, placement = "insights",
+            modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp),
+        )
+    }
     ScrollPage(maxWidth = if (landscape) LANDSCAPE_MAX_WIDTH else null) {
         Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp)) {
             Text(stringResource(R.string.tab_insights), style = displayStyle(26, FontWeight.SemiBold))
@@ -77,6 +88,8 @@ fun InsightsScreen(vm: InsightsViewModel = hiltViewModel()) {
                 stringResource(R.string.insights_empty), Modifier.fillMaxWidth().padding(40.dp),
                 style = bodyStyle(15), textAlign = TextAlign.Center,
             )
+            insightsNative()
+            Box(Modifier.height(16.dp))
             return@ScrollPage
         }
         if (landscape) {
@@ -103,6 +116,7 @@ fun InsightsScreen(vm: InsightsViewModel = hiltViewModel()) {
             GoalCard(i.goalDone)
             i.weakest?.let { Tip(it) }
         }
+        insightsNative()
         Box(Modifier.height(16.dp))
     }
 

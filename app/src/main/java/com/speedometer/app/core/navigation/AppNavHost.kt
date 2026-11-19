@@ -320,7 +320,7 @@ fun AppNavHost() {
         }
         framed(Routes.LanguageChange) {
             val context = LocalContext.current
-            LanguageScreen(s.language) { name ->
+            LanguageScreen(s.language, showNativeAd = false) { name ->
                 changeLanguage(context, vm, name)
                 nav.popBackStack()
             }

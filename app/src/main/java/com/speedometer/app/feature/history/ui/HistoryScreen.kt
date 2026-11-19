@@ -104,7 +104,9 @@ fun HistoryScreen(
     val showNativeAd = nativeAd.isAdEnabled && nativeAd.adNativeId.isNotBlank() && ads.config.canRequestAds()
 
     if (!u.hasAnyTrips) {
-        HistoryEmptyState(onStartTrip)
+        HistoryEmptyState(onStartTrip) {
+            if (showNativeAd) HistoryNativeAd(nativeAd, ads.analytics, Modifier.padding(top = 24.dp))
+        }
         return
     }
 
@@ -133,6 +135,11 @@ fun HistoryScreen(
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(stringResource(R.string.no_trips_yet), style = bodyStyle(15, color = TextSoft), textAlign = TextAlign.Center)
+                        }
+                    }
+                    if (showNativeAd) item(key = "native_ad", contentType = "ad") {
+                        Box(Modifier.widthIn(max = contentMax).fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 16.dp)) {
+                            HistoryNativeAd(nativeAd, ads.analytics)
                         }
                     }
                 } else {
@@ -295,7 +302,7 @@ private fun TripRow(t: TripEntity, unit: SpeedUnit, today: LocalDate, onClick: (
 }
 
 @Composable
-private fun HistoryEmptyState(onStartTrip: () -> Unit) {
+private fun HistoryEmptyState(onStartTrip: () -> Unit, footer: @Composable () -> Unit = {}) {
     Box(Modifier.fillMaxSize().background(Bg), contentAlignment = Alignment.Center) {
         Column(
             Modifier.widthIn(max = 380.dp).padding(24.dp),
@@ -322,6 +329,7 @@ private fun HistoryEmptyState(onStartTrip: () -> Unit) {
                 style = bodyStyle(15).copy(lineHeight = 22.sp), textAlign = TextAlign.Center,
             )
             Box(Modifier.padding(top = 24.dp)) { PrimaryButton(stringResource(R.string.start_a_trip), onStartTrip, Modifier.padding(horizontal = 0.dp)) }
+            footer()
         }
     }
 }

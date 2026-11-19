@@ -32,7 +32,7 @@ import javax.inject.Singleton
  *    time the app comes back to the foreground;
  *  - one ad is kept loaded ahead of time. If it is still loading at that moment, the opportunity stays open for up to
  *    [WAIT_FOR_AD_MS] and the ad shows the moment it loads;
- *  - never during onboarding/setup screens, never until consent allows ads;
+ *  - never shown on onboarding/setup screens (it preloads there, so a new user sees it on reaching Home), never until consent allows ads;
  *  - never while a trip is recording, paused, or being saved, nor on live trip screens ([AdGate]);
  *  - never when returning from the system (permission dialog, settings, share): [AdGate.suppressNextAppOpen];
  *  - never on top of another full-screen ad; only on [MainActivity], only while the app is in the foreground;
@@ -77,6 +77,7 @@ class AppOpenManager @Inject constructor(
     }
 
     override fun onStop(owner: LifecycleOwner) {
+        AdGate.onAppBackgrounded()
         cancelPending()
         // Keep an ad ready for the next return.
         main.post { fetchAd() }
@@ -163,7 +164,8 @@ class AppOpenManager @Inject constructor(
     fun fetchAd(): Unit = runOnMain {
         expireIfStale()
         val model = config.appOpen()
-        if (!AdGate.adsUnlocked.value || !config.canRequestAds() || !model.isAdEnabled || model.adAppOpenId.isEmpty()) return@runOnMain
+        // Loading is allowed during onboarding (showing is not), so a new user's first app-open ad is ready at Home.
+        if (!config.canRequestAds() || !model.isAdEnabled || model.adAppOpenId.isEmpty()) return@runOnMain
         if (state == AdState.Ready || state == AdState.Showing) return@runOnMain
         if (state == AdState.Loading) return@runOnMain AdLog.d("app_open", "duplicate load prevented")
         if (!context.isNetworkConnected()) return@runOnMain AdLog.d("app_open", "load deferred: offline")
@@ -272,7 +274,11 @@ class AppOpenManager @Inject constructor(
     // ---------------------------------------------------------------- activity tracking
 
     override fun onActivityStarted(activity: Activity) { if (activity !is AdActivity) currentActivity = activity }
-    override fun onActivityResumed(activity: Activity) { if (activity !is AdActivity) currentActivity = activity }
+    override fun onActivityResumed(activity: Activity) {
+        if (activity is AdActivity) return
+        currentActivity = activity
+        if (activity is MainActivity) AdGate.onAppScreenResumed()
+    }
     override fun onActivityDestroyed(activity: Activity) { if (currentActivity === activity) currentActivity = null }
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
         if (activity is AdActivity) return

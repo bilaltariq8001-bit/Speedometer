@@ -27,7 +27,10 @@ object AdGate {
 
     private val _adsUnlocked = MutableStateFlow(false)
 
-    /** True once onboarding is finished. Nothing loads or shows before that: setup stays completely ad-free. */
+    /**
+     * True once onboarding is finished. Full-screen ads and the banner wait for it. Native ads on the setup screens and
+     * the app-open preload do not, so the first app-open ad is ready when a new user reaches Home.
+     */
     val adsUnlocked: StateFlow<Boolean> = _adsUnlocked
 
     /** Null until settings are read; then whether onboarding was already done when this process started. */
@@ -54,16 +57,29 @@ object AdGate {
      * Call right before the app hands the screen to the system (permission dialog, settings, share sheet). Coming back
      * from there is not "returning to the app", so the next app-open ad is skipped.
      */
-    fun suppressNextAppOpen() { suppressAppOpen = true }
+    fun suppressNextAppOpen() { suppressAppOpen = true; suppressedAppLeft = false }
 
-    fun consumeAppOpenSuppression(): Boolean = suppressAppOpen.also { suppressAppOpen = false }
+    /** Whether the app went to the background after [suppressNextAppOpen]. */
+    @Volatile private var suppressedAppLeft = false
+
+    /** The app went to the background: a pending suppression now covers the coming return. */
+    fun onAppBackgrounded() { if (suppressAppOpen) suppressedAppLeft = true }
+
+    /**
+     * The app's screen is back without the app having gone to the background (an in-app dialog such as a permission
+     * prompt): the suppression was not used, so drop it. Otherwise it would wrongly swallow the next real return.
+     */
+    fun onAppScreenResumed() { if (suppressAppOpen && !suppressedAppLeft) suppressAppOpen = false }
+
+    /** True only for a return from a system screen the app itself opened. Clears the flag either way. */
+    fun consumeAppOpenSuppression(): Boolean = (suppressAppOpen && suppressedAppLeft).also { suppressAppOpen = false; suppressedAppLeft = false }
 
     fun markFullScreenAdClosed() { lastFullScreenAdMs = SystemClock.elapsedRealtime() }
 
     fun sinceLastFullScreenAdMs(): Long =
         if (lastFullScreenAdMs == 0L) Long.MAX_VALUE else SystemClock.elapsedRealtime() - lastFullScreenAdMs
 
-    /** Setup screens: never any ad, of any kind. */
+    /** Setup screens: no full-screen ad and no banner; only the slim native card drawn by the screens themselves. */
     val onboardingRoutes = setOf(Routes.Splash, Routes.Language, Routes.Onboarding, Routes.Vehicle)
 
     /** Screens with no app-open ad: setup screens and everything the driver may be looking at during a trip. */

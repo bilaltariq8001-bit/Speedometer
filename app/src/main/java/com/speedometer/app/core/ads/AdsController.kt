@@ -55,7 +55,12 @@ class AdsController @Inject constructor(
     /** Called when UMP has answered (from MainActivity). Ads may load from here on, if consent allows. */
     fun onConsentResolved(app: Application, canRequestAds: Boolean) {
         config.setCanRequestAds(canRequestAds)
-        if (canRequestAds) AdMobInitializer.initializeAdmob(app) {}
+        if (canRequestAds) {
+            AdMobInitializer.initializeAdmob(app) {}
+            // New user: get the first app-open ad and the setup native ad ready while onboarding runs.
+            appOpen.fetchAd()
+            if (!AdGate.adsUnlocked.value) NativeAdCache.preload(app, config.native(ONBOARDING_NATIVE), analytics, ONBOARDING_NATIVE)
+        }
         preloadIfAllowed(app)
         appOpen.onAdConfigurationReady()
     }
@@ -133,6 +138,7 @@ class AdsController @Inject constructor(
         const val PRELOAD_PLACEMENT = "trip_saved_click"
         const val IN_FLIGHT_TIMEOUT_MS = 8_000L
         const val NATIVE_PLACEMENT = "history"
+        const val ONBOARDING_NATIVE = "onboarding"
         const val NETWORK_SETTLE_MS = 1_500L
     }
 }

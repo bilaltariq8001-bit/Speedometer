@@ -38,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -154,6 +155,25 @@ private fun Frame(
         }
     }
 }
+
+/**
+ * Slim native ad for the setup screens, sitting just above the main button with clear space around it. It takes no room
+ * until an ad has loaded, waits for consent, and is left out in landscape, where the setup screens have no height to spare.
+ */
+@Composable
+private fun SetupNativeAd() {
+    if (com.speedometer.app.core.designsystem.rememberLayout().isLandscape) return
+    val ads = androidx.hilt.navigation.compose.hiltViewModel<com.speedometer.app.core.ads.AdsViewModel>().ads
+    val consent by ads.config.consent.collectAsStateWithLifecycle()
+    if (!consent) return
+    val model = remember { ads.config.native(SETUP_NATIVE_PLACEMENT) }
+    com.speedometer.app.core.ads.NativeAdCard(
+        model, ads.analytics, placement = SETUP_NATIVE_PLACEMENT, compact = true,
+        modifier = Modifier.padding(start = ScreenPad, end = ScreenPad, top = 8.dp),
+    )
+}
+
+private const val SETUP_NATIVE_PLACEMENT = "onboarding"
 
 @Composable
 private fun PrimaryBar(text: String, onClick: () -> Unit) {
@@ -495,13 +515,18 @@ private data class Language(val code: String, val name: String, val native: Stri
 private val languages = AppLanguage.tags.keys.map { Language(AppLanguage.tags.getValue(it).uppercase(), it, AppLanguage.native.getValue(it)) }
 
 @Composable
-fun LanguageScreen(selected: String, onContinue: (String) -> Unit) {
+fun LanguageScreen(selected: String, showNativeAd: Boolean = true, onContinue: (String) -> Unit) {
     var query by rememberSaveable { mutableStateOf("") }
     var pendingLanguage by rememberSaveable(selected) { mutableStateOf(selected) }
     val shown = languages.filter {
         query.isBlank() || it.name.contains(query, true) || it.native.contains(query, true)
     }
-    Frame(bottom = { PrimaryBar(stringResource(R.string.continue_label)) { onContinue(pendingLanguage) } }) {
+    Frame(bottom = {
+        Column {
+            if (showNativeAd) SetupNativeAd()
+            PrimaryBar(stringResource(R.string.continue_label)) { onContinue(pendingLanguage) }
+        }
+    }) {
         Column(Modifier.padding(start = ScreenPad, end = ScreenPad, top = 28.dp)) {
             Text(stringResource(R.string.language_title), style = display(28, FontWeight.SemiBold))
             Text(stringResource(R.string.language_hint), Modifier.padding(top = 6.dp), style = body(15))
@@ -657,6 +682,8 @@ fun OnboardingScreen(page: Int, onPage: (Int) -> Unit, onBackHome: () -> Unit, o
             },
             bottom = {
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                    // One ad for all five pages: it stays put while the pages slide.
+                    SetupNativeAd()
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp, bottom = 24.dp)) {
                         repeat(ONBOARDING_PAGES) { i ->
                             val width by androidx.compose.animation.core.animateDpAsState(if (i == page) 28.dp else 8.dp, androidx.compose.animation.core.tween(260), label = "dot")
@@ -895,7 +922,12 @@ fun VehicleScreen(
         }
     }
 
-    Frame(bottom = { PrimaryBar(stringResource(R.string.finish_setup), onFinish) }) {
+    Frame(bottom = {
+        Column {
+            SetupNativeAd()
+            PrimaryBar(stringResource(R.string.finish_setup), onFinish)
+        }
+    }) {
         if (landscape) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Column(Modifier.weight(1.1f)) {
