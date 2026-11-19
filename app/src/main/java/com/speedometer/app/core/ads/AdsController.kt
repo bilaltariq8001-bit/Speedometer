@@ -108,6 +108,15 @@ class AdsController @Inject constructor(
         interstitial.show(activity, placement, onDismiss)
     }
 
+    /** Click interstitial with no cooldown: shown every time an ad is ready (Trips/Insights tabs, trip saved, Start trip). */
+    fun showAlwaysClickAd(activity: Activity, placement: String, onDismiss: () -> Unit) {
+        interstitial.show(activity, placement, onDismiss, always = true)
+    }
+
+    /** Whether the Start trip tap should show an interstitial first: from the 4th trip on (after 3 completed trips). */
+    fun startTripAdDue(context: android.content.Context): Boolean =
+        TripAdCounter.startAdDue(context, config.startTripInterAfterTrips)
+
     /**
      * Back-press interstitial for [placement] (a Remote Config prefix such as `gauge_style_back`). Returns false when the press
      * was consumed because another back ad is still on its way, so a double back shows one ad and leaves once.

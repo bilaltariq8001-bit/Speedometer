@@ -150,8 +150,11 @@ class InterstitialManager @Inject constructor(
 
     // ---------------------------------------------------------------- show
 
-    /** Shows an ad for [placement] if allowed, then runs [onDismiss] exactly once. */
-    fun show(activity: Activity, placement: String, onDismiss: () -> Unit, onShowAd: () -> Unit = {}) {
+    /**
+     * Shows an ad for [placement] if allowed, then runs [onDismiss] exactly once. [always] skips the time/click capping
+     * (the shared cooldown), for placements that must show every time they have an ad ready.
+     */
+    fun show(activity: Activity, placement: String, onDismiss: () -> Unit, onShowAd: () -> Unit = {}, always: Boolean = false) {
         val model = config.interstitial(placement)
         onMain {
             eligibleClicks++
@@ -165,7 +168,7 @@ class InterstitialManager @Inject constructor(
             if (model.shouldLoadNextAd && cachedAds.count { it.adUnitId == model.adInterstitialId } + pendingForUnit < maxCachedAds) {
                 requestOne(activity, model, placement, "show call warmup")
             }
-            if (!passesCapping(model)) {
+            if (!always && !passesCapping(model)) {
                 AdLog.skipped("interstitial", "[$placement] capped")
                 onDismiss()
                 return@onMain

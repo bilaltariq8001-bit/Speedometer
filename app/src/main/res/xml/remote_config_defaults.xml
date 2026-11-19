@@ -205,6 +205,27 @@
 
   
   <entry>
+    <key>start_trip_click_inter_id</key>
+    <value>ca-app-pub-3940256099942544/1033173712</value>
+  </entry>
+  <entry>
+    <key>start_trip_click_inter_enabled</key>
+    <value>true</value>
+  </entry>
+  <entry>
+    <key>start_trip_click_inter_should_load</key>
+    <value>true</value>
+  </entry>
+  <entry>
+    <key>start_trip_click_inter_counter_enabled</key>
+    <value>false</value>
+  </entry>
+  <entry>
+    <key>start_trip_inter_after_trips</key>
+    <value>3</value>
+  </entry>
+
+  <entry>
     <key>trip_saved_click_inter_id</key>
     <value>ca-app-pub-3940256099942544/1033173712</value>
   </entry>

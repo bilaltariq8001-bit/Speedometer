@@ -87,6 +87,9 @@ class AdConfig @Inject constructor(@ApplicationContext private val context: Cont
     val interstitialCooldownSec: Long get() = long("interstitial_cooldown_seconds")
     val interstitialClickCap: Long get() = long("interstitial_click_cap")
 
+    /** Completed trips before Start trip shows an interstitial (3: the ad starts on the 4th trip). */
+    val startTripInterAfterTrips: Long get() = long("start_trip_inter_after_trips").takeIf { it > 0 } ?: 3L
+
     // ---------------------------------------------------------------- placements
 
     fun interstitial(prefix: String) = if (BuildConfig.DEBUG) {
