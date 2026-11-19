@@ -44,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -117,17 +118,21 @@ fun HistoryScreen(
         val contentMax = rememberLayout().contentMax
         val today = remember { LocalDate.now() }
         val onSelect: (Long) -> Unit = { selected = it }
-        androidx.compose.foundation.layout.Column(Modifier.fillMaxSize().background(Bg).navigationBarsPadding()) {
+        androidx.compose.foundation.layout.Column(
+            Modifier.fillMaxSize().background(Bg).navigationBarsPadding(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            // Title, totals, View on map and the Week / Month / All / Flagged filter stay fixed; only the trips scroll.
+            androidx.compose.foundation.layout.Column(Modifier.widthIn(max = contentMax).fillMaxWidth()) {
+                HistoryTopBar(u, mi, onViewMap)
+                HistoryFilterSection(u, vm)
+            }
             androidx.compose.foundation.lazy.LazyColumn(
-                Modifier.weight(1f).fillMaxWidth(),
+                Modifier.weight(1f).fillMaxWidth()
+                    // Trips slide under the fixed filter with a clean edge instead of overlapping it.
+                    .clipToBounds(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                item(key = "header", contentType = "header") {
-                    androidx.compose.foundation.layout.Column(Modifier.widthIn(max = contentMax).fillMaxWidth()) {
-                        HistoryTopBar(u, mi, onViewMap)
-                        HistoryFilterSection(u, vm)
-                    }
-                }
                 if (u.trips.isEmpty()) {
                     item(key = "empty", contentType = "empty") {
                         Box(
