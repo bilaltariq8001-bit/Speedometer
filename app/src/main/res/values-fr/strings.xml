@@ -499,4 +499,6 @@
     <string name="ob_p5_body">Marche, vélo, moto ou voiture. Choisissez votre véhicule et lancez un trajet en un geste.</string>
     <string name="orientation_switch_to_landscape">Passer en paysage</string>
     <string name="orientation_switch_to_portrait">Passer en portrait</string>
+    <string name="no_languages_found">Aucune langue trouvée</string>
+    <string name="clear_search">Effacer la recherche</string>
 </resources>

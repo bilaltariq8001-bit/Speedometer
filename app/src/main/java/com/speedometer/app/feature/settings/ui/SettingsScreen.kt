@@ -35,6 +35,7 @@ import com.speedometer.app.R
 import com.speedometer.app.core.data.AppLanguage
 import com.speedometer.app.core.data.GuardOption
 import com.speedometer.app.core.designsystem.DesignSwitch
+import com.speedometer.app.core.designsystem.switchRow
 import com.speedometer.app.core.designsystem.Line2
 import com.speedometer.app.core.designsystem.ScrollPage
 import com.speedometer.app.core.designsystem.Segmented
@@ -68,21 +69,23 @@ fun SettingsScreen(onZones: () -> Unit, onGaugeStyle: () -> Unit, onLanguage: ()
     val setAutoDetect = rememberAutoDetectSwitch(vm::hasActivityPermission) { vm.setAutoDetect(it) }
 
     if (rememberLayout().isLandscape) {
-        Row(Modifier.fillMaxSize().background(Bg).padding(top = 16.dp, end = 4.dp), horizontalArrangement = Arrangement.spacedBy(0.dp)) {
-            Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
-                SettingsTopBar()
-                SpeedUnitSection(settings, vm)
-                SpeedLimitSection(settings, vm)
-                AutoDetectSection(settings, setAutoDetect)
-                LimitGuardSection(settings, vm)
-            }
-            Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
-                MoreSection(settings, context, onZones, onGaugeStyle, onLanguage)
+        // Title stays fixed above both columns; only the columns scroll.
+        Column(Modifier.fillMaxSize().background(Bg).padding(top = 16.dp, end = 4.dp)) {
+            SettingsTopBar()
+            Row(Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(0.dp)) {
+                Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+                    SpeedUnitSection(settings, vm)
+                    SpeedLimitSection(settings, vm)
+                    AutoDetectSection(settings, setAutoDetect)
+                    LimitGuardSection(settings, vm)
+                }
+                Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+                    MoreSection(settings, context, onZones, onGaugeStyle, onLanguage)
+                }
             }
         }
     } else {
-        ScrollPage {
-            SettingsTopBar()
+        ScrollPage(top = { SettingsTopBar() }) {
             SpeedUnitSection(settings, vm)
             SpeedLimitSection(settings, vm)
             AutoDetectSection(settings, setAutoDetect)
@@ -118,7 +121,9 @@ private fun SpeedLimitSection(settings: com.speedometer.app.core.data.Settings, 
 private fun AutoDetectSection(settings: com.speedometer.app.core.data.Settings, setAutoDetect: (Boolean) -> Unit) {
     Row(
         Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, top = 20.dp)
-            .background(Surface1, RoundedCornerShape(20.dp)).padding(horizontal = 16.dp, vertical = 6.dp)
+            .clip(RoundedCornerShape(20.dp)).background(Surface1)
+            .switchRow(settings.autoDetect, setAutoDetect)
+            .padding(horizontal = 16.dp, vertical = 6.dp)
             .heightIn(min = 64.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
@@ -126,7 +131,7 @@ private fun AutoDetectSection(settings: com.speedometer.app.core.data.Settings, 
             Text(stringResource(R.string.auto_detect_title), style = bodyStyle(16, FontWeight.Bold, TextPrimary))
             Text(stringResource(R.string.auto_detect_body), Modifier.padding(top = 2.dp), style = bodyStyle(13))
         }
-        DesignSwitch(settings.autoDetect, setAutoDetect)
+        DesignSwitch(settings.autoDetect, setAutoDetect, interactive = false)
     }
 }
 
@@ -138,14 +143,16 @@ private fun LimitGuardSection(settings: com.speedometer.app.core.data.Settings, 
             optionRows.forEachIndexed { i, (option, name, sub) ->
                 if (i > 0) Divider()
                 Row(
-                    Modifier.fillMaxWidth().heightIn(min = 64.dp).padding(horizontal = 16.dp, vertical = 10.dp),
+                    Modifier.fillMaxWidth().heightIn(min = 64.dp)
+                        .switchRow(settings.option(option)) { vm.setOption(option, it) }
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     Column(Modifier.weight(1f)) {
                         Text(stringResource(name), style = bodyStyle(16, FontWeight.Bold, TextPrimary))
                         Text(stringResource(sub), Modifier.padding(top = 2.dp), style = bodyStyle(13))
                     }
-                    DesignSwitch(settings.option(option)) { vm.setOption(option, it) }
+                    DesignSwitch(settings.option(option), { vm.setOption(option, it) }, interactive = false)
                 }
             }
         }

@@ -1,5 +1,6 @@
 package com.speedometer.app.core.designsystem
 
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -120,9 +121,11 @@ fun Segmented(options: List<String>, selected: Int, onSelect: (Int) -> Unit, mod
 
 /** 52 x 32 switch with a 24 thumb inside a 48dp touch area, as in the design. */
 @Composable
-fun DesignSwitch(checked: Boolean, onChange: (Boolean) -> Unit) {
+fun DesignSwitch(checked: Boolean, onChange: (Boolean) -> Unit, interactive: Boolean = true) {
     Box(
-        Modifier.size(width = 56.dp, height = 48.dp).clickable(role = Role.Switch) { onChange(!checked) },
+        // interactive = false when the whole row is the toggle (Modifier.switchRow), so the row gets one tap target.
+        Modifier.size(width = 56.dp, height = 48.dp)
+            .then(if (interactive) Modifier.clickable(role = Role.Switch) { onChange(!checked) } else Modifier),
         contentAlignment = Alignment.CenterEnd,
     ) {
         Box(
@@ -171,3 +174,7 @@ fun Modifier.tabSwipe(onNext: () -> Unit, onPrevious: () -> Unit): Modifier = co
         )
     }
 }
+
+/** Makes a whole settings row toggle its switch, not just the small switch on the right. */
+fun Modifier.switchRow(checked: Boolean, onChange: (Boolean) -> Unit): Modifier =
+    this.toggleable(value = checked, role = Role.Switch, onValueChange = onChange)

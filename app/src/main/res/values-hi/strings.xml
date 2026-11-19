@@ -498,4 +498,6 @@
     <string name="ob_p5_body">पैदल, साइकिल, बाइक या कार। अपना वाहन चुनें और एक टैप में यात्रा शुरू करें।</string>
     <string name="orientation_switch_to_landscape">लैंडस्केप में बदलें</string>
     <string name="orientation_switch_to_portrait">पोर्ट्रेट में बदलें</string>
+    <string name="no_languages_found">कोई भाषा नहीं मिली</string>
+    <string name="clear_search">खोज साफ़ करें</string>
 </resources>

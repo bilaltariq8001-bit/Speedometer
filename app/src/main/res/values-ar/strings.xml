@@ -502,4 +502,6 @@
     <string name="ob_p5_body">امشِ أو اركب دراجة أو قد سيارة. اختر مركبتك وابدأ رحلة بلمسة واحدة.</string>
     <string name="orientation_switch_to_landscape">التبديل إلى الوضع الأفقي</string>
     <string name="orientation_switch_to_portrait">التبديل إلى الوضع العمودي</string>
+    <string name="no_languages_found">لم يتم العثور على لغات</string>
+    <string name="clear_search">مسح البحث</string>
 </resources>

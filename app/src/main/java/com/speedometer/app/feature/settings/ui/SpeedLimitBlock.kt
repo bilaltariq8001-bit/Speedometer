@@ -1,5 +1,6 @@
 package com.speedometer.app.feature.settings.ui
 
+import com.speedometer.app.core.designsystem.switchRow
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -71,14 +72,16 @@ fun SpeedLimitBlock(
         Text(stringResource(R.string.speed_limit_title), Modifier.padding(bottom = 8.dp), style = bodyStyle(13))
         Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(Surface1)) {
             Row(
-                Modifier.fillMaxWidth().heightIn(min = 64.dp).padding(horizontal = 16.dp, vertical = 10.dp),
+                Modifier.fillMaxWidth().heightIn(min = 64.dp)
+                    .switchRow(settings.speedLimitOn, onOn)
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 Column(Modifier.weight(1f)) {
                     Text(stringResource(R.string.speed_limit_alarm), style = bodyStyle(16, FontWeight.Bold, TextPrimary))
                     Text(stringResource(R.string.speed_limit_alarm_sub), Modifier.padding(top = 2.dp), style = bodyStyle(13))
                 }
-                DesignSwitch(settings.speedLimitOn, onOn)
+                DesignSwitch(settings.speedLimitOn, onOn, interactive = false)
             }
             Box(Modifier.fillMaxWidth().padding(horizontal = 16.dp).heightIn(min = 1.dp).background(Line2.copy(alpha = 0.6f)))
             val enabled = settings.speedLimitOn

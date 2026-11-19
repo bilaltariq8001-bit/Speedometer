@@ -147,11 +147,17 @@ private fun StyleCard(style: MeterStyle, selected: Boolean, modifier: Modifier, 
         }
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(meterNameRes(style)), Modifier.weight(1f), style = bodyStyle(15, FontWeight.Bold, TextPrimary))
-            Text(
-                stringResource(R.string.preview),
-                Modifier.heightIn(min = 32.dp).clickable(role = Role.Button, onClick = onPreview).padding(start = 8.dp),
-                style = bodyStyle(13, FontWeight.Bold, Amber),
-            )
+            // 48dp tap target with an outlined pill, so Preview is clearly its own button and a near miss doesn't select the card.
+            Box(
+                Modifier.heightIn(min = 48.dp).clickable(role = Role.Button, onClick = onPreview).padding(start = 4.dp),
+                contentAlignment = Alignment.CenterEnd,
+            ) {
+                Text(
+                    stringResource(R.string.preview),
+                    Modifier.border(1.dp, Amber.copy(alpha = 0.6f), RoundedCornerShape(50)).padding(horizontal = 10.dp, vertical = 5.dp),
+                    style = bodyStyle(12, FontWeight.Bold, Amber),
+                )
+            }
         }
     }
 }

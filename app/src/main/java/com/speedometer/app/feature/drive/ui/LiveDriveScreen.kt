@@ -338,7 +338,7 @@ private fun LivePill(onClick: (() -> Unit)? = null, modifier: Modifier = Modifie
     Row(
         modifier = modifier
             .widthIn(min = 118.dp, max = 118.dp)
-            .heightIn(min = 36.dp)
+            .heightIn(min = 48.dp) // 48dp: easier to hit while driving
             .background(Surface1, RoundedCornerShape(999.dp))
             .then(if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier)
             .padding(horizontal = 14.dp, vertical = 8.dp),

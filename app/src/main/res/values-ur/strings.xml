@@ -498,4 +498,6 @@
     <string name="ob_p5_body">پیدل، سائیکل، بائیک یا کار۔ اپنی سواری چنیں اور ایک ٹیپ میں سفر شروع کریں۔</string>
     <string name="orientation_switch_to_landscape">لینڈ اسکیپ پر جائیں</string>
     <string name="orientation_switch_to_portrait">پورٹریٹ پر جائیں</string>
+    <string name="no_languages_found">کوئی زبان نہیں ملی</string>
+    <string name="clear_search">تلاش صاف کریں</string>
 </resources>

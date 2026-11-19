@@ -670,7 +670,9 @@ private fun GpsStatusLine(
         else -> Danger
     }
     Row(
-        Modifier.width(176.dp).heightIn(min = 32.dp).clickable(role = Role.Button, onClick = onClick),
+        // A pill with a chevron so it reads as a button (it opens GPS status). Fixed width, so nothing shifts as the state changes.
+        Modifier.width(176.dp).heightIn(min = 36.dp).clip(RoundedCornerShape(999.dp)).background(Surface1)
+            .clickable(role = Role.Button, onClick = onClick).padding(start = 12.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Canvas(Modifier.size(width = 20.dp, height = 14.dp)) {
@@ -684,7 +686,8 @@ private fun GpsStatusLine(
                 )
             }
         }
-        Text("GPS: " + stringResource(state), style = body(13), maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text("GPS: " + stringResource(state), Modifier.weight(1f), style = body(13), maxLines = 1, overflow = TextOverflow.Ellipsis)
+        StrokeIcon("M9 6l6 6-6 6", TextMuted, size = 16.dp, box = 24f)
     }
 }
 

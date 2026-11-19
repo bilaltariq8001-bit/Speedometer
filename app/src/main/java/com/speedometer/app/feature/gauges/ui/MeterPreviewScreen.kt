@@ -144,8 +144,7 @@ fun MeterPreviewScreen(initial: MeterStyle, onBack: () -> Unit, vm: GaugeStyleVi
             Box(Modifier.padding(start = 20.dp, end = 20.dp, bottom = 28.dp, top = 8.dp)) {
                 PrimaryButton(stringResource(R.string.use_this_meter), onClick = useMeter)
             }
-        }) {
-            header()
+        }, top = header) {
             meterOptions()
             Box(Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 16.dp), contentAlignment = Alignment.Center) {
                 Meter(style, data)

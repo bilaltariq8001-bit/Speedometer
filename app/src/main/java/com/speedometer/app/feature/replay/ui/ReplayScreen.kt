@@ -71,13 +71,14 @@ fun ReplayScreen(onBack: () -> Unit, vm: ReplayViewModel = hiltViewModel()) {
     val missing by vm.tripMissing.collectAsStateWithLifecycle()
     val u = ui
 
-    ScrollPage {
+    ScrollPage(top = {
         Row(Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.size(48.dp).clickable(role = Role.Button, onClick = onBack), contentAlignment = Alignment.Center) {
                 StrokeIcon("M15 5l-7 7 7 7", TextPrimary, size = 24.dp, box = 24f)
             }
             Text(stringResource(R.string.trip_replay), Modifier.padding(start = 4.dp), style = displayStyle(22, FontWeight.SemiBold))
         }
+    }) {
         if (u == null || u.points.size < 2) {
             Text(
                 stringResource(if (missing) R.string.replay_missing else R.string.replay_no_route),

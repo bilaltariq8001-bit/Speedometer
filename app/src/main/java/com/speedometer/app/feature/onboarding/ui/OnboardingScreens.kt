@@ -1,5 +1,6 @@
 package com.speedometer.app.feature.onboarding.ui
 
+import com.speedometer.app.core.designsystem.switchRow
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -546,6 +547,20 @@ fun LanguageScreen(selected: String, showNativeAd: Boolean = true, onContinue: (
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
+            if (query.isNotEmpty()) {
+                val clearLabel = stringResource(R.string.clear_search)
+                Box(
+                    Modifier.size(40.dp).clip(CircleShape).clickable(role = Role.Button, onClickLabel = clearLabel) { query = "" },
+                    contentAlignment = Alignment.Center,
+                ) { StrokeIcon("M6 6l12 12M18 6L6 18", TextMuted, size = 18.dp, box = 24f) }
+            }
+        }
+        if (shown.isEmpty()) {
+            Text(
+                stringResource(R.string.no_languages_found),
+                Modifier.fillMaxWidth().padding(start = ScreenPad, end = ScreenPad, top = 32.dp),
+                style = body(15), textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            )
         }
         Column(
             Modifier.padding(start = ScreenPad, end = ScreenPad, top = 16.dp),
@@ -910,7 +925,9 @@ fun VehicleScreen(
     val autoDetectSection: @Composable () -> Unit = {
         Row(
             Modifier.padding(start = ScreenPad, end = ScreenPad, top = 16.dp).fillMaxWidth().heightIn(min = 64.dp)
-                .background(Surface1, RoundedCornerShape(20.dp)).padding(horizontal = 16.dp, vertical = 12.dp),
+                .clip(RoundedCornerShape(20.dp)).background(Surface1)
+                .switchRow(autoDetect, onAutoDetect)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
@@ -918,7 +935,7 @@ fun VehicleScreen(
                 Text(stringResource(R.string.auto_detect_title), style = body(16, FontWeight.Bold, TextPrimary))
                 Text(stringResource(R.string.auto_detect_body), Modifier.padding(top = 2.dp), style = body(13))
             }
-            DesignSwitch(autoDetect, onAutoDetect)
+            DesignSwitch(autoDetect, onAutoDetect, interactive = false)
         }
     }
 
@@ -963,10 +980,10 @@ private fun UnitSegment(text: String, selected: Boolean, modifier: Modifier, onC
 
 /** 52 x 32 switch with a 24 thumb, 48dp tall touch area, as in the design. */
 @Composable
-private fun DesignSwitch(checked: Boolean, onChange: (Boolean) -> Unit) {
+private fun DesignSwitch(checked: Boolean, onChange: (Boolean) -> Unit, interactive: Boolean = true) {
     Box(
         Modifier.size(width = 56.dp, height = 48.dp)
-            .clickable(role = Role.Switch) { onChange(!checked) },
+            .then(if (interactive) Modifier.clickable(role = Role.Switch) { onChange(!checked) } else Modifier),
         contentAlignment = Alignment.CenterEnd,
     ) {
         Box(
