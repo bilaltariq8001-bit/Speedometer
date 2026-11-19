@@ -147,11 +147,15 @@ private fun androidx.navigation.NavGraphBuilder.framed(
     arguments: List<androidx.navigation.NamedNavArgument> = emptyList(),
     content: @Composable (androidx.navigation.NavBackStackEntry) -> Unit,
 ) = composable(route, arguments = arguments) { entry ->
-    RouteFrame(route) { content(entry) }
+    val settled = com.speedometer.app.core.designsystem.rememberScreenSettled(this)
+    androidx.compose.runtime.CompositionLocalProvider(com.speedometer.app.core.designsystem.LocalScreenSettled provides settled) {
+        RouteFrame(route) { content(entry) }
+    }
 }
 
 private const val BANNER_SLOT = "bottom_banner"
 const val START_TRIP_PLACEMENT = "start_trip_click"
+private const val AD_WARM_AFTER_NAV_MS = 450L
 private val BACK_STRIP_HEIGHT = 52.dp
 
 /** Remote Config prefix of the click interstitial shown before opening a tab, or null for tabs without one. */
@@ -204,7 +208,10 @@ fun AppNavHost() {
         AdGate.currentRoute = route
         if (route != null) analytics.screenEnter(route.substringBefore('?').substringBefore('/'))
         if (route == Routes.Home) adsVm.ads.onHomeVisible(!StartRequest.pending && !tripPhase.tripActive())
-        // Keep the Trips and Insights tab ads loading on the main screens, so a tab tap never waits on one.
+        // Keep the Trips and Insights tab ads loading on the main screens, so a tab tap never waits on one. Requested only
+        // after the screen transition has finished: an ad request does main-thread work that dropped frames mid-slide.
+        // A quick second navigation cancels this wait, so passing through a screen requests nothing.
+        kotlinx.coroutines.delay(AD_WARM_AFTER_NAV_MS)
         if (route == Routes.Home || route == Routes.History || route == Routes.Insights || route == Routes.Settings) {
             activity?.let { a -> listOf(Routes.History, Routes.Insights).filter { it != route }.forEach { t -> tabClickPlacement(t)?.let { adsVm.ads.warmUp(a, it) } } }
             if (route == Routes.Home && activity != null && adsVm.ads.startTripAdDue(activity)) adsVm.ads.warmUp(activity, START_TRIP_PLACEMENT)

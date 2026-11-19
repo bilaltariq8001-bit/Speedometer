@@ -15,6 +15,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -72,6 +73,12 @@ data class Settings(
 /** Single source of truth for user options. */
 interface SettingsRepository {
     val settings: Flow<Settings>
+
+    /**
+     * The latest settings, kept in memory for the whole app (null only until the first read). Screens start from it, so
+     * they draw their real content on their very first frame instead of an empty frame while DataStore is read.
+     */
+    val current: kotlinx.coroutines.flow.StateFlow<Settings?>
     suspend fun setLanguage(language: String)
     suspend fun setVehicle(vehicle: Vehicle)
     suspend fun setUnit(unit: SpeedUnit)
@@ -140,6 +147,9 @@ class DataStoreSettingsRepository @Inject constructor(
             limitToleranceKmh = p[K.limitTol] ?: 0,
         )
     }
+
+    override val current: kotlinx.coroutines.flow.StateFlow<Settings?> = settings
+        .stateIn(kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.SupervisorJob() + kotlinx.coroutines.Dispatchers.Default), kotlinx.coroutines.flow.SharingStarted.Eagerly, null)
 
     override suspend fun setLanguage(language: String) { context.store.edit { it[K.language] = language } }
     override suspend fun setVehicle(vehicle: Vehicle) {

@@ -63,10 +63,10 @@ class LiveDriveViewModel @Inject constructor(
     }.distinctUntilChanged().flowOn(kotlinx.coroutines.Dispatchers.Default).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
     val loadedSettings: StateFlow<Settings?> = settingsRepo.settings
         .map<Settings, Settings?> { it }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), settingsRepo.current.value)
     val settings: StateFlow<Settings> = loadedSettings
         .filterNotNull()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), Settings())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), settingsRepo.current.value ?: Settings())
 
     private val _gTrail = MutableStateFlow<List<Pair<Float, Float>>>(emptyList())
 

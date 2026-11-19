@@ -383,7 +383,7 @@ private fun HistoryLandscape(
         Column(Modifier.weight(1f).fillMaxHeight().padding(start = 8.dp, end = 20.dp, top = 16.dp, bottom = 16.dp)) {
             Box(Modifier.weight(1f).fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(Surface1)) {
                 val l = line
-                if (l == null) {
+                if (l == null || !com.speedometer.app.core.designsystem.LocalScreenSettled.current.value) {
                     Unit
                 } else if (l.size >= 2) {
                     RouteMap(

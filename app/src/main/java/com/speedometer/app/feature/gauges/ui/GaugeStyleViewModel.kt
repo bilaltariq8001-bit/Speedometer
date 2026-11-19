@@ -19,16 +19,20 @@ data class CustomModel(val name: String, val maxKmh: Int, val active: Boolean)
 @HiltViewModel
 class GaugeStyleViewModel @Inject constructor(private val repo: SettingsRepository) : ViewModel() {
     val unit: StateFlow<SpeedUnit> = repo.settings.map { it.unit }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SpeedUnit.Kmh)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), repo.current.value?.unit ?: SpeedUnit.Kmh)
 
     val style: StateFlow<MeterStyle> = repo.settings.map { it.meterStyle }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), MeterStyle.Dial)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), repo.current.value?.meterStyle ?: MeterStyle.Dial)
 
-    val custom: StateFlow<CustomModel?> = repo.settings.map { s ->
+    // All three start from the in-memory settings, so the screen opens on the right selection (no flash of the defaults).
+    val custom: StateFlow<CustomModel?> = repo.settings.map(::customOf)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), repo.current.value?.let(::customOf))
+
+    private fun customOf(s: com.speedometer.app.core.data.Settings): CustomModel? {
         val name = s.customName
         val max = s.customMaxKmh
-        if (name != null && max != null) CustomModel(name, max, s.customActive) else null
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+        return if (name != null && max != null) CustomModel(name, max, s.customActive) else null
+    }
 
     /** Saves a generic meter choice; the standard 0 to 200 scale applies again. */
     fun save(style: MeterStyle, onSaved: () -> Unit = {}) {

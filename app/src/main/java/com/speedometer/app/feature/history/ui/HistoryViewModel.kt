@@ -46,15 +46,23 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
-    val ui: StateFlow<HistoryUi?> = combine(saved.trips, range, flagged, settings.settings) { all, r, f, s ->
+    private fun build(all: List<TripEntity>, r: Range, f: Boolean, s: com.speedometer.app.core.data.Settings): HistoryUi {
         val since = when (r) {
             Range.Week -> System.currentTimeMillis() - TimeUnit.DAYS.toMillis(7)
             Range.Month -> System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)
             Range.All -> 0L
         }
         val shown = all.filter { it.startMs >= since && (!f || it.score < FLAG_BELOW_SCORE) }
-        HistoryUi(r, f, all.isNotEmpty(), shown, shown.sumOf { it.distanceKm.toDouble() }.toFloat(), s.unit)
-    }.flowOn(kotlinx.coroutines.Dispatchers.Default).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+        return HistoryUi(r, f, all.isNotEmpty(), shown, shown.sumOf { it.distanceKm.toDouble() }.toFloat(), s.unit)
+    }
+
+    // Starts from the in-memory trips and settings, so the screen is filled on its first frame (no blank frame mid-slide).
+    val ui: StateFlow<HistoryUi?> = combine(saved.trips, range, flagged, settings.settings) { all, r, f, s -> build(all, r, f, s) }
+        .flowOn(kotlinx.coroutines.Dispatchers.Default)
+        .stateIn(
+            viewModelScope, SharingStarted.WhileSubscribed(5_000),
+            saved.summaries.value?.let { all -> settings.current.value?.let { s -> build(all, range.value, flagged.value, s) } },
+        )
 
     fun setRange(r: Range) {
         range.update { r }

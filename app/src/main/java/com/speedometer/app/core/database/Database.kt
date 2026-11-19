@@ -22,6 +22,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -185,7 +187,11 @@ class SavedTripsRepository @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
     /** Saved trips without their routes (see [TripDao.observeSummaries]); use [get] or [tripsWithRoutes] for a route. */
-    val trips: Flow<List<TripEntity>> = dao.observeSummaries()
+    /** Trip summaries kept in memory for the whole app (null only until the first read), so screens open already filled. */
+    val summaries: kotlinx.coroutines.flow.StateFlow<List<TripEntity>?> = dao.observeSummaries()
+        .stateIn(kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.SupervisorJob() + kotlinx.coroutines.Dispatchers.IO), kotlinx.coroutines.flow.SharingStarted.Eagerly, null)
+
+    val trips: Flow<List<TripEntity>> = summaries.filterNotNull()
 
     /** Saved trips with their routes, only for the screens that draw them (the trips map). */
     val tripsWithRoutes: Flow<List<TripEntity>> = dao.observeAll()

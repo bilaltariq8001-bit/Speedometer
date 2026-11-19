@@ -55,6 +55,19 @@ fun NativeAdCard(
     compact: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
+    // Inflating the ad's Android views mid-transition dropped frames; it is added once the screen has settled.
+    if (!com.speedometer.app.core.designsystem.LocalScreenSettled.current.value) return
+    NativeAdCardBody(model, analytics, placement, compact, modifier)
+}
+
+@Composable
+private fun NativeAdCardBody(
+    model: NativeAdModel,
+    analytics: AdAnalytics,
+    placement: String,
+    compact: Boolean,
+    modifier: Modifier,
+) {
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() } ?: return
     val internetConnected = rememberInternetConnected()

@@ -258,9 +258,14 @@ fun HomeScreen(
     }
 
     val layout = rememberLayout()
-    var here by remember { mutableStateOf<GeoPoint?>(null) }
-    LaunchedEffect(granted) { if (granted) here = vm.locate() }
-    val place by androidx.compose.runtime.produceState<String?>(null, here) { val p = here; value = if (p != null) vm.placeAt(p) else null }
+    var here by remember { mutableStateOf<GeoPoint?>(vm.lastHere) }
+    LaunchedEffect(granted) { if (granted) vm.locate()?.let { here = it } }
+    val place by androidx.compose.runtime.produceState(vm.lastPlace?.takeIf { it.first == here }?.second, here) {
+        val p = here
+        if (p == null) { value = null; return@produceState }
+        vm.lastPlace?.takeIf { it.first == p }?.let { value = it.second; return@produceState }
+        value = vm.placeAt(p)
+    }
     val homeUnit = settings?.unit ?: SpeedUnit.Kmh
     var showExit by rememberSaveable { mutableStateOf(false) }
     var lastBackPressAt by rememberSaveable { mutableLongStateOf(0L) }

@@ -29,20 +29,25 @@ class InsightsViewModel @Inject constructor(private val savedTrips: SavedTripsRe
         viewModelScope.launch { savedTrips.removeLegacyDemoTrips() }
     }
 
+    // Each starts from the in-memory trips, so Insights is filled on its first frame instead of popping in mid-transition.
     val insights: StateFlow<Insights?> = saved.trips
         .map { InsightsCalculator.compute(it, LocalDate.now()) }
-        .flowOn(kotlinx.coroutines.Dispatchers.Default).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+        .flowOn(kotlinx.coroutines.Dispatchers.Default)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), savedTrips.summaries.value?.let { InsightsCalculator.compute(it, LocalDate.now()) })
 
     /** Saved trips grouped by the day they started, for the day sheet opened from a bar. */
     val tripsByDay: StateFlow<Map<LocalDate, List<TripEntity>>> = saved.trips
-        .map { list ->
-            val zone = ZoneId.systemDefault()
-            list.groupBy { Instant.ofEpochMilli(it.startMs).atZone(zone).toLocalDate() }
-                .mapValues { (_, trips) -> trips.sortedBy { it.startMs } }
-        }
-        .flowOn(kotlinx.coroutines.Dispatchers.Default).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyMap())
+        .map(::groupByDay)
+        .flowOn(kotlinx.coroutines.Dispatchers.Default)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), savedTrips.summaries.value?.let(::groupByDay) ?: emptyMap())
 
     val unit: StateFlow<SpeedUnit> = settings.settings
         .map { it.unit }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SpeedUnit.Kmh)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), settings.current.value?.unit ?: SpeedUnit.Kmh)
+}
+
+private fun groupByDay(list: List<TripEntity>): Map<LocalDate, List<TripEntity>> {
+    val zone = ZoneId.systemDefault()
+    return list.groupBy { Instant.ofEpochMilli(it.startMs).atZone(zone).toLocalDate() }
+        .mapValues { (_, trips) -> trips.sortedBy { it.startMs } }
 }

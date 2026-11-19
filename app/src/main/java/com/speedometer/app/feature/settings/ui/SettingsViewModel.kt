@@ -20,8 +20,9 @@ class SettingsViewModel @Inject constructor(
     private val repo: SettingsRepository,
     private val autoDetect: AutoDetect,
 ) : ViewModel() {
+    // Starts from the in-memory settings, so the screen draws its rows on the first frame of the transition.
     val settings: StateFlow<Settings?> = repo.settings
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), repo.current.value)
 
     fun setUnit(unit: SpeedUnit) = viewModelScope.launch { repo.setUnit(unit) }
     fun setScreenOrientation(orientation: ScreenOrientation) = viewModelScope.launch { repo.setScreenOrientation(orientation) }

@@ -25,10 +25,21 @@ class HomeViewModel @Inject constructor(
     fun autoDetectActive(on: Boolean) = on && autoDetect.hasPermission()
 
     /** One-shot current position for the tablet map preview, or null without permission or a fix. */
-    suspend fun locate() = here.get()
+    suspend fun locate() = here.get()?.also { lastHere = it }
 
     /** Street or area name for [point], or null. */
-    suspend fun placeAt(point: com.speedometer.app.core.location.GeoPoint) = places.at(point.lat, point.lon)
+    suspend fun placeAt(point: com.speedometer.app.core.location.GeoPoint) = places.at(point.lat, point.lon).also {
+        lastPlace = point to it
+    }
+
+    /**
+     * The last position and place name Home showed. Home's screen is rebuilt each time you come back from Trips, Insights or
+     * Settings; starting from these, it comes back exactly as it was instead of empty while it locates again.
+     */
+    var lastHere: com.speedometer.app.core.location.GeoPoint? = null
+        private set
+    var lastPlace: Pair<com.speedometer.app.core.location.GeoPoint, String?>? = null
+        private set
 
     /** Saved zones, to show the limit that applies where you stand. */
     val zones: StateFlow<List<com.speedometer.app.core.database.ZoneEntity>> = zonesRepo.zones
@@ -36,7 +47,7 @@ class HomeViewModel @Inject constructor(
 
     /** Null until the first read from DataStore. */
     val settings: StateFlow<Settings?> = repo.settings
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), repo.current.value)
 
     fun setMeterStyle(style: com.speedometer.app.core.data.MeterStyle) { viewModelScope.launch { repo.setMeterStyle(style) } }
     fun setScreenOrientation(orientation: ScreenOrientation) { viewModelScope.launch { repo.setScreenOrientation(orientation) } }
