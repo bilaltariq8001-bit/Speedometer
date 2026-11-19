@@ -118,7 +118,14 @@ class AdsController @Inject constructor(
      * screen transition. Closing the ad then reveals the new screen directly instead of flashing the old one first. With
      * no ad ready, [action] runs at once as usual. Runs [action] exactly once.
      */
-    fun showAlwaysClickAdBehind(activity: Activity, placement: String, action: () -> Unit) {
+    fun showAlwaysClickAdBehind(activity: Activity, placement: String, action: () -> Unit) =
+        showClickAdBehind(activity, placement, action, always = true)
+
+    /**
+     * AdMob policy: an interstitial must not follow every user action. Tab opens use this capped version: the shared
+     * cooldown and click cap apply, so most taps open the tab with no ad at all. [action] still runs exactly once.
+     */
+    fun showClickAdBehind(activity: Activity, placement: String, action: () -> Unit, always: Boolean = false) {
         val done = AtomicBoolean(false)
         val run = { if (done.compareAndSet(false, true)) action() }
         interstitial.show(
@@ -132,7 +139,7 @@ class AdsController @Inject constructor(
                 AdGate.navigateInstantly = true
                 run()
             },
-            always = true,
+            always = always,
         )
     }
 

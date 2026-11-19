@@ -340,6 +340,7 @@
     <string name="more_zones">Zapisane strefy</string>
     <string name="more_language">Język</string>
     <string name="more_rate">Oceń aplikację</string>
+    <string name="more_privacy_options">Opcje prywatności</string>
     <string name="opt_alert_tones">Dźwięki alertów</string>
     <string name="opt_alert_tones_sub">Łagodny, mocny, potem głos</string>
     <string name="opt_spoken">Głosowe ostrzeżenia o strefach</string>

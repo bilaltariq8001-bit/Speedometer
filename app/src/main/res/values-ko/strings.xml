@@ -337,6 +337,7 @@
     <string name="more_zones">저장된 구역</string>
     <string name="more_language">언어</string>
     <string name="more_rate">앱 평가하기</string>
+    <string name="more_privacy_options">개인정보 보호 옵션</string>
     <string name="opt_alert_tones">알림음</string>
     <string name="opt_alert_tones_sub">부드럽게, 강하게, 그다음 음성</string>
     <string name="opt_spoken">구역 음성 안내</string>

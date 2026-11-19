@@ -338,6 +338,7 @@
     <string name="more_zones">Αποθηκευμένες ζώνες</string>
     <string name="more_language">Γλώσσα</string>
     <string name="more_rate">Βαθμολογήστε την εφαρμογή</string>
+    <string name="more_privacy_options">Επιλογές απορρήτου</string>
     <string name="opt_alert_tones">Ήχοι ειδοποίησης</string>
     <string name="opt_alert_tones_sub">Ήπιος, έντονος και μετά φωνή</string>
     <string name="opt_spoken">Φωνητικές ειδοποιήσεις ζωνών</string>

@@ -283,6 +283,7 @@
     <string name="more_zones">Zones enregistrées</string>
     <string name="more_language">Langue</string>
     <string name="more_rate">Noter l\'appli</string>
+    <string name="more_privacy_options">Options de confidentialité</string>
     <string name="opt_alert_tones">Sons d\'alerte</string>
     <string name="opt_alert_tones_sub">Doux, ferme, puis parlé</string>
     <string name="opt_spoken">Alertes de zone parlées</string>

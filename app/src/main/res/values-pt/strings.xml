@@ -338,6 +338,7 @@
     <string name="more_zones">Zonas salvas</string>
     <string name="more_language">Idioma</string>
     <string name="more_rate">Avaliar o app</string>
+    <string name="more_privacy_options">Opções de privacidade</string>
     <string name="opt_alert_tones">Tons de alerta</string>
     <string name="opt_alert_tones_sub">Suave, firme e depois falado</string>
     <string name="opt_spoken">Avisos de zona falados</string>

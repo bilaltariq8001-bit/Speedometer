@@ -288,6 +288,7 @@
     <string name="more_zones">المناطق المحفوظة</string>
     <string name="more_language">اللغة</string>
     <string name="more_rate">قيّم التطبيق</string>
+    <string name="more_privacy_options">خيارات الخصوصية</string>
     <string name="opt_alert_tones">نغمات التنبيه</string>
     <string name="opt_alert_tones_sub">هادئة ثم حازمة ثم منطوقة</string>
     <string name="opt_spoken">تنبيهات المناطق المنطوقة</string>

@@ -210,7 +210,7 @@
   </entry>
   <entry>
     <key>start_trip_click_inter_enabled</key>
-    <value>true</value>
+    <value>false</value>
   </entry>
   <entry>
     <key>start_trip_click_inter_should_load</key>
@@ -441,7 +441,7 @@
   </entry>
   <entry>
     <key>interstitial_cooldown_seconds</key>
-    <value>30</value>
+    <value>60</value>
   </entry>
   <entry>
     <key>interstitial_click_cap</key>

@@ -337,6 +337,7 @@
     <string name="more_zones">Khu vực đã lưu</string>
     <string name="more_language">Ngôn ngữ</string>
     <string name="more_rate">Đánh giá ứng dụng</string>
+    <string name="more_privacy_options">Tùy chọn quyền riêng tư</string>
     <string name="opt_alert_tones">Âm báo</string>
     <string name="opt_alert_tones_sub">Nhẹ, mạnh, rồi giọng nói</string>
     <string name="opt_spoken">Cảnh báo khu vực bằng giọng nói</string>

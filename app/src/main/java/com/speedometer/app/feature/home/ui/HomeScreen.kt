@@ -204,22 +204,13 @@ fun HomeScreen(
             settings?.notificationAsked == false &&
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
 
-    val ads = hiltViewModel<com.speedometer.app.core.ads.AdsViewModel>().ads
-    var startAdShowing by remember { mutableStateOf(false) }
 
-    /** Start trip: from the 4th trip on, an interstitial shows first and the trip starts when it closes. */
+    /**
+     * Start trip: records at once, with no ad. A full-screen ad here would cover the speedometer while the trip (and the
+     * drive) is starting, which is unsafe and an "unexpected interstitial" under AdMob policy, so this placement is retired.
+     */
     fun begin() {
-        val activity = context.findActivity()
-        if (activity != null && ads.startTripAdDue(context)) {
-            if (startAdShowing) return
-            startAdShowing = true
-            ads.showAlwaysClickAdBehind(activity, com.speedometer.app.core.navigation.START_TRIP_PLACEMENT) {
-                startAdShowing = false
-                TripService.start(context)
-            }
-        } else {
-            TripService.start(context)
-        }
+        TripService.start(context)
     }
 
     val notificationLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { begin() }

@@ -337,6 +337,7 @@
     <string name="more_zones">Zon Disimpan</string>
     <string name="more_language">Bahasa</string>
     <string name="more_rate">Nilai apl</string>
+    <string name="more_privacy_options">Pilihan privasi</string>
     <string name="opt_alert_tones">Nada amaran</string>
     <string name="opt_alert_tones_sub">Lembut, tegas, kemudian suara</string>
     <string name="opt_spoken">Amaran zon bersuara</string>

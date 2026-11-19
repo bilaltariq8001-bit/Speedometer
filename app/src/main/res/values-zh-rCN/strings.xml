@@ -337,6 +337,7 @@
     <string name="more_zones">已保存区域</string>
     <string name="more_language">语言</string>
     <string name="more_rate">为应用评分</string>
+    <string name="more_privacy_options">隐私选项</string>
     <string name="opt_alert_tones">提醒音</string>
     <string name="opt_alert_tones_sub">轻声、加强，然后语音</string>
     <string name="opt_spoken">语音区域提醒</string>

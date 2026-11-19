@@ -338,6 +338,7 @@
     <string name="more_zones">Kayıtlı Bölgeler</string>
     <string name="more_language">Dil</string>
     <string name="more_rate">Uygulamayı puanla</string>
+    <string name="more_privacy_options">Gizlilik seçenekleri</string>
     <string name="opt_alert_tones">Uyarı sesleri</string>
     <string name="opt_alert_tones_sub">Yumuşak, sert, ardından sesli</string>
     <string name="opt_spoken">Sesli bölge uyarıları</string>

@@ -31,6 +31,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.speedometer.app.core.ads.privacyOptionsRequired
+import com.speedometer.app.core.ads.showPrivacyOptions
+import com.speedometer.app.core.common.findActivity
 import com.speedometer.app.R
 import com.speedometer.app.core.data.AppLanguage
 import com.speedometer.app.core.data.GuardOption
@@ -168,6 +171,16 @@ private fun MoreSection(settings: com.speedometer.app.core.data.Settings, contex
             MoreRow(R.string.more_zones, null, onClick = onZones)
             MoreRow(R.string.more_language, AppLanguage.native[settings.language] ?: settings.language, onClick = onLanguage)
             MoreRow(R.string.more_rate, null, onClick = { openPlayStore(context) })
+            // Required by Google's EU consent policy wherever UMP asks for it: change or withdraw ad consent at any time.
+            if (androidx.compose.runtime.remember { context.privacyOptionsRequired() }) {
+                val ads = hiltViewModel<com.speedometer.app.core.ads.AdsViewModel>().ads
+                MoreRow(R.string.more_privacy_options, null, onClick = {
+                    val activity = context.findActivity()
+                    activity?.showPrivacyOptions { canRequest ->
+                        ads.onConsentResolved(activity.application, canRequest)
+                    }
+                })
+            }
         }
     }
 }

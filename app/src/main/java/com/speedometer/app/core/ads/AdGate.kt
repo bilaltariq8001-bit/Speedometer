@@ -92,10 +92,10 @@ object AdGate {
     private val noAppOpenRoutes = onboardingRoutes + setOf(Routes.LanguageChange, Routes.Live, Routes.LiveMap, Routes.Hud)
 
     /**
-     * Screens without the banner: setup, Settings (as before), and the HUD, which is mirrored onto the windscreen
-     * at night, where a bright banner would distract the driver.
+     * Screens without the banner: setup, Settings (as before), and every screen shown while driving (live speedometer,
+     * live map, HUD): an ad there distracts the driver and invites accidental taps on a mounted phone.
      */
-    private val noBannerRoutes = onboardingRoutes + setOf(Routes.Settings, Routes.Hud)
+    private val noBannerRoutes = onboardingRoutes + setOf(Routes.Settings, Routes.Hud, Routes.Live, Routes.LiveMap)
 
     fun isRestrictedRoute(): Boolean = currentRoute == null || currentRoute in noAppOpenRoutes
 

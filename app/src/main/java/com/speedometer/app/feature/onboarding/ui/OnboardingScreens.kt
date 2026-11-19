@@ -170,7 +170,8 @@ private fun SetupNativeAd() {
     val model = remember { ads.config.native(SETUP_NATIVE_PLACEMENT) }
     com.speedometer.app.core.ads.NativeAdCard(
         model, ads.analytics, placement = SETUP_NATIVE_PLACEMENT, compact = true,
-        modifier = Modifier.padding(start = ScreenPad, end = ScreenPad, top = 8.dp),
+        // 16 dp below the card plus the button bar's 8 dp: a clear gap so a tap meant for Continue never lands on the ad.
+        modifier = Modifier.padding(start = ScreenPad, end = ScreenPad, top = 8.dp, bottom = 16.dp),
     )
 }
 

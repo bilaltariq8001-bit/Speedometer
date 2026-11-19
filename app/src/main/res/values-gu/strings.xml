@@ -338,6 +338,7 @@
     <string name="more_zones">સાચવેલા ઝોન</string>
     <string name="more_language">ભાષા</string>
     <string name="more_rate">ઍપને રેટિંગ આપો</string>
+    <string name="more_privacy_options">ગોપનીયતા વિકલ્પો</string>
     <string name="opt_alert_tones">ચેતવણી અવાજો</string>
     <string name="opt_alert_tones_sub">હળવો, તીવ્ર, પછી બોલીને</string>
     <string name="opt_spoken">બોલીને ઝોન ચેતવણીઓ</string>

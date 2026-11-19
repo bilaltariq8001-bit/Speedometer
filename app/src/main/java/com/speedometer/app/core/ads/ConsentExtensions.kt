@@ -45,3 +45,20 @@ fun Activity.showGDPRScreen(onScreenShown: (Boolean, Boolean) -> Unit) {
         { onScreenShown(false, consentInfo.canRequestAds()) },
     )
 }
+
+/**
+ * Google's EU user consent policy: where UMP says a privacy entry point is required (EEA, UK, Switzerland and some US
+ * states), the user must be able to change or withdraw consent at any time. Settings shows "Privacy options" when true.
+ */
+fun android.content.Context.privacyOptionsRequired(): Boolean = runCatching {
+    UserMessagingPlatform.getConsentInformation(this).privacyOptionsRequirementStatus ==
+        ConsentInformation.PrivacyOptionsRequirementStatus.REQUIRED
+}.getOrDefault(false)
+
+/** Opens UMP's privacy options form, then reports whether ads may still be requested. */
+@MainThread
+fun Activity.showPrivacyOptions(onDone: (Boolean) -> Unit) {
+    UserMessagingPlatform.showPrivacyOptionsForm(this) {
+        onDone(UserMessagingPlatform.getConsentInformation(this).canRequestAds())
+    }
+}

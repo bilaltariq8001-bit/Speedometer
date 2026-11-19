@@ -338,6 +338,7 @@
     <string name="more_zones">Opgeslagen zones</string>
     <string name="more_language">Taal</string>
     <string name="more_rate">Beoordeel de app</string>
+    <string name="more_privacy_options">Privacyopties</string>
     <string name="opt_alert_tones">Waarschuwingstonen</string>
     <string name="opt_alert_tones_sub">Zacht, duidelijk, dan gesproken</string>
     <string name="opt_spoken">Gesproken zonewaarschuwingen</string>

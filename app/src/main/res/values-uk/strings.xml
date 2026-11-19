@@ -340,6 +340,7 @@
     <string name="more_zones">Збережені зони</string>
     <string name="more_language">Мова</string>
     <string name="more_rate">Оцінити додаток</string>
+    <string name="more_privacy_options">Налаштування конфіденційності</string>
     <string name="opt_alert_tones">Звуки сповіщень</string>
     <string name="opt_alert_tones_sub">М’який, різкий, потім голос</string>
     <string name="opt_spoken">Голосові сповіщення про зони</string>

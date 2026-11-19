@@ -284,6 +284,7 @@
     <string name="more_zones">सहेजे गए ज़ोन</string>
     <string name="more_language">भाषा</string>
     <string name="more_rate">ऐप को रेट करें</string>
+    <string name="more_privacy_options">गोपनीयता विकल्प</string>
     <string name="opt_alert_tones">अलर्ट की आवाज़ें</string>
     <string name="opt_alert_tones_sub">हल्की, तेज़, फिर बोलकर</string>
     <string name="opt_spoken">बोलकर ज़ोन चेतावनी</string>

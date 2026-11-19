@@ -189,10 +189,11 @@ fun AppNavHost() {
                     restoreState = true
                 }
             }
-            // Trips and Insights tabs: an interstitial every time, no cooldown, then the tab opens (right away if no ad is ready).
+            // Trips and Insights tabs: a capped interstitial (shared cooldown + click cap, AdMob policy: not on every tap),
+            // then the tab opens (right away when capped or no ad is ready).
             val placement = tabClickPlacement(target)
             if (placement != null && activity != null && nav.currentDestination?.route != target) {
-                adsVm.ads.showAlwaysClickAdBehind(activity, placement) { go() }
+                adsVm.ads.showClickAdBehind(activity, placement, { go() })
             } else {
                 go()
             }
@@ -214,7 +215,6 @@ fun AppNavHost() {
         kotlinx.coroutines.delay(AD_WARM_AFTER_NAV_MS)
         if (route == Routes.Home || route == Routes.History || route == Routes.Insights || route == Routes.Settings) {
             activity?.let { a -> listOf(Routes.History, Routes.Insights).filter { it != route }.forEach { t -> tabClickPlacement(t)?.let { adsVm.ads.warmUp(a, it) } } }
-            if (route == Routes.Home && activity != null && adsVm.ads.startTripAdDue(activity)) adsVm.ads.warmUp(activity, START_TRIP_PLACEMENT)
         }
     }
     // First launch with analytics: someone who already finished onboarding is an existing user and starts as returning.
@@ -417,8 +417,9 @@ fun AppNavHost() {
                     val seconds = tripPhase.trip.value.durationSec
                     analytics.tripSaved(if (seconds < 60) "under_1m" else if (seconds < 300) "1_to_5m" else if (seconds < 1800) "5_to_30m" else "over_30m")
                     TripAdCounter.onTripSaved(startContext)
-                    // The save (and its progress bar) has reached 100%: an interstitial every time, no cooldown.
-                    if (activity != null) adsVm.ads.showAlwaysClickAd(activity, "trip_saved_click") { }
+                    // The save (and its progress bar) has reached 100%: a natural break, but capped like every other
+                    // interstitial (shared cooldown + click cap) so it never shows after every trip by rule.
+                    if (activity != null) adsVm.ads.showClickAd(activity, "trip_saved_click") { }
                 },
                 onSavedDone = { nav.popBackStack(Routes.Home, inclusive = false); Unit },
             )

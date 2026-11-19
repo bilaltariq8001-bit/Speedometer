@@ -337,6 +337,7 @@
     <string name="more_zones">保存したゾーン</string>
     <string name="more_language">言語</string>
     <string name="more_rate">アプリを評価</string>
+    <string name="more_privacy_options">プライバシー設定</string>
     <string name="opt_alert_tones">警告音</string>
     <string name="opt_alert_tones_sub">控えめ、強め、そして音声</string>
     <string name="opt_spoken">ゾーンの音声案内</string>

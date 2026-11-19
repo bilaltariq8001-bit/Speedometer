@@ -338,6 +338,7 @@
     <string name="more_zones">சேமித்த மண்டலங்கள்</string>
     <string name="more_language">மொழி</string>
     <string name="more_rate">ஆப்பை மதிப்பிடு</string>
+    <string name="more_privacy_options">தனியுரிமை விருப்பங்கள்</string>
     <string name="opt_alert_tones">எச்சரிக்கை ஒலிகள்</string>
     <string name="opt_alert_tones_sub">மென்மை, உறுதி, பிறகு குரல்</string>
     <string name="opt_spoken">மண்டலக் குரல் எச்சரிக்கைகள்</string>

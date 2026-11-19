@@ -337,6 +337,7 @@
     <string name="more_zones">Zona Tersimpan</string>
     <string name="more_language">Bahasa</string>
     <string name="more_rate">Beri rating aplikasi</string>
+    <string name="more_privacy_options">Opsi privasi</string>
     <string name="opt_alert_tones">Nada peringatan</string>
     <string name="opt_alert_tones_sub">Lembut, tegas, lalu suara</string>
     <string name="opt_spoken">Peringatan zona dengan suara</string>

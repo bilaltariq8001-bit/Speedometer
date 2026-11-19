@@ -338,6 +338,7 @@
     <string name="more_zones">সেভ করা জোন</string>
     <string name="more_language">ভাষা</string>
     <string name="more_rate">অ্যাপকে রেটিং দিন</string>
+    <string name="more_privacy_options">গোপনীয়তার বিকল্প</string>
     <string name="opt_alert_tones">সতর্কতার শব্দ</string>
     <string name="opt_alert_tones_sub">মৃদু, জোরালো, তারপর কণ্ঠস্বর</string>
     <string name="opt_spoken">জোনের মৌখিক সতর্কতা</string>
