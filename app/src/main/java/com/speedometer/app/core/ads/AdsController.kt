@@ -113,6 +113,29 @@ class AdsController @Inject constructor(
         interstitial.show(activity, placement, onDismiss, always = true)
     }
 
+    /**
+     * Like [showAlwaysClickAd], but [action] (a navigation or start) runs as soon as the ad is on screen, behind it, with no
+     * screen transition. Closing the ad then reveals the new screen directly instead of flashing the old one first. With
+     * no ad ready, [action] runs at once as usual. Runs [action] exactly once.
+     */
+    fun showAlwaysClickAdBehind(activity: Activity, placement: String, action: () -> Unit) {
+        val done = AtomicBoolean(false)
+        val run = { if (done.compareAndSet(false, true)) action() }
+        interstitial.show(
+            activity, placement,
+            onDismiss = {
+                run()
+                // Keep transitions off until the revealed screen has drawn, then back to normal.
+                main.postDelayed({ AdGate.navigateInstantly = false }, INSTANT_NAV_RESET_MS)
+            },
+            onShowAd = {
+                AdGate.navigateInstantly = true
+                run()
+            },
+            always = true,
+        )
+    }
+
     /** Whether the Start trip tap should show an interstitial first: from the 4th trip on (after 3 completed trips). */
     fun startTripAdDue(context: android.content.Context): Boolean =
         TripAdCounter.startAdDue(context, config.startTripInterAfterTrips)
@@ -145,6 +168,7 @@ class AdsController @Inject constructor(
 
     private companion object {
         const val PRELOAD_PLACEMENT = "trip_saved_click"
+        const val INSTANT_NAV_RESET_MS = 700L
         const val IN_FLIGHT_TIMEOUT_MS = 8_000L
         const val NATIVE_PLACEMENT = "history"
         const val ONBOARDING_NATIVE = "onboarding"

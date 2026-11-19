@@ -10,6 +10,12 @@ import kotlinx.coroutines.flow.StateFlow
  * overlap and none appears where it must not.
  */
 object AdGate {
+    /**
+     * True while an interstitial covers a screen change made behind it: screen transitions are skipped, so when the ad
+     * closes the new screen is already there, with no glimpse of the old one.
+     */
+    @Volatile var navigateInstantly: Boolean = false
+
     @Volatile var fullScreenAdVisible = false
 
     /** Full-screen ads must wait until the saved trip write and its progress state have both completed. */

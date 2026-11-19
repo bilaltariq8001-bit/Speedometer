@@ -213,7 +213,7 @@ fun HomeScreen(
         if (activity != null && ads.startTripAdDue(context)) {
             if (startAdShowing) return
             startAdShowing = true
-            ads.showAlwaysClickAd(activity, com.speedometer.app.core.navigation.START_TRIP_PLACEMENT) {
+            ads.showAlwaysClickAdBehind(activity, com.speedometer.app.core.navigation.START_TRIP_PLACEMENT) {
                 startAdShowing = false
                 TripService.start(context)
             }

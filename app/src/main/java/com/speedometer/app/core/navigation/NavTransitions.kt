@@ -38,7 +38,7 @@ class NavTransitions(private val reduceMotion: Boolean) {
         initialState.destination.route in secondary && targetState.destination.route == Routes.Home
 
     fun enter(s: AnimatedContentTransitionScope<NavBackStackEntry>): EnterTransition = when {
-        reduceMotion -> EnterTransition.None
+        reduceMotion || com.speedometer.app.core.ads.AdGate.navigateInstantly -> EnterTransition.None
         // Trips, Insights and Settings come in from the left edge, moving to the right, over a Home that stays still.
         s.homeToSecondary() -> slideInHorizontally(tween(slideMs, easing = easing)) { -it }
         else -> fadeIn(tween(fadeMs, easing = easing))
@@ -51,7 +51,7 @@ class NavTransitions(private val reduceMotion: Boolean) {
     fun popEnter(s: AnimatedContentTransitionScope<NavBackStackEntry>): EnterTransition = EnterTransition.None
 
     fun popExit(s: AnimatedContentTransitionScope<NavBackStackEntry>): ExitTransition = when {
-        reduceMotion -> ExitTransition.None
+        reduceMotion || com.speedometer.app.core.ads.AdGate.navigateInstantly -> ExitTransition.None
         // Going back, the screen slides out to the left, the way it came in.
         s.secondaryToHome() -> slideOutHorizontally(tween(slideMs, easing = easing)) { -it }
         else -> fadeOut(tween(fadeMs, easing = easing))

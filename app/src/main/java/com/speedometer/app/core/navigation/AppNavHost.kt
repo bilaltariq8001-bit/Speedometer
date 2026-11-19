@@ -188,7 +188,7 @@ fun AppNavHost() {
             // Trips and Insights tabs: an interstitial every time, no cooldown, then the tab opens (right away if no ad is ready).
             val placement = tabClickPlacement(target)
             if (placement != null && activity != null && nav.currentDestination?.route != target) {
-                adsVm.ads.showAlwaysClickAd(activity, placement) { go() }
+                adsVm.ads.showAlwaysClickAdBehind(activity, placement) { go() }
             } else {
                 go()
             }
