@@ -12,3 +12,6 @@ keystore.properties
 .kotlin/
 .qodo/
 /app/google-services.json
+
+# Signing secrets never go in this public repo
+Key/
