@@ -513,87 +513,133 @@ private fun SplashNeonGauge(
 
 private data class Language(val code: String, val name: String, val native: String)
 
-private val languages = AppLanguage.tags.keys.map { Language(AppLanguage.tags.getValue(it).uppercase(), it, AppLanguage.native.getValue(it)) }
+private val languages = AppLanguage.tags.keys.map { Language(AppLanguage.shortCode(it), it, AppLanguage.native.getValue(it)) }
 
+/**
+ * The language list. It is a lazy list (only the rows on screen are composed), the search filters as you type with rows
+ * sliding into place, the chosen row is scrolled into view on open, and on first run the phone's own language is
+ * preselected when the app supports it.
+ */
 @Composable
 fun LanguageScreen(selected: String, showNativeAd: Boolean = true, onContinue: (String) -> Unit) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     var query by rememberSaveable { mutableStateOf("") }
-    var pendingLanguage by rememberSaveable(selected) { mutableStateOf(selected) }
-    val shown = languages.filter {
-        query.isBlank() || it.name.contains(query, true) || it.native.contains(query, true)
+    var pendingLanguage by rememberSaveable(selected) {
+        mutableStateOf(
+            if (!AppLanguage.hasChoice(context)) AppLanguage.deviceDefault() ?: selected else selected,
+        )
     }
-    Frame(bottom = {
-        Column {
+    val shown = remember(query) {
+        val q = query.trim()
+        languages.filter {
+            q.isEmpty() || it.name.contains(q, true) || it.native.contains(q, true) || it.code.equals(q, true)
+        }
+    }
+    val listState = androidx.compose.foundation.lazy.rememberLazyListState()
+    // Bring the chosen language into view once, without animation, so the screen opens already in place.
+    LaunchedEffect(Unit) {
+        val index = languages.indexOfFirst { it.name == pendingLanguage }
+        if (index > 3) listState.scrollToItem(index)
+    }
+    Box(Modifier.fillMaxSize().background(Bg).systemBarsPadding(), contentAlignment = Alignment.TopCenter) {
+        Column(Modifier.widthIn(max = com.speedometer.app.core.designsystem.rememberLayout().contentMax).fillMaxSize()) {
+            androidx.compose.foundation.lazy.LazyColumn(
+                Modifier.weight(1f).fillMaxWidth(),
+                state = listState,
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                item(key = "header", contentType = "header") {
+                    Column {
+                        Column(Modifier.padding(start = ScreenPad, end = ScreenPad, top = 28.dp)) {
+                            Text(stringResource(R.string.language_title), style = display(28, FontWeight.SemiBold))
+                            Text(stringResource(R.string.language_hint), Modifier.padding(top = 6.dp), style = body(15))
+                        }
+                        LanguageSearch(query, { query = it })
+                        Spacer(Modifier.height(8.dp))
+                    }
+                }
+                if (shown.isEmpty()) {
+                    item(key = "empty", contentType = "empty") {
+                        Text(
+                            stringResource(R.string.no_languages_found),
+                            Modifier.fillMaxWidth().padding(start = ScreenPad, end = ScreenPad, top = 24.dp),
+                            style = body(15), textAlign = TextAlign.Center,
+                        )
+                    }
+                }
+                items(shown.size, key = { shown[it].name }, contentType = { "language" }) { i ->
+                    val l = shown[i]
+                    LanguageRow(l, l.name == pendingLanguage, Modifier.animateItem()) { pendingLanguage = l.name }
+                }
+            }
             if (showNativeAd) SetupNativeAd()
             PrimaryBar(stringResource(R.string.continue_label)) { onContinue(pendingLanguage) }
         }
-    }) {
-        Column(Modifier.padding(start = ScreenPad, end = ScreenPad, top = 28.dp)) {
-            Text(stringResource(R.string.language_title), style = display(28, FontWeight.SemiBold))
-            Text(stringResource(R.string.language_hint), Modifier.padding(top = 6.dp), style = body(15))
-        }
-        Row(
-            Modifier.padding(start = ScreenPad, end = ScreenPad, top = 20.dp).fillMaxWidth().height(52.dp)
-                .background(Surface1, RoundedCornerShape(16.dp)).padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            StrokeIcon("M11 4a7 7 0 1 0 0 14a7 7 0 0 0 0 -14 M20 20l-4 -4", TextMuted, size = 20.dp)
-            Box(Modifier.weight(1f)) {
-                if (query.isEmpty()) Text(stringResource(R.string.search_languages), style = body(16))
-                BasicTextField(
-                    query, { query = it }, singleLine = true,
-                    textStyle = body(16, color = TextPrimary), cursorBrush = SolidColor(Amber),
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-            if (query.isNotEmpty()) {
-                val clearLabel = stringResource(R.string.clear_search)
-                Box(
-                    Modifier.size(40.dp).clip(CircleShape).clickable(role = Role.Button, onClickLabel = clearLabel) { query = "" },
-                    contentAlignment = Alignment.Center,
-                ) { StrokeIcon("M6 6l12 12M18 6L6 18", TextMuted, size = 18.dp, box = 24f) }
-            }
-        }
-        if (shown.isEmpty()) {
-            Text(
-                stringResource(R.string.no_languages_found),
-                Modifier.fillMaxWidth().padding(start = ScreenPad, end = ScreenPad, top = 32.dp),
-                style = body(15), textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+    }
+}
+
+@Composable
+private fun LanguageSearch(query: String, onQuery: (String) -> Unit) {
+    Row(
+        Modifier.padding(start = ScreenPad, end = ScreenPad, top = 20.dp).fillMaxWidth().height(52.dp)
+            .background(Surface1, RoundedCornerShape(16.dp)).padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        StrokeIcon("M11 4a7 7 0 1 0 0 14a7 7 0 0 0 0 -14 M20 20l-4 -4", TextMuted, size = 20.dp)
+        Box(Modifier.weight(1f)) {
+            if (query.isEmpty()) Text(stringResource(R.string.search_languages), style = body(16))
+            BasicTextField(
+                query, onQuery, singleLine = true,
+                textStyle = body(16, color = TextPrimary), cursorBrush = SolidColor(Amber),
+                modifier = Modifier.fillMaxWidth(),
             )
         }
-        Column(
-            Modifier.padding(start = ScreenPad, end = ScreenPad, top = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            shown.forEach { l ->
-                val on = l.name == pendingLanguage
-                Row(
-                    Modifier.fillMaxWidth().heightIn(min = 56.dp)
-                        .background(Surface1, RoundedCornerShape(16.dp))
-                        .border(2.dp, if (on) Amber else Color.Transparent, RoundedCornerShape(16.dp))
-                        .clip(RoundedCornerShape(16.dp))
-                        .clickable(role = Role.RadioButton) { pendingLanguage = l.name }
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(14.dp),
-                ) {
-                    Box(Modifier.size(width = 36.dp, height = 28.dp).background(Surface2, RoundedCornerShape(8.dp)),
-                        contentAlignment = Alignment.Center) {
-                        Text(l.code, style = body(12, FontWeight.Bold, TextSoft))
-                    }
-                    Text(l.name, Modifier.weight(1f), style = body(16, FontWeight.Medium, TextPrimary))
-                    Text(l.native, style = body(14))
-                    Box(
-                        Modifier.size(22.dp).clip(CircleShape).then(
-                            if (on) Modifier.background(Bg).border(7.dp, Amber, CircleShape)
-                            else Modifier.border(2.dp, Line3, CircleShape),
-                        ),
-                    )
-                }
-            }
+        if (query.isNotEmpty()) {
+            val clearLabel = stringResource(R.string.clear_search)
+            Box(
+                Modifier.size(40.dp).clip(CircleShape).clickable(role = Role.Button, onClickLabel = clearLabel) { onQuery("") },
+                contentAlignment = Alignment.Center,
+            ) { StrokeIcon("M6 6l12 12M18 6L6 18", TextMuted, size = 18.dp, box = 24f) }
         }
-        Spacer(Modifier.height(16.dp))
+    }
+}
+
+@Composable
+private fun LanguageRow(l: Language, on: Boolean, modifier: Modifier, onClick: () -> Unit) {
+    val ring by androidx.compose.animation.animateColorAsState(
+        if (on) Amber else Color.Transparent, tween(180), label = "languageRing",
+    )
+    val dot by androidx.compose.animation.core.animateDpAsState(
+        if (on) 7.dp else 2.dp, tween(180), label = "languageDot",
+    )
+    val dotColor by androidx.compose.animation.animateColorAsState(
+        if (on) Amber else Line3, tween(180), label = "languageDotColor",
+    )
+    Row(
+        modifier.padding(horizontal = ScreenPad).fillMaxWidth().heightIn(min = 56.dp)
+            .background(Surface1, RoundedCornerShape(16.dp))
+            .border(2.dp, ring, RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp))
+            .clickable(role = Role.RadioButton, onClick = onClick)
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        Box(
+            Modifier.size(width = 36.dp, height = 28.dp).background(Surface2, RoundedCornerShape(8.dp)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(l.code, style = body(12, FontWeight.Bold, TextSoft))
+        }
+        Text(l.name, Modifier.weight(1f), style = body(16, FontWeight.Medium, TextPrimary), maxLines = 1)
+        Text(l.native, style = body(14), maxLines = 1)
+        Box(
+            Modifier.size(22.dp).clip(CircleShape).then(
+                if (on) Modifier.background(Bg) else Modifier,
+            ).border(dot, dotColor, CircleShape),
+        )
     }
 }
 

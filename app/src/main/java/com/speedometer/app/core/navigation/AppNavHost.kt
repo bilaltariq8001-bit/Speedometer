@@ -545,10 +545,14 @@ fun AppNavHost() {
 }
 
 
-/** Saves the language, then recreates the activity so every string is read in it. */
+/**
+ * Saves the language and switches the running app to it in place: strings redraw at once while the screen transition
+ * plays, with no activity recreate (no flash, nothing reloads). Falls back to a recreate only if the in-place switch fails.
+ */
 private fun changeLanguage(context: android.content.Context, vm: OnboardingViewModel, name: String) {
-    if (AppLanguage.saved(context) == name) return
-    AppLanguage.save(context, name)
+    val activity = context.findActivity()
+    if (AppLanguage.hasChoice(context) && AppLanguage.saved(context) == name) return
     vm.setLanguage(name)
-    context.findActivity()?.recreate()
+    if (activity == null) { AppLanguage.save(context, name); return }
+    if (!AppLanguage.applyNow(activity, name)) activity.recreate()
 }

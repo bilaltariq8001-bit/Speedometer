@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -45,7 +46,26 @@ class MainActivity : ComponentActivity() {
         }
         enableEdgeToEdge()
         if (savedInstanceState == null || intent?.action == TripService.ACTION_OPEN_TRIP) handle(intent)
-        setContent { SpeedometerTheme { AppNavHost() } }
+        setContent {
+            // A live language change (AppLanguage.applyNow) updates the resources in place and bumps the revision: a fresh
+            // configuration makes every string redraw in the new language, and the layout direction follows it (RTL).
+            val revision by AppLanguage.revision
+            val systemConfig = androidx.compose.ui.platform.LocalConfiguration.current
+            val config = androidx.compose.runtime.remember(revision, systemConfig) {
+                android.content.res.Configuration(resources.configuration)
+            }
+            val direction = if (config.layoutDirection == android.view.View.LAYOUT_DIRECTION_RTL) {
+                androidx.compose.ui.unit.LayoutDirection.Rtl
+            } else {
+                androidx.compose.ui.unit.LayoutDirection.Ltr
+            }
+            androidx.compose.runtime.CompositionLocalProvider(
+                androidx.compose.ui.platform.LocalConfiguration provides config,
+                androidx.compose.ui.platform.LocalLayoutDirection provides direction,
+            ) {
+                SpeedometerTheme { AppNavHost() }
+            }
+        }
     }
 
     /** Any touch counts as "the user is using the app": a late app-open ad never jumps in after it. */
