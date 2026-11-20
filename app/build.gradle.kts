@@ -36,6 +36,9 @@ android {
         val admobTestDeviceId = providers.gradleProperty("admobTestDeviceId").orElse("").get()
             .replace("\\", "\\\\").replace("\"", "\\\"")
         buildConfigField("String", "ADMOB_TEST_DEVICE_ID", "\"$admobTestDeviceId\"")
+        // true: debug builds use Google's test ad units instead of the IDs from Remote Config.
+        val forceTestAds = providers.gradleProperty("forceTestAds").orElse("false").get().toBoolean()
+        buildConfigField("boolean", "FORCE_TEST_ADS", "$forceTestAds")
     }
 
     // Release signing reads keystore.properties (git-ignored, see keystore.properties.example). Without the file the
