@@ -7,7 +7,7 @@
   </entry>
   <entry>
     <key>bottom_banner_banner_ad_id</key>
-    <value>ca-app-pub-3940256099942544/9214589741</value>
+    <value>ca-app-pub-7094796830915786~9068896024</value>
   </entry>
   <entry>
     <key>bottom_banner_banner_is_collapsing</key>
@@ -17,7 +17,7 @@
     <key>bottom_banner_ad_position</key>
     <value>BOTTOM</value>
   </entry>
-  
+
   <entry>
     <key>history_in_screen_ad_enabled</key>
     <value>true</value>
@@ -55,7 +55,7 @@
     <value>2</value>
   </entry>
 
-  
+
   <entry>
     <key>insights_in_screen_ad_enabled</key>
     <value>true</value>
@@ -101,7 +101,7 @@
     <value>2</value>
   </entry>
 
-  
+
   <entry>
     <key>results_in_screen_ad_enabled</key>
     <value>true</value>
@@ -135,7 +135,7 @@
     <value>2</value>
   </entry>
 
-  
+
   <entry>
     <key>trip_map_in_screen_ad_enabled</key>
     <value>true</value>
@@ -169,7 +169,7 @@
     <value>2</value>
   </entry>
 
-  
+
   <entry>
     <key>replay_in_screen_ad_enabled</key>
     <value>true</value>
@@ -203,7 +203,7 @@
     <value>2</value>
   </entry>
 
-  
+
   <entry>
     <key>start_trip_click_inter_id</key>
     <value>ca-app-pub-3940256099942544/1033173712</value>
@@ -242,7 +242,7 @@
     <value>true</value>
   </entry>
 
-  
+
   <entry>
     <key>history_open_click_inter_id</key>
     <value>ca-app-pub-3940256099942544/1033173712</value>
@@ -276,7 +276,7 @@
     <value>true</value>
   </entry>
 
-  
+
   <entry>
     <key>gauge_style_back_inter_id</key>
     <value>ca-app-pub-3940256099942544/1033173712</value>
@@ -294,7 +294,7 @@
     <value>true</value>
   </entry>
 
-  
+
   <entry>
     <key>meter_preview_back_inter_id</key>
     <value>ca-app-pub-3940256099942544/1033173712</value>
@@ -312,7 +312,7 @@
     <value>true</value>
   </entry>
 
-  
+
   <entry>
     <key>vehicle_meters_back_inter_id</key>
     <value>ca-app-pub-3940256099942544/1033173712</value>
@@ -330,7 +330,7 @@
     <value>true</value>
   </entry>
 
-  
+
   <entry>
     <key>trip_map_back_inter_id</key>
     <value>ca-app-pub-3940256099942544/1033173712</value>
@@ -348,7 +348,7 @@
     <value>true</value>
   </entry>
 
-  
+
   <entry>
     <key>replay_back_inter_id</key>
     <value>ca-app-pub-3940256099942544/1033173712</value>
@@ -366,7 +366,7 @@
     <value>true</value>
   </entry>
 
-  
+
   <entry>
     <key>zones_back_inter_id</key>
     <value>ca-app-pub-3940256099942544/1033173712</value>
@@ -384,7 +384,7 @@
     <value>true</value>
   </entry>
 
-  
+
   <entry>
     <key>gps_status_back_inter_id</key>
     <value>ca-app-pub-3940256099942544/1033173712</value>
@@ -402,7 +402,7 @@
     <value>true</value>
   </entry>
 
-  
+
   <entry>
     <key>results_back_inter_id</key>
     <value>ca-app-pub-3940256099942544/1033173712</value>
@@ -420,7 +420,7 @@
     <value>true</value>
   </entry>
 
-  
+
   <entry>
     <key>app_open_id</key>
     <value>ca-app-pub-3940256099942544/9257395921</value>
@@ -430,7 +430,7 @@
     <value>true</value>
   </entry>
 
-  
+
   <entry>
     <key>interstitial_cache_size</key>
     <value>1</value>
@@ -456,7 +456,7 @@
     <value>false</value>
   </entry>
 
-  
+
   <entry>
     <key>show_on_boarding</key>
     <value>true</value>

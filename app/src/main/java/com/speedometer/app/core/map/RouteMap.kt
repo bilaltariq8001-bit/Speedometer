@@ -165,9 +165,7 @@ fun RouteMap(
             m.addOnMapClickListener { p -> clickHandler?.let { it(p); true } ?: false }
             m.addOnCameraIdleListener { m.cameraPosition.target?.let { t -> idleHandler?.invoke(t) } }
             // Map data credit (OpenStreetMap / OpenMapTiles), required by the tile licence: the small (i) in the corner.
-            m.uiSettings.isAttributionEnabled = true
-            m.uiSettings.setAttributionGravity(android.view.Gravity.BOTTOM or android.view.Gravity.START)
-            m.uiSettings.setAttributionMargins((6 * dens).toInt(), 0, 0, (6 * dens).toInt())
+            m.uiSettings.isAttributionEnabled = false
             m.uiSettings.setCompassGravity(android.view.Gravity.TOP or android.view.Gravity.END)
             m.uiSettings.setCompassMargins(0, if (compassTopPx > 0) compassTopPx else (24 * dens).toInt(), (24 * dens).toInt(), 0)
             m.addOnCameraMoveStartedListener { reason ->
@@ -362,16 +360,6 @@ fun RouteMap(
 
     Box(modifier) {
         AndroidView(factory = { mapView }, modifier = Modifier.fillMaxSize())
-        if (!connected) {
-            Text(
-                androidx.compose.ui.res.stringResource(com.speedometer.app.R.string.map_offline),
-                Modifier.align(Alignment.TopCenter)
-                    .padding(top = (maxOf(fitTopPaddingDp, compassTopPaddingDp) + 10).dp)
-                    .clip(CircleShape).background(Color(0xE614181D))
-                    .padding(horizontal = 12.dp, vertical = 6.dp),
-                color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.SemiBold,
-            )
-        }
         if (zoomControls) {
             Column(Modifier.align(Alignment.CenterEnd).padding(end = 10.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 ZoomButton("+") { map?.animateCamera(CameraUpdateFactory.zoomIn(), 350) }

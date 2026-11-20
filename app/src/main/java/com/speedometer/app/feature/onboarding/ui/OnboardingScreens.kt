@@ -560,27 +560,25 @@ fun LanguageScreen(selected: String, showNativeAd: Boolean = true, onContinue: (
     androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides previewDirection) {
     Box(Modifier.fillMaxSize().background(Bg).systemBarsPadding(), contentAlignment = Alignment.TopCenter) {
         Column(Modifier.widthIn(max = com.speedometer.app.core.designsystem.rememberLayout().contentMax).fillMaxSize()) {
+            Column {
+                Column(Modifier.padding(start = ScreenPad, end = ScreenPad, top = 28.dp)) {
+                    Text(preview.getString(R.string.language_title), style = display(28, FontWeight.SemiBold))
+                    Text(preview.getString(R.string.language_hint), Modifier.padding(top = 6.dp), style = body(15))
+                }
+                LanguageSearch(query, { query = it }, preview.getString(R.string.search_languages), preview.getString(R.string.clear_search))
+                Spacer(Modifier.height(8.dp))
+            }
             androidx.compose.foundation.lazy.LazyColumn(
                 Modifier.weight(1f).fillMaxWidth(),
                 state = listState,
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 16.dp),
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(start = ScreenPad, end = ScreenPad, bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                item(key = "header", contentType = "header") {
-                    Column {
-                        Column(Modifier.padding(start = ScreenPad, end = ScreenPad, top = 28.dp)) {
-                            Text(preview.getString(R.string.language_title), style = display(28, FontWeight.SemiBold))
-                            Text(preview.getString(R.string.language_hint), Modifier.padding(top = 6.dp), style = body(15))
-                        }
-                        LanguageSearch(query, { query = it }, preview.getString(R.string.search_languages), preview.getString(R.string.clear_search))
-                        Spacer(Modifier.height(8.dp))
-                    }
-                }
                 if (shown.isEmpty()) {
                     item(key = "empty", contentType = "empty") {
                         Text(
                             preview.getString(R.string.no_languages_found),
-                            Modifier.fillMaxWidth().padding(start = ScreenPad, end = ScreenPad, top = 24.dp),
+                            Modifier.fillMaxWidth().padding(top = 24.dp),
                             style = body(15), textAlign = TextAlign.Center,
                         )
                     }
