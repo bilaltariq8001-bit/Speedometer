@@ -1,0 +1,822 @@
+{
+  "conditions": [],
+  "parameters": {},
+  "parameterGroups": {
+    "Global ad settings": {
+      "description": "Global ad settings",
+      "parameters": {
+        "interstitial_cache_size": {
+          "defaultValue": {
+            "value": "1"
+          },
+          "valueType": "NUMBER",
+          "description": "Interstitials kept preloaded"
+        },
+        "is_interstitial_time_capping_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Use the interstitial cooldown"
+        },
+        "interstitial_cooldown_seconds": {
+          "defaultValue": {
+            "value": "60"
+          },
+          "valueType": "NUMBER",
+          "description": "Seconds between interstitials"
+        },
+        "interstitial_click_cap": {
+          "defaultValue": {
+            "value": "3"
+          },
+          "valueType": "NUMBER",
+          "description": "Taps between interstitials"
+        },
+        "native_refresh_time": {
+          "defaultValue": {
+            "value": "30"
+          },
+          "valueType": "NUMBER",
+          "description": "Native ad refresh seconds"
+        },
+        "revenue_tracking_enabled": {
+          "defaultValue": {
+            "value": "false"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Log ad revenue to Analytics"
+        }
+      }
+    },
+    "App open": {
+      "description": "App open",
+      "parameters": {
+        "app_open_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/9257395921"
+          },
+          "valueType": "STRING",
+          "description": "AdMob app open unit ID"
+        },
+        "app_open_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show app open ad on launch/resume"
+        }
+      }
+    },
+    "Banners and native ads": {
+      "description": "Banners and native ads",
+      "parameters": {
+        "bottom_banner_in_screen_ad_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show the in-screen ad on this screen"
+        },
+        "bottom_banner_banner_ad_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/9214589741"
+          },
+          "valueType": "STRING",
+          "description": "AdMob banner unit ID"
+        },
+        "bottom_banner_banner_is_collapsing": {
+          "defaultValue": {
+            "value": "false"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Use a collapsible banner"
+        },
+        "bottom_banner_ad_position": {
+          "defaultValue": {
+            "value": "BOTTOM"
+          },
+          "valueType": "STRING",
+          "description": "TOP or BOTTOM"
+        },
+        "history_in_screen_ad_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show the in-screen ad on this screen"
+        },
+        "history_in_screen_ad_type": {
+          "defaultValue": {
+            "value": "BANNER"
+          },
+          "valueType": "STRING",
+          "description": "BANNER or NATIVE"
+        },
+        "history_ad_position": {
+          "defaultValue": {
+            "value": "BOTTOM"
+          },
+          "valueType": "STRING",
+          "description": "TOP or BOTTOM"
+        },
+        "history_native_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/2247696110"
+          },
+          "valueType": "STRING",
+          "description": "AdMob native unit ID"
+        },
+        "history_native_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show the native ad"
+        },
+        "history_banner_ad_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/9214589741"
+          },
+          "valueType": "STRING",
+          "description": "AdMob banner unit ID"
+        },
+        "history_banner_is_collapsing": {
+          "defaultValue": {
+            "value": "false"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Use a collapsible banner"
+        },
+        "history_native_cta_color": {
+          "defaultValue": {
+            "value": "#FFFFFF"
+          },
+          "valueType": "STRING",
+          "description": "Native ad button color (hex)"
+        },
+        "history_native_ad_type": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "valueType": "NUMBER",
+          "description": "Native layout type"
+        },
+        "insights_in_screen_ad_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show the in-screen ad on this screen"
+        },
+        "insights_in_screen_ad_type": {
+          "defaultValue": {
+            "value": "BANNER"
+          },
+          "valueType": "STRING",
+          "description": "BANNER or NATIVE"
+        },
+        "insights_ad_position": {
+          "defaultValue": {
+            "value": "BOTTOM"
+          },
+          "valueType": "STRING",
+          "description": "TOP or BOTTOM"
+        },
+        "insights_native_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/2247696110"
+          },
+          "valueType": "STRING",
+          "description": "AdMob native unit ID"
+        },
+        "insights_native_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show the native ad"
+        },
+        "onboarding_native_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/2247696110"
+          },
+          "valueType": "STRING",
+          "description": "AdMob native unit ID"
+        },
+        "onboarding_native_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show the native ad"
+        },
+        "insights_banner_ad_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/9214589741"
+          },
+          "valueType": "STRING",
+          "description": "AdMob banner unit ID"
+        },
+        "insights_banner_is_collapsing": {
+          "defaultValue": {
+            "value": "false"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Use a collapsible banner"
+        },
+        "insights_native_cta_color": {
+          "defaultValue": {
+            "value": "#FFFFFF"
+          },
+          "valueType": "STRING",
+          "description": "Native ad button color (hex)"
+        },
+        "insights_native_ad_type": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "valueType": "NUMBER",
+          "description": "Native layout type"
+        },
+        "results_in_screen_ad_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show the in-screen ad on this screen"
+        },
+        "results_in_screen_ad_type": {
+          "defaultValue": {
+            "value": "BANNER"
+          },
+          "valueType": "STRING",
+          "description": "BANNER or NATIVE"
+        },
+        "results_ad_position": {
+          "defaultValue": {
+            "value": "BOTTOM"
+          },
+          "valueType": "STRING",
+          "description": "TOP or BOTTOM"
+        },
+        "results_native_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/2247696110"
+          },
+          "valueType": "STRING",
+          "description": "AdMob native unit ID"
+        },
+        "results_banner_ad_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/9214589741"
+          },
+          "valueType": "STRING",
+          "description": "AdMob banner unit ID"
+        },
+        "results_banner_is_collapsing": {
+          "defaultValue": {
+            "value": "false"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Use a collapsible banner"
+        },
+        "results_native_cta_color": {
+          "defaultValue": {
+            "value": "#FFFFFF"
+          },
+          "valueType": "STRING",
+          "description": "Native ad button color (hex)"
+        },
+        "results_native_ad_type": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "valueType": "NUMBER",
+          "description": "Native layout type"
+        },
+        "trip_map_in_screen_ad_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show the in-screen ad on this screen"
+        },
+        "trip_map_in_screen_ad_type": {
+          "defaultValue": {
+            "value": "BANNER"
+          },
+          "valueType": "STRING",
+          "description": "BANNER or NATIVE"
+        },
+        "trip_map_ad_position": {
+          "defaultValue": {
+            "value": "BOTTOM"
+          },
+          "valueType": "STRING",
+          "description": "TOP or BOTTOM"
+        },
+        "trip_map_native_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/2247696110"
+          },
+          "valueType": "STRING",
+          "description": "AdMob native unit ID"
+        },
+        "trip_map_banner_ad_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/9214589741"
+          },
+          "valueType": "STRING",
+          "description": "AdMob banner unit ID"
+        },
+        "trip_map_banner_is_collapsing": {
+          "defaultValue": {
+            "value": "false"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Use a collapsible banner"
+        },
+        "trip_map_native_cta_color": {
+          "defaultValue": {
+            "value": "#FFFFFF"
+          },
+          "valueType": "STRING",
+          "description": "Native ad button color (hex)"
+        },
+        "trip_map_native_ad_type": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "valueType": "NUMBER",
+          "description": "Native layout type"
+        },
+        "replay_in_screen_ad_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show the in-screen ad on this screen"
+        },
+        "replay_in_screen_ad_type": {
+          "defaultValue": {
+            "value": "BANNER"
+          },
+          "valueType": "STRING",
+          "description": "BANNER or NATIVE"
+        },
+        "replay_ad_position": {
+          "defaultValue": {
+            "value": "BOTTOM"
+          },
+          "valueType": "STRING",
+          "description": "TOP or BOTTOM"
+        },
+        "replay_native_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/2247696110"
+          },
+          "valueType": "STRING",
+          "description": "AdMob native unit ID"
+        },
+        "replay_banner_ad_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/9214589741"
+          },
+          "valueType": "STRING",
+          "description": "AdMob banner unit ID"
+        },
+        "replay_banner_is_collapsing": {
+          "defaultValue": {
+            "value": "false"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Use a collapsible banner"
+        },
+        "replay_native_cta_color": {
+          "defaultValue": {
+            "value": "#FFFFFF"
+          },
+          "valueType": "STRING",
+          "description": "Native ad button color (hex)"
+        },
+        "replay_native_ad_type": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "valueType": "NUMBER",
+          "description": "Native layout type"
+        },
+        "settings_native_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/2247696110"
+          },
+          "valueType": "STRING",
+          "description": "AdMob native unit ID"
+        },
+        "settings_native_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show the native ad"
+        }
+      }
+    },
+    "Interstitials": {
+      "description": "Interstitials",
+      "parameters": {
+        "start_trip_click_inter_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/1033173712"
+          },
+          "valueType": "STRING",
+          "description": "AdMob interstitial unit ID"
+        },
+        "start_trip_click_inter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show this interstitial"
+        },
+        "start_trip_click_inter_should_load": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Preload this interstitial"
+        },
+        "start_trip_click_inter_counter_enabled": {
+          "defaultValue": {
+            "value": "false"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Apply cooldown/click cap to this interstitial"
+        },
+        "start_trip_inter_after_trips": {
+          "defaultValue": {
+            "value": "3"
+          },
+          "valueType": "NUMBER",
+          "description": "Start trip interstitial begins after this many completed trips"
+        },
+        "trip_saved_click_inter_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/1033173712"
+          },
+          "valueType": "STRING",
+          "description": "AdMob interstitial unit ID"
+        },
+        "trip_saved_click_inter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show this interstitial"
+        },
+        "trip_saved_click_inter_should_load": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Preload this interstitial"
+        },
+        "trip_saved_click_inter_counter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Apply cooldown/click cap to this interstitial"
+        },
+        "history_open_click_inter_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/1033173712"
+          },
+          "valueType": "STRING",
+          "description": "AdMob interstitial unit ID"
+        },
+        "history_open_click_inter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show this interstitial"
+        },
+        "history_open_click_inter_should_load": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Preload this interstitial"
+        },
+        "history_open_click_inter_counter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Apply cooldown/click cap to this interstitial"
+        },
+        "insights_open_click_inter_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/1033173712"
+          },
+          "valueType": "STRING",
+          "description": "AdMob interstitial unit ID"
+        },
+        "insights_open_click_inter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show this interstitial"
+        },
+        "insights_open_click_inter_should_load": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Preload this interstitial"
+        },
+        "insights_open_click_inter_counter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Apply cooldown/click cap to this interstitial"
+        },
+        "gauge_style_back_inter_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/1033173712"
+          },
+          "valueType": "STRING",
+          "description": "AdMob interstitial unit ID"
+        },
+        "gauge_style_back_inter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show this interstitial"
+        },
+        "gauge_style_back_inter_should_load": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Preload this interstitial"
+        },
+        "gauge_style_back_inter_counter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Apply cooldown/click cap to this interstitial"
+        },
+        "meter_preview_back_inter_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/1033173712"
+          },
+          "valueType": "STRING",
+          "description": "AdMob interstitial unit ID"
+        },
+        "meter_preview_back_inter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show this interstitial"
+        },
+        "meter_preview_back_inter_should_load": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Preload this interstitial"
+        },
+        "meter_preview_back_inter_counter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Apply cooldown/click cap to this interstitial"
+        },
+        "vehicle_meters_back_inter_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/1033173712"
+          },
+          "valueType": "STRING",
+          "description": "AdMob interstitial unit ID"
+        },
+        "vehicle_meters_back_inter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show this interstitial"
+        },
+        "vehicle_meters_back_inter_should_load": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Preload this interstitial"
+        },
+        "vehicle_meters_back_inter_counter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Apply cooldown/click cap to this interstitial"
+        },
+        "trip_map_back_inter_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/1033173712"
+          },
+          "valueType": "STRING",
+          "description": "AdMob interstitial unit ID"
+        },
+        "trip_map_back_inter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show this interstitial"
+        },
+        "trip_map_back_inter_should_load": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Preload this interstitial"
+        },
+        "trip_map_back_inter_counter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Apply cooldown/click cap to this interstitial"
+        },
+        "replay_back_inter_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/1033173712"
+          },
+          "valueType": "STRING",
+          "description": "AdMob interstitial unit ID"
+        },
+        "replay_back_inter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show this interstitial"
+        },
+        "replay_back_inter_should_load": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Preload this interstitial"
+        },
+        "replay_back_inter_counter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Apply cooldown/click cap to this interstitial"
+        },
+        "zones_back_inter_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/1033173712"
+          },
+          "valueType": "STRING",
+          "description": "AdMob interstitial unit ID"
+        },
+        "zones_back_inter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show this interstitial"
+        },
+        "zones_back_inter_should_load": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Preload this interstitial"
+        },
+        "zones_back_inter_counter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Apply cooldown/click cap to this interstitial"
+        },
+        "gps_status_back_inter_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/1033173712"
+          },
+          "valueType": "STRING",
+          "description": "AdMob interstitial unit ID"
+        },
+        "gps_status_back_inter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show this interstitial"
+        },
+        "gps_status_back_inter_should_load": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Preload this interstitial"
+        },
+        "gps_status_back_inter_counter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Apply cooldown/click cap to this interstitial"
+        },
+        "results_back_inter_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/1033173712"
+          },
+          "valueType": "STRING",
+          "description": "AdMob interstitial unit ID"
+        },
+        "results_back_inter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show this interstitial"
+        },
+        "results_back_inter_should_load": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Preload this interstitial"
+        },
+        "results_back_inter_counter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Apply cooldown/click cap to this interstitial"
+        },
+        "tab_inter_always": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Interstitial on every tab open (ignores cap)"
+        },
+        "settings_open_click_inter_id": {
+          "defaultValue": {
+            "value": "ca-app-pub-3940256099942544/1033173712"
+          },
+          "valueType": "STRING",
+          "description": "AdMob interstitial unit ID"
+        },
+        "settings_open_click_inter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show this interstitial"
+        },
+        "settings_open_click_inter_should_load": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Preload this interstitial"
+        },
+        "settings_open_click_inter_counter_enabled": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Apply cooldown/click cap to this interstitial"
+        }
+      }
+    },
+    "App": {
+      "description": "App",
+      "parameters": {
+        "show_on_boarding": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "valueType": "BOOLEAN",
+          "description": "Show onboarding on first run"
+        }
+      }
+    }
+  }
+}
