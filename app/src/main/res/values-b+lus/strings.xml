@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Portrait lamah switch rawh</string>
     <string name="no_languages_found">Ṭawng hmuh tur a awm lo</string>
     <string name="clear_search">Clear search rawh</string>
+    <string name="zone_schedule">Hunruat</string>
+    <string name="schedule_always">Englaipawhin</string>
+    <string name="schedule_morning">Zing dar 7–9 AM a ni</string>
+    <string name="schedule_weekdays">Kar khat chhungin</string>
+    <string name="schedule_weekdays_morning">Kartin zing dar 7–9 AM</string>
 </resources>

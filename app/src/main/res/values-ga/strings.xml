@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Athraigh go portráid</string>
     <string name="no_languages_found">Níor aimsíodh aon teanga</string>
     <string name="clear_search">Glan cuardach</string>
+    <string name="zone_schedule">Sceideal</string>
+    <string name="schedule_always">I gcónaí</string>
+    <string name="schedule_morning">7–9 r.n</string>
+    <string name="schedule_weekdays">Laethanta na seachtaine</string>
+    <string name="schedule_weekdays_morning">Laethanta na seachtaine 7-9 AM</string>
 </resources>

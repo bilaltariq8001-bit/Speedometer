@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Aldatu erretraturara</string>
     <string name="no_languages_found">Ez da hizkuntzarik aurkitu</string>
     <string name="clear_search">Garbitu bilaketa</string>
+    <string name="zone_schedule">Ordutegia</string>
+    <string name="schedule_always">Beti</string>
+    <string name="schedule_morning">7-9:00etan</string>
+    <string name="schedule_weekdays">Astegunetan</string>
+    <string name="schedule_weekdays_morning">Astegunetan 7:00etatik 9:00etara</string>
 </resources>

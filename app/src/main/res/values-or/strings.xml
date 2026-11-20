@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">ଚିତ୍ରକୁ ସୁଇଚ୍ କରନ୍ତୁ |</string>
     <string name="no_languages_found">କ languages ​​ଣସି ଭାଷା ମିଳିଲା ନାହିଁ |</string>
     <string name="clear_search">ସନ୍ଧାନ ସଫା କରନ୍ତୁ |</string>
+    <string name="zone_schedule">କାର୍ଯ୍ୟସୂଚୀ</string>
+    <string name="schedule_always">ସର୍ବଦା |</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">ସାପ୍ତାହିକ ଦିନ |</string>
+    <string name="schedule_weekdays_morning">ସପ୍ତାହ ଦିନ 7–9 AM |</string>
 </resources>

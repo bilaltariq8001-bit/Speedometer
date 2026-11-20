@@ -161,6 +161,11 @@
     <string name="zone_name">Name</string>
     <string name="zone_limit">Limit (%1$s)</string>
     <string name="zone_meta">%1$d m · always</string>
+    <string name="zone_schedule">Schedule</string>
+    <string name="schedule_always">Always</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Weekdays</string>
+    <string name="schedule_weekdays_morning">Weekdays 7–9 AM</string>
     <string name="zone_location_failed">Could not read your location. Check that location is on and try again.</string>
 
     <string name="trip_replay">Trip Replay</string>

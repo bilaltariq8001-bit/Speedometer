@@ -112,7 +112,10 @@ private class SplashValue(private val read: () -> Float) {
     val value: Float get() = read()
 }
 
+/** Splash length on first run, when the intro is part of the welcome. */
 private const val SPLASH_RUN_MS = 2000
+/** Splash length for a returning user: the same animation, played quicker, so the app is ready sooner. */
+private const val SPLASH_RETURN_MS = 900
 private const val SPLASH_METER_STAGE = 0
 private const val SPLASH_PROGRESS_STAGE = 1
 private const val SPLASH_WAITING_STAGE = 2
@@ -188,6 +191,8 @@ private fun PrimaryBar(text: String, onClick: () -> Unit) {
 
 @Composable
 fun SplashScreen(onDone: () -> Unit) {
+    val splashContext = androidx.compose.ui.platform.LocalContext.current
+    val runMs = remember { if (AppLanguage.hasChoice(splashContext)) SPLASH_RETURN_MS else SPLASH_RUN_MS }
     var meterProgress by rememberSaveable { mutableFloatStateOf(0f) }
     var barProgress by rememberSaveable { mutableFloatStateOf(0f) }
     var stage by rememberSaveable { mutableIntStateOf(SPLASH_METER_STAGE) }
@@ -217,7 +222,7 @@ fun SplashScreen(onDone: () -> Unit) {
         if (stage == SPLASH_METER_STAGE) {
             coroutineScope {
                 launch {
-                    val remainingDuration = (SPLASH_RUN_MS * (1f - meterAnimation.value)).toInt().coerceAtLeast(1)
+                    val remainingDuration = (runMs * (1f - meterAnimation.value)).toInt().coerceAtLeast(1)
                     meterAnimation.animateTo(
                         targetValue = 1f,
                         animationSpec = tween(remainingDuration, easing = SplashMotion.run),
@@ -227,7 +232,7 @@ fun SplashScreen(onDone: () -> Unit) {
                     meterProgress = 1f
                 }
                 launch {
-                    val remainingDuration = (SPLASH_RUN_MS * (1f - progressAnimation.value)).toInt().coerceAtLeast(1)
+                    val remainingDuration = (runMs * (1f - progressAnimation.value)).toInt().coerceAtLeast(1)
                     progressAnimation.animateTo(
                         targetValue = 1f,
                         animationSpec = tween(remainingDuration, easing = SplashMotion.run),
@@ -530,6 +535,16 @@ fun LanguageScreen(selected: String, showNativeAd: Boolean = true, onContinue: (
             if (!AppLanguage.hasChoice(context)) AppLanguage.deviceDefault() ?: selected else selected,
         )
     }
+    // The screen speaks the language being picked: its title, hint, search box and button switch the moment a row is
+    // tapped, and the layout turns right-to-left for Arabic, Urdu, Hebrew and the rest, before anything is saved.
+    val preview = remember(pendingLanguage) { AppLanguage.resources(context, pendingLanguage) }
+    val previewDirection = remember(pendingLanguage) {
+        if (android.text.TextUtils.getLayoutDirectionFromLocale(AppLanguage.locale(pendingLanguage)) == android.view.View.LAYOUT_DIRECTION_RTL) {
+            androidx.compose.ui.unit.LayoutDirection.Rtl
+        } else {
+            androidx.compose.ui.unit.LayoutDirection.Ltr
+        }
+    }
     val shown = remember(query) {
         val q = query.trim()
         languages.filter {
@@ -542,6 +557,7 @@ fun LanguageScreen(selected: String, showNativeAd: Boolean = true, onContinue: (
         val index = languages.indexOfFirst { it.name == pendingLanguage }
         if (index > 3) listState.scrollToItem(index)
     }
+    androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides previewDirection) {
     Box(Modifier.fillMaxSize().background(Bg).systemBarsPadding(), contentAlignment = Alignment.TopCenter) {
         Column(Modifier.widthIn(max = com.speedometer.app.core.designsystem.rememberLayout().contentMax).fillMaxSize()) {
             androidx.compose.foundation.lazy.LazyColumn(
@@ -553,17 +569,17 @@ fun LanguageScreen(selected: String, showNativeAd: Boolean = true, onContinue: (
                 item(key = "header", contentType = "header") {
                     Column {
                         Column(Modifier.padding(start = ScreenPad, end = ScreenPad, top = 28.dp)) {
-                            Text(stringResource(R.string.language_title), style = display(28, FontWeight.SemiBold))
-                            Text(stringResource(R.string.language_hint), Modifier.padding(top = 6.dp), style = body(15))
+                            Text(preview.getString(R.string.language_title), style = display(28, FontWeight.SemiBold))
+                            Text(preview.getString(R.string.language_hint), Modifier.padding(top = 6.dp), style = body(15))
                         }
-                        LanguageSearch(query, { query = it })
+                        LanguageSearch(query, { query = it }, preview.getString(R.string.search_languages), preview.getString(R.string.clear_search))
                         Spacer(Modifier.height(8.dp))
                     }
                 }
                 if (shown.isEmpty()) {
                     item(key = "empty", contentType = "empty") {
                         Text(
-                            stringResource(R.string.no_languages_found),
+                            preview.getString(R.string.no_languages_found),
                             Modifier.fillMaxWidth().padding(start = ScreenPad, end = ScreenPad, top = 24.dp),
                             style = body(15), textAlign = TextAlign.Center,
                         )
@@ -575,13 +591,14 @@ fun LanguageScreen(selected: String, showNativeAd: Boolean = true, onContinue: (
                 }
             }
             if (showNativeAd) SetupNativeAd()
-            PrimaryBar(stringResource(R.string.continue_label)) { onContinue(pendingLanguage) }
+            PrimaryBar(preview.getString(R.string.continue_label)) { onContinue(pendingLanguage) }
         }
+    }
     }
 }
 
 @Composable
-private fun LanguageSearch(query: String, onQuery: (String) -> Unit) {
+private fun LanguageSearch(query: String, onQuery: (String) -> Unit, placeholder: String, clearLabel: String) {
     Row(
         Modifier.padding(start = ScreenPad, end = ScreenPad, top = 20.dp).fillMaxWidth().height(52.dp)
             .background(Surface1, RoundedCornerShape(16.dp)).padding(horizontal = 16.dp),
@@ -590,7 +607,7 @@ private fun LanguageSearch(query: String, onQuery: (String) -> Unit) {
     ) {
         StrokeIcon("M11 4a7 7 0 1 0 0 14a7 7 0 0 0 0 -14 M20 20l-4 -4", TextMuted, size = 20.dp)
         Box(Modifier.weight(1f)) {
-            if (query.isEmpty()) Text(stringResource(R.string.search_languages), style = body(16))
+            if (query.isEmpty()) Text(placeholder, style = body(16))
             BasicTextField(
                 query, onQuery, singleLine = true,
                 textStyle = body(16, color = TextPrimary), cursorBrush = SolidColor(Amber),
@@ -598,7 +615,6 @@ private fun LanguageSearch(query: String, onQuery: (String) -> Unit) {
             )
         }
         if (query.isNotEmpty()) {
-            val clearLabel = stringResource(R.string.clear_search)
             Box(
                 Modifier.size(40.dp).clip(CircleShape).clickable(role = Role.Button, onClickLabel = clearLabel) { onQuery("") },
                 contentAlignment = Alignment.Center,

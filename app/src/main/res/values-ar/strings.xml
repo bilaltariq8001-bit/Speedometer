@@ -505,4 +505,9 @@
     <string name="orientation_switch_to_portrait">التبديل إلى الوضع العمودي</string>
     <string name="no_languages_found">لم يتم العثور على لغات</string>
     <string name="clear_search">مسح البحث</string>
+    <string name="zone_schedule">جدول</string>
+    <string name="schedule_always">دائماً</string>
+    <string name="schedule_morning">7-9 صباحًا</string>
+    <string name="schedule_weekdays">أيام الأسبوع</string>
+    <string name="schedule_weekdays_morning">أيام الأسبوع من 7 إلى 9 صباحًا</string>
 </resources>

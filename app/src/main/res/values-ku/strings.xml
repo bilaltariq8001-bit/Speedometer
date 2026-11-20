@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Biguherîne portreyê</string>
     <string name="no_languages_found">Ziman nehatin dîtin</string>
     <string name="clear_search">Lêgerînê paqij bike</string>
+    <string name="zone_schedule">Pîlan</string>
+    <string name="schedule_always">Herdem</string>
+    <string name="schedule_morning">7-9 AM</string>
+    <string name="schedule_weekdays">Weekdays</string>
+    <string name="schedule_weekdays_morning">Rojên hefteyê 7-9 AM</string>
 </resources>

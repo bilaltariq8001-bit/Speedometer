@@ -480,4 +480,9 @@
     <string name="orientation_switch_to_portrait">Книжкова орієнтація</string>
     <string name="no_languages_found">Мов не знайдено</string>
     <string name="clear_search">Очистити пошук</string>
+    <string name="zone_schedule">розклад</string>
+    <string name="schedule_always">Завжди</string>
+    <string name="schedule_morning">7–9 ранку</string>
+    <string name="schedule_weekdays">будні</string>
+    <string name="schedule_weekdays_morning">Будні 7-9 ранку</string>
 </resources>

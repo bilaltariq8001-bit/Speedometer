@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Kalo në portret</string>
     <string name="no_languages_found">Nuk u gjet asnjë gjuhë</string>
     <string name="clear_search">Pastro kërkimin</string>
+    <string name="zone_schedule">Orari</string>
+    <string name="schedule_always">Gjithmonë</string>
+    <string name="schedule_morning">7–9 e mëngjesit</string>
+    <string name="schedule_weekdays">Ditët e javës</string>
+    <string name="schedule_weekdays_morning">Ditëve të javës 7-9 AM</string>
 </resources>

@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Fetohela ho portrait</string>
     <string name="no_languages_found">Ha ho lipuo tse fumanoeng</string>
     <string name="clear_search">Hlakola patlo</string>
+    <string name="zone_schedule">Kemiso</string>
+    <string name="schedule_always">Kamehla</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Matsatsi a beke</string>
+    <string name="schedule_weekdays_morning">Matsatsi a beke 7–9 AM</string>
 </resources>

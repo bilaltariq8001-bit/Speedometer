@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Comutați la portret</string>
     <string name="no_languages_found">Nu s-au găsit limbi</string>
     <string name="clear_search">Ștergeți căutarea</string>
+    <string name="zone_schedule">Programa</string>
+    <string name="schedule_always">Întotdeauna</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">În zilele lucrătoare</string>
+    <string name="schedule_weekdays_morning">În zilele lucrătoare 7–9 AM</string>
 </resources>

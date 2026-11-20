@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Chinja kumufananidzo</string>
     <string name="no_languages_found">Hapana mitauro yawanikwa</string>
     <string name="clear_search">Bvisa kutsvaga</string>
+    <string name="zone_schedule">Purogiramu</string>
+    <string name="schedule_always">Nguva dzose</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Mazuva evhiki</string>
+    <string name="schedule_weekdays_morning">Pakati pevhiki 7–9 AM</string>
 </resources>

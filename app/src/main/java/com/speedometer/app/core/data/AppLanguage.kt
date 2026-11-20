@@ -304,6 +304,15 @@ object AppLanguage {
 
     fun locale(name: String): Locale = Locale.forLanguageTag(tags[name] ?: "en")
 
+    /** Resources in language [name], whatever the app is set to now (the language screen previews the row being picked). */
+    fun resources(base: Context, name: String): Resources {
+        val locale = locale(name)
+        val config = Configuration(base.resources.configuration)
+        config.setLocale(locale)
+        config.setLayoutDirection(locale)
+        return base.createConfigurationContext(config).resources
+    }
+
     /** [base] with the saved language applied. */
     fun wrap(base: Context): Context {
         val locale = locale(saved(base))

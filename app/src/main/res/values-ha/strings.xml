@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Canja zuwa hoto</string>
     <string name="no_languages_found">Ba a sami yaruka ba</string>
     <string name="clear_search">Share bincike</string>
+    <string name="zone_schedule">Jadawalin</string>
+    <string name="schedule_always">Koyaushe</string>
+    <string name="schedule_morning">7-9 AM</string>
+    <string name="schedule_weekdays">Ranakun mako</string>
+    <string name="schedule_weekdays_morning">Ranar mako 7-9 AM</string>
 </resources>

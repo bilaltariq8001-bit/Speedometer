@@ -51,6 +51,8 @@ class GuardAlerts @Inject constructor(
     private var job: Job? = null
     private var tts: TextToSpeech? = null
     private var ttsReady = false
+    /** The app language the voice was set up for; a language change afterwards sets the voice up again. */
+    private var voiceLanguage: String? = null
 
     /** True when the phone's voice has no data for the app language, so the English words are spoken instead. */
     private var voiceEnglish = false
@@ -66,12 +68,16 @@ class GuardAlerts @Inject constructor(
     /** Starts watching the live trip. Safe to call more than once. */
     fun start() {
         if (job?.isActive == true) return
-        // The voice takes a moment to start; getting it ready now means the first warning is spoken, not just beeped.
-        runCatching { ensureVoice() }
+        // The voice takes a moment to start, but binding to the speech engine on every launch slowed app start. It is now
+        // started the moment a trip begins recording, still well before the first warning can fire.
         job = scope.launch {
             val policy = AlertPolicy()
             var lastLevel = GuardLevel.Off
             combine(trips.state, settings.settings) { s, set -> s to set }.collect { (s, set) ->
+                if (s.phase == TripPhase.Recording) {
+                    if (tts == null) runCatching { ensureVoice() }
+                    else if (ttsReady && voiceLanguage != AppLanguage.saved(context)) runCatching { setUpVoice(tts!!) }
+                }
                 val level = if (s.phase == TripPhase.Recording) s.guard else GuardLevel.Off
                 // One analytics event per time the speed goes over the limit, not one per repeated warning.
                 if (level != GuardLevel.Off && lastLevel == GuardLevel.Off) analytics.event("limit_alert_fired", "level" to level.name)
@@ -127,9 +133,14 @@ class GuardAlerts @Inject constructor(
 
     private fun ensureVoice(): TextToSpeech = tts ?: TextToSpeech(context) { status ->
         ttsReady = status == TextToSpeech.SUCCESS
-        if (ttsReady) {
+        if (ttsReady) tts?.let { setUpVoice(it) }
+    }.also { tts = it }
+
+    /** Speaks in the app's language, or in English when the phone has no voice for it. */
+    private fun setUpVoice(engine: TextToSpeech) {
             runCatching {
-                val engine = tts ?: return@runCatching
+                voiceLanguage = AppLanguage.saved(context)
+                voiceEnglish = false
                 val wanted = Locale.forLanguageTag(AppLanguage.tags[AppLanguage.saved(context)] ?: "en")
                 val result = engine.setLanguage(wanted)
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
@@ -143,8 +154,7 @@ class GuardAlerts @Inject constructor(
                         .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build(),
                 )
             }
-        }
-    }.also { tts = it }
+    }
 
     /** True when the text was handed to a ready voice; false while the voice is starting or when the phone has none. */
     private fun speak(text: String): Boolean = runCatching {

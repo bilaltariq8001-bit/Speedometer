@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Portretlere geçiň</string>
     <string name="no_languages_found">Dil tapylmady</string>
     <string name="clear_search">Gözleg arassala</string>
+    <string name="zone_schedule">Iş tertibi</string>
+    <string name="schedule_always">Elmydama</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Dynç günleri</string>
+    <string name="schedule_weekdays_morning">Dynç günleri sagat 7–9</string>
 </resources>

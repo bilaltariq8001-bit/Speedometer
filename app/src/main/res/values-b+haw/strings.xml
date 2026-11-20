@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">E hoʻololi i ke kiʻi</string>
     <string name="no_languages_found">ʻAʻohe ʻōlelo i loaʻa</string>
     <string name="clear_search">Holoi i ka huli</string>
+    <string name="zone_schedule">Papa kuhikuhi</string>
+    <string name="schedule_always">mau</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Nā lā pule</string>
+    <string name="schedule_weekdays_morning">Nā lā pule 7–9 AM</string>
 </resources>

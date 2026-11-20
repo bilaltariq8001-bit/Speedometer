@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">पोर्ट्रेटाचेर वचचें</string>
     <string name="no_languages_found">भासो मेळूंक नात</string>
     <string name="clear_search">सोद स्पश्ट करचो</string>
+    <string name="zone_schedule">वेळापत्रक</string>
+    <string name="schedule_always">सदांच</string>
+    <string name="schedule_morning">७-९ सकाळीं</string>
+    <string name="schedule_weekdays">सप्तकाचे दीस</string>
+    <string name="schedule_weekdays_morning">सप्तकाचे दीस सकाळीं 7-9 वरांचेर</string>
 </resources>

@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Aqleb għal ritratt</string>
     <string name="no_languages_found">Ma nstabet l-ebda lingwa</string>
     <string name="clear_search">Tiftix ċar</string>
+    <string name="zone_schedule">Skeda</string>
+    <string name="schedule_always">Dejjem</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Ġranet tal-ġimgħa</string>
+    <string name="schedule_weekdays_morning">Ġranet tal-ġimgħa 7–9 AM</string>
 </resources>

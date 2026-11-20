@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Hindura amashusho</string>
     <string name="no_languages_found">Nta ndimi zabonetse</string>
     <string name="clear_search">Gushakisha neza</string>
+    <string name="zone_schedule">Gahunda</string>
+    <string name="schedule_always">Buri gihe</string>
+    <string name="schedule_morning">7-9 AM</string>
+    <string name="schedule_weekdays">Iminsi y\'icyumweru</string>
+    <string name="schedule_weekdays_morning">Icyumweru 7–9 AM</string>
 </resources>

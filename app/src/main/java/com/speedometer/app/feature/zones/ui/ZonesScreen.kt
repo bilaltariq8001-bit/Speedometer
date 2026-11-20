@@ -134,7 +134,14 @@ private fun ZoneRow(z: ZoneEntity, color: Color, unit: SpeedUnit, onToggle: (Boo
         }
         Column(Modifier.weight(1f)) {
             Text(z.name, style = bodyStyle(16, FontWeight.Bold, TextPrimary))
-            Text("${z.radiusM} m · ${z.schedule}", Modifier.padding(top = 2.dp), style = bodyStyle(13))
+            val schedule = stringResource(
+                when (z.schedule) {
+                    "weekdays 7–9 AM" -> R.string.schedule_weekdays_morning
+                    "weekdays" -> R.string.schedule_weekdays
+                    else -> R.string.schedule_always
+                },
+            )
+            Text("${z.radiusM} m · $schedule", Modifier.padding(top = 2.dp), style = bodyStyle(13))
         }
         DesignSwitch(z.enabled, onToggle)
         Box(Modifier.size(40.dp).clickable(role = Role.Button, onClick = onDelete), contentAlignment = Alignment.Center) {
@@ -154,8 +161,11 @@ private fun AddZoneDialog(unit: SpeedUnit, onAdd: (String, Int, String) -> Unit,
         Text(stringResource(R.string.add_zone_title), style = displayStyle(22, FontWeight.SemiBold))
         DesignTextField(name, { name = it }, stringResource(R.string.zone_name), KeyboardType.Text)
         DesignTextField(limit, { limit = it.filter(Char::isDigit).take(3) }, stringResource(R.string.zone_limit, unit.label), KeyboardType.Number)
-        Text("Schedule", style = bodyStyle(13, color = TextMuted))
-        Segmented(listOf("Always", "7–9 AM", "Weekdays"), scheduleIndex, { scheduleIndex = it })
+        Text(stringResource(R.string.zone_schedule), style = bodyStyle(13, color = TextMuted))
+        Segmented(
+            listOf(stringResource(R.string.schedule_always), stringResource(R.string.schedule_morning), stringResource(R.string.schedule_weekdays)),
+            scheduleIndex, { scheduleIndex = it },
+        )
         PrimaryButton(stringResource(R.string.add_zone), onClick = {
             if (limitValue != null && limitValue > 0) {
                 val sched = when (scheduleIndex) {

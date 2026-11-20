@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Портретке которулуу</string>
     <string name="no_languages_found">Тилдер табылган жок</string>
     <string name="clear_search">Издөөнү тазалоо</string>
+    <string name="zone_schedule">График</string>
+    <string name="schedule_always">Ар дайым</string>
+    <string name="schedule_morning">7–9</string>
+    <string name="schedule_weekdays">Иш күндөрү</string>
+    <string name="schedule_weekdays_morning">Иш күндөрү 7–9</string>
 </resources>

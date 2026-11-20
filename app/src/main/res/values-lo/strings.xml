@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">ປ່ຽນເປັນຮູບຄົນ</string>
     <string name="no_languages_found">ບໍ່ພົບພາສາ</string>
     <string name="clear_search">ລຶບການຊອກຫາ</string>
+    <string name="zone_schedule">ຕາຕະລາງ</string>
+    <string name="schedule_always">ສະເໝີ</string>
+    <string name="schedule_morning">7–9 ໂມງເຊົ້າ</string>
+    <string name="schedule_weekdays">ມື້ອາທິດ</string>
+    <string name="schedule_weekdays_morning">ອາທິດ 7-9 ໂມງເຊົ້າ</string>
 </resources>

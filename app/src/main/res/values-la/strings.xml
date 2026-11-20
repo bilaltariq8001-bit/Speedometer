@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Transibit ad imaginem</string>
     <string name="no_languages_found">Linguae non invenerunt</string>
     <string name="clear_search">Patet quaerere</string>
+    <string name="zone_schedule">Schedule</string>
+    <string name="schedule_always">semper</string>
+    <string name="schedule_morning">7-9 AM</string>
+    <string name="schedule_weekdays">Feriae</string>
+    <string name="schedule_weekdays_morning">Feriis 7-9 AM</string>
 </resources>

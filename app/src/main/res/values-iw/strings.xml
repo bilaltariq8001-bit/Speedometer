@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">עבור לפורטרט</string>
     <string name="no_languages_found">לא נמצאו שפות</string>
     <string name="clear_search">נקה חיפוש</string>
+    <string name="zone_schedule">לוּחַ זְמַנִים</string>
+    <string name="schedule_always">תָמִיד</string>
+    <string name="schedule_morning">7–9 בבוקר</string>
+    <string name="schedule_weekdays">ימי חול</string>
+    <string name="schedule_weekdays_morning">ימי חול 7-9 בבוקר</string>
 </resources>

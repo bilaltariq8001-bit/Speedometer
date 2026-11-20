@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Gara suuraa (portrait)tti jijjiiraa</string>
     <string name="no_languages_found">Afaanonni hin argamne</string>
     <string name="clear_search">Barbaacha qulqulleessi</string>
+    <string name="zone_schedule">Sagantaa</string>
+    <string name="schedule_always">Yeroo hunda</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Guyyoota torbanii</string>
+    <string name="schedule_weekdays_morning">Guyyoota torbanii 7–9 AM</string>
 </resources>

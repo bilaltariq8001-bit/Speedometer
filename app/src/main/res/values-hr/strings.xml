@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Prijeđi na portret</string>
     <string name="no_languages_found">Nema pronađenih jezika</string>
     <string name="clear_search">Očisti pretragu</string>
+    <string name="zone_schedule">Raspored</string>
+    <string name="schedule_always">Uvijek</string>
+    <string name="schedule_morning">7-9 ujutro</string>
+    <string name="schedule_weekdays">Radnim danima</string>
+    <string name="schedule_weekdays_morning">Radnim danom 7-9 ujutro</string>
 </resources>

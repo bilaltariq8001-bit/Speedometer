@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Ŝanĝu al portreto</string>
     <string name="no_languages_found">Neniuj lingvoj trovitaj</string>
     <string name="clear_search">Klara serĉo</string>
+    <string name="zone_schedule">Horaro</string>
+    <string name="schedule_always">Ĉiam</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Labortagoj</string>
+    <string name="schedule_weekdays_morning">Labortagoj 7–9 AM</string>
 </resources>

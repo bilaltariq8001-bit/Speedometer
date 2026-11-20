@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Портретка күчә</string>
     <string name="no_languages_found">Телләр табылмады</string>
     <string name="clear_search">Эзләү</string>
+    <string name="zone_schedule">Расписание</string>
+    <string name="schedule_always">Waysәрвакыт</string>
+    <string name="schedule_morning">7–9 сәгать</string>
+    <string name="schedule_weekdays">Ял көннәре</string>
+    <string name="schedule_weekdays_morning">Ял көннәре 7–9</string>
 </resources>

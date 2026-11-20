@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Skiptu yfir í andlitsmynd</string>
     <string name="no_languages_found">Engin tungumál fundust</string>
     <string name="clear_search">Hreinsa leit</string>
+    <string name="zone_schedule">Dagskrá</string>
+    <string name="schedule_always">Alltaf</string>
+    <string name="schedule_morning">7–9 að morgni</string>
+    <string name="schedule_weekdays">Virka daga</string>
+    <string name="schedule_weekdays_morning">Virka daga 7–9</string>
 </resources>

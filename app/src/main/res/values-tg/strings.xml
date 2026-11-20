@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Гузариш ба портрет</string>
     <string name="no_languages_found">Ягон забон ёфт нашуд</string>
     <string name="clear_search">Ҷустуҷӯро тоза кунед</string>
+    <string name="zone_schedule">Ҷадвал</string>
+    <string name="schedule_always">Ҳамеша</string>
+    <string name="schedule_morning">7-9</string>
+    <string name="schedule_weekdays">Рӯзҳои ҳафта</string>
+    <string name="schedule_weekdays_morning">Рӯзҳои корӣ аз 7 то 9 саҳар</string>
 </resources>

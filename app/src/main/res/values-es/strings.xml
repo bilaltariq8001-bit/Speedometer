@@ -502,4 +502,9 @@
     <string name="orientation_switch_to_portrait">Cambiar a vertical</string>
     <string name="no_languages_found">No se encontraron idiomas</string>
     <string name="clear_search">Borrar búsqueda</string>
+    <string name="zone_schedule">Cronograma</string>
+    <string name="schedule_always">Siempre</string>
+    <string name="schedule_morning">7 a 9 a.m</string>
+    <string name="schedule_weekdays">Días laborables</string>
+    <string name="schedule_weekdays_morning">Días laborables de 7 a 9 a. m</string>
 </resources>

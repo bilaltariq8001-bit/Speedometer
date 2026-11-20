@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">ပုံတူသို့ပြောင်းပါ</string>
     <string name="no_languages_found">ဘာသာစကား မတွေ့ပါ</string>
     <string name="clear_search">ရှာဖွေမှုကို ရှင်းလင်းပါ</string>
+    <string name="zone_schedule">အချိန်ဇယား</string>
+    <string name="schedule_always">အမြဲတမ်း</string>
+    <string name="schedule_morning">၇-၉ နာရီ</string>
+    <string name="schedule_weekdays">ရက်သတ္တပတ်များ</string>
+    <string name="schedule_weekdays_morning">အပတ်စဉ် 7-9 AM</string>
 </resources>

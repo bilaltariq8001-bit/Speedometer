@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Switch to pɔtrɛt</string>
     <string name="no_languages_found">Dɛn nɔ fɛn ɛni langwej</string>
     <string name="clear_search">Klia sɔch</string>
+    <string name="zone_schedule">Mek tɛm</string>
+    <string name="schedule_always">Ɔltɛm</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Di wikde dɛn</string>
+    <string name="schedule_weekdays_morning">Wikde 7–9 AM</string>
 </resources>

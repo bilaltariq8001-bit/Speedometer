@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Lumipat sa portrait</string>
     <string name="no_languages_found">Walang nahanap na mga wika</string>
     <string name="clear_search">I-clear ang paghahanap</string>
+    <string name="zone_schedule">Iskedyul</string>
+    <string name="schedule_always">Laging</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Weekdays</string>
+    <string name="schedule_weekdays_morning">Linggo 7–9 AM</string>
 </resources>

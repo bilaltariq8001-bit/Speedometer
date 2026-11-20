@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Portretga o\'tish</string>
     <string name="no_languages_found">Hech qanday til topilmadi</string>
     <string name="clear_search">Qidiruvni tozalash</string>
+    <string name="zone_schedule">Jadval</string>
+    <string name="schedule_always">Har doim</string>
+    <string name="schedule_morning">7–9</string>
+    <string name="schedule_weekdays">Hafta kunlari</string>
+    <string name="schedule_weekdays_morning">Ish kunlari soat 7-9</string>
 </resources>

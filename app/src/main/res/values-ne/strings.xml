@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">पोर्ट्रेटमा स्विच गर्नुहोस्</string>
     <string name="no_languages_found">कुनै भाषा भेटिएन</string>
     <string name="clear_search">खोज खाली गर्नुहोस्</string>
+    <string name="zone_schedule">तालिका</string>
+    <string name="schedule_always">सधैं</string>
+    <string name="schedule_morning">बिहान ७-९ बजे</string>
+    <string name="schedule_weekdays">हप्ताका दिनहरू</string>
+    <string name="schedule_weekdays_morning">हप्ताका दिनहरू 7-9 AM</string>
 </resources>

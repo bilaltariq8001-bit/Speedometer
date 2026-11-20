@@ -502,4 +502,9 @@
     <string name="orientation_switch_to_portrait">Passer en portrait</string>
     <string name="no_languages_found">Aucune langue trouvée</string>
     <string name="clear_search">Effacer la recherche</string>
+    <string name="zone_schedule">Calendrier</string>
+    <string name="schedule_always">Toujours</string>
+    <string name="schedule_morning">7h à 9h</string>
+    <string name="schedule_weekdays">Jours de la semaine</string>
+    <string name="schedule_weekdays_morning">En semaine de 7h à 9h</string>
 </resources>

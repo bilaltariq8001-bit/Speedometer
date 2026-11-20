@@ -5,6 +5,7 @@ Machine-translates app/src/main/res/values/strings.xml into every app language t
 Usage:  python3 scripts/translate_strings.py            # only languages whose folder is missing
         python3 scripts/translate_strings.py --force    # redo every language in TARGETS
         python3 scripts/translate_strings.py tw yo      # only these app tags
+        python3 scripts/translate_strings.py --fill-missing   # add new English strings to every translated folder
 
 Placeholders (%1$s, %d, %%, \n) are protected and checked; a string whose translation loses one keeps its English text.
 """
@@ -171,5 +172,32 @@ def main():
                 print("FAILED", e, flush=True)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" and "--fill-missing" not in sys.argv:
     main()
+
+
+def fill_missing():
+    """Adds strings that are in values/ but missing from any translated folder (hand-translated ones included)."""
+    items = {name: val for kind, name, val in load() if kind == "string"}
+    for d in sorted(RES.glob("values-*/strings.xml")):
+        folder = d.parent.name[len("values-"):]
+        have = {e.get("name") for e in ET.parse(d).getroot()}
+        missing = [n for n in items if n not in have]
+        if not missing:
+            continue
+        code = {"in": "id", "iw": "iw", "ji": "yi", "nb": "no", "b+fil": "tl", "tw": "ak", "b+mni+Mtei": "mni-Mtei",
+                "b+mni": "mni-Mtei"}.get(folder) or folder.replace("b+", "").replace("-r", "-")
+        prot = [protect(unescape(items[n])) for n in missing]
+        outs = call(code, [p[0] for p in prot])
+        lines = []
+        for n, (_, found), o in zip(missing, prot, outs):
+            r = restore(o, found) or unescape(items[n])
+            lines.append(f'    <string name="{n}">{escape(fix_end(unescape(items[n]), r))}</string>')
+        text = d.read_text(encoding="utf-8").replace("</resources>", "\n".join(lines) + "\n</resources>")
+        ET.fromstring(text.encode())
+        d.write_text(text, encoding="utf-8")
+        print(f"{d.parent.name}: added {len(missing)}", flush=True)
+
+
+if "--fill-missing" in sys.argv:
+    fill_missing()

@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">पोर्ट्रेटवर जा</string>
     <string name="no_languages_found">एकही भाषा सापडली नाही</string>
     <string name="clear_search">शोध साफ करा</string>
+    <string name="zone_schedule">वेळापत्रक</string>
+    <string name="schedule_always">नेहमी</string>
+    <string name="schedule_morning">सकाळी ७-९</string>
+    <string name="schedule_weekdays">आठवड्याचे दिवस</string>
+    <string name="schedule_weekdays_morning">आठवड्याचे दिवस 7-9 AM</string>
 </resources>

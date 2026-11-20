@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">انځور ته لاړ شئ</string>
     <string name="no_languages_found">هیڅ ژبه ونه موندل شوه</string>
     <string name="clear_search">پاک لټون</string>
+    <string name="zone_schedule">مهالویش</string>
+    <string name="schedule_always">تل</string>
+    <string name="schedule_morning">د سهار له ۷ تر ۹ بجو</string>
+    <string name="schedule_weekdays">د اونۍ ورځې</string>
+    <string name="schedule_weekdays_morning">د اونۍ ورځې 7-9 AM</string>
 </resources>

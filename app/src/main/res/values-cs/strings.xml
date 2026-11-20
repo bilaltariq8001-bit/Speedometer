@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Přepnout na výšku</string>
     <string name="no_languages_found">Nebyly nalezeny žádné jazyky</string>
     <string name="clear_search">Vymazat vyhledávání</string>
+    <string name="zone_schedule">Naplánovat</string>
+    <string name="schedule_always">Vždy</string>
+    <string name="schedule_morning">7–9:00</string>
+    <string name="schedule_weekdays">všední dny</string>
+    <string name="schedule_weekdays_morning">Ve všední dny 7–9 hodin</string>
 </resources>

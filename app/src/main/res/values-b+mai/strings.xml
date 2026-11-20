@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">चित्र पर स्विच करू</string>
     <string name="no_languages_found">कोनो भाषा नहि भेटल</string>
     <string name="clear_search">खोज साफ करू</string>
+    <string name="zone_schedule">समय-सारणी</string>
+    <string name="schedule_always">सदिखन</string>
+    <string name="schedule_morning">7–9 बजे भोर</string>
+    <string name="schedule_weekdays">सप्ताह के दिन</string>
+    <string name="schedule_weekdays_morning">सप्ताह के दिन 7–9 बजे</string>
 </resources>

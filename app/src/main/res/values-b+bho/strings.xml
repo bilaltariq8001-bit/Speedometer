@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">पोर्ट्रेट पर स्विच कइल जाव</string>
     <string name="no_languages_found">कवनो भाषा ना मिलल</string>
     <string name="clear_search">खोज के साफ कर दिहल जाव</string>
+    <string name="zone_schedule">सूची</string>
+    <string name="schedule_always">हर दम</string>
+    <string name="schedule_morning">7–9 बजे के बा</string>
+    <string name="schedule_weekdays">हफ्ता के दिन में</string>
+    <string name="schedule_weekdays_morning">सप्ताह के दिन सबेरे 7–9 बजे से</string>
 </resources>

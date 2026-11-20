@@ -501,4 +501,9 @@
     <string name="orientation_switch_to_portrait">پورٹریٹ پر جائیں</string>
     <string name="no_languages_found">کوئی زبان نہیں ملی</string>
     <string name="clear_search">تلاش صاف کریں</string>
+    <string name="zone_schedule">شیڈول</string>
+    <string name="schedule_always">ہمیشہ</string>
+    <string name="schedule_morning">7-9 AM</string>
+    <string name="schedule_weekdays">ہفتے کے دن</string>
+    <string name="schedule_weekdays_morning">ہفتے کے دن صبح 7-9 بجے</string>
 </resources>

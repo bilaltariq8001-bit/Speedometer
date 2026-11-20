@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">நீள்வாக்கிற்கு மாற்று</string>
     <string name="no_languages_found">மொழிகள் எதுவும் கிடைக்கவில்லை</string>
     <string name="clear_search">தேடலை அழி</string>
+    <string name="zone_schedule">அட்டவணை</string>
+    <string name="schedule_always">எப்போதும்</string>
+    <string name="schedule_morning">காலை 7–9 மணி</string>
+    <string name="schedule_weekdays">வார நாட்கள்</string>
+    <string name="schedule_weekdays_morning">வார நாட்களில் காலை 7–9 மணி</string>
 </resources>

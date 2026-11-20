@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Vaihda muotokuvaan</string>
     <string name="no_languages_found">Kieliä ei löytynyt</string>
     <string name="clear_search">Tyhjennä haku</string>
+    <string name="zone_schedule">Ajoittaa</string>
+    <string name="schedule_always">Aina</string>
+    <string name="schedule_morning">klo 7-9</string>
+    <string name="schedule_weekdays">Arkisin</string>
+    <string name="schedule_weekdays_morning">Arkisin klo 7-9</string>
 </resources>

@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Váltás portréra</string>
     <string name="no_languages_found">Nem található nyelv</string>
     <string name="clear_search">Keresés törlése</string>
+    <string name="zone_schedule">Menetrend</string>
+    <string name="schedule_always">Mindig</string>
+    <string name="schedule_morning">7-9 óráig</string>
+    <string name="schedule_weekdays">Hétköznapok</string>
+    <string name="schedule_weekdays_morning">Hétköznap 7-9 óráig</string>
 </resources>

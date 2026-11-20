@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Portretə keçin</string>
     <string name="no_languages_found">Heç bir dil tapılmadı</string>
     <string name="clear_search">Axtarışı təmizləyin</string>
+    <string name="zone_schedule">Cədvəl</string>
+    <string name="schedule_always">Həmişə</string>
+    <string name="schedule_morning">Səhər 7-9</string>
+    <string name="schedule_weekdays">Həftə içi</string>
+    <string name="schedule_weekdays_morning">Həftə içi 7-9</string>
 </resources>

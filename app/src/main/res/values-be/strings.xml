@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Пераключыцца на партрэт</string>
     <string name="no_languages_found">Мовы не знойдзены</string>
     <string name="clear_search">Выразны пошук</string>
+    <string name="zone_schedule">Расклад</string>
+    <string name="schedule_always">Заўсёды</string>
+    <string name="schedule_morning">7–9 раніцы</string>
+    <string name="schedule_weekdays">будні</string>
+    <string name="schedule_weekdays_morning">Па буднях 7–9 раніцы</string>
 </resources>

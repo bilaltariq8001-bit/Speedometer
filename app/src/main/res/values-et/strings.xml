@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Lülitu portreerežiimile</string>
     <string name="no_languages_found">Keeli ei leitud</string>
     <string name="clear_search">Tühjenda otsing</string>
+    <string name="zone_schedule">Ajakava</string>
+    <string name="schedule_always">Alati</string>
+    <string name="schedule_morning">7-9 hommikul</string>
+    <string name="schedule_weekdays">Argipäevad</string>
+    <string name="schedule_weekdays_morning">Tööpäeviti 7-9</string>
 </resources>

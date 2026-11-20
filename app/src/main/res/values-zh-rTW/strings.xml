@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">切換到縱向</string>
     <string name="no_languages_found">未找到語言</string>
     <string name="clear_search">清除搜尋</string>
+    <string name="zone_schedule">行程</string>
+    <string name="schedule_always">總是</string>
+    <string name="schedule_morning">上午 7 點至 9 點</string>
+    <string name="schedule_weekdays">平日</string>
+    <string name="schedule_weekdays_morning">Weekdays 7–9 AM</string>
 </resources>

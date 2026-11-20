@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">ಭಾವಚಿತ್ರಕ್ಕೆ ಬದಲಿಸಿ</string>
     <string name="no_languages_found">ಯಾವುದೇ ಭಾಷೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ</string>
     <string name="clear_search">ಹುಡುಕಾಟವನ್ನು ತೆರವುಗೊಳಿಸಿ</string>
+    <string name="zone_schedule">ವೇಳಾಪಟ್ಟಿ</string>
+    <string name="schedule_always">ಯಾವಾಗಲೂ</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">ವಾರದ ದಿನಗಳು</string>
+    <string name="schedule_weekdays_morning">ವಾರದ ದಿನಗಳು 7–9 AM</string>
 </resources>

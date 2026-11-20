@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Badili kwenda wima</string>
     <string name="no_languages_found">Hakuna lugha zilizopatikana</string>
     <string name="clear_search">Futa utafutaji</string>
+    <string name="zone_schedule">Ratiba</string>
+    <string name="schedule_always">Daima</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Siku za wiki</string>
+    <string name="schedule_weekdays_morning">Siku za wiki 7–9 AM</string>
 </resources>

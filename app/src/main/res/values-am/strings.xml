@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">ወደ የቁም ሥዕል ቀይር</string>
     <string name="no_languages_found">ምንም ቋንቋዎች አልተገኙም</string>
     <string name="clear_search">ፍለጋን አጽዳ</string>
+    <string name="zone_schedule">መርሐግብር</string>
+    <string name="schedule_always">ሁሌም</string>
+    <string name="schedule_morning">ከቀኑ 7–9 ጥዋት</string>
+    <string name="schedule_weekdays">የሳምንት ቀናት</string>
+    <string name="schedule_weekdays_morning">የሳምንት ቀናት 7-9 AM</string>
 </resources>

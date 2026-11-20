@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Tionndaidh gu dealbh</string>
     <string name="no_languages_found">Cha deach cànan sam bith a lorg</string>
     <string name="clear_search">Glan lorg</string>
+    <string name="zone_schedule">Clàr-ama</string>
+    <string name="schedule_always">An-còmhnaidh</string>
+    <string name="schedule_morning">7–9m</string>
+    <string name="schedule_weekdays">Làithean na seachdain</string>
+    <string name="schedule_weekdays_morning">Làithean seachdaineach 7-9m</string>
 </resources>

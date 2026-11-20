@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Hurihia ki te whakaahua</string>
     <string name="no_languages_found">Karekau he reo i kitea</string>
     <string name="clear_search">Maama te rapu</string>
+    <string name="zone_schedule">Hōtaka</string>
+    <string name="schedule_always">I nga wa katoa</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Nga wiki</string>
+    <string name="schedule_weekdays_morning">Rā wiki 7–9 AM</string>
 </resources>

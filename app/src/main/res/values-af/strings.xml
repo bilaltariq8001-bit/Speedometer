@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Skakel oor na portret</string>
     <string name="no_languages_found">Geen tale gevind nie</string>
     <string name="clear_search">Vee soektog uit</string>
+    <string name="zone_schedule">Skedule</string>
+    <string name="schedule_always">Altyd</string>
+    <string name="schedule_morning">7–9 vm</string>
+    <string name="schedule_weekdays">Weeksdae</string>
+    <string name="schedule_weekdays_morning">Weeksdae 7–9 VM</string>
 </resources>

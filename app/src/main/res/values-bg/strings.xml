@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Превключване към портрет</string>
     <string name="no_languages_found">Няма намерени езици</string>
     <string name="clear_search">Изчистете търсенето</string>
+    <string name="zone_schedule">График</string>
+    <string name="schedule_always">Винаги</string>
+    <string name="schedule_morning">7–9 сутринта</string>
+    <string name="schedule_weekdays">Делнични дни</string>
+    <string name="schedule_weekdays_morning">Делнични дни 7-9 сутринта</string>
 </resources>

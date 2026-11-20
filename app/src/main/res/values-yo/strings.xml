@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Yipada si aworan</string>
     <string name="no_languages_found">Ko si awọn ede ti a rii</string>
     <string name="clear_search">Ko wiwa kuro</string>
+    <string name="zone_schedule">Iṣeto</string>
+    <string name="schedule_always">Nigbagbogbo</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Awọn ọjọ ọsẹ</string>
+    <string name="schedule_weekdays_morning">Awọn ọjọ ọsẹ 7-9 AM</string>
 </resources>

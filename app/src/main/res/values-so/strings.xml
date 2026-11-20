@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">U beddelo sawirka</string>
     <string name="no_languages_found">Lama helin luqado</string>
     <string name="clear_search">Nadiifi raadinta</string>
+    <string name="zone_schedule">Jadwalka</string>
+    <string name="schedule_always">Had iyo jeer</string>
+    <string name="schedule_morning">7-9 subaxnimo</string>
+    <string name="schedule_weekdays">Maalmaha shaqada</string>
+    <string name="schedule_weekdays_morning">Maalmaha shaqada 7-9 subaxnimo</string>
 </resources>

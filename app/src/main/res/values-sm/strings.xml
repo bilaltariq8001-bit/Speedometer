@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Su\'e ile ata</string>
     <string name="no_languages_found">Leai gagana na maua</string>
     <string name="clear_search">Fa\'amama su\'esu\'ega</string>
+    <string name="zone_schedule">Fa\'atonuga</string>
+    <string name="schedule_always">I taimi uma</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Aso vaiaso</string>
+    <string name="schedule_weekdays_morning">Aso vaiaso 7–9 AM</string>
 </resources>

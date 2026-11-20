@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Cinca eka xifaniso xa xifaniso</string>
     <string name="no_languages_found">Ku hava tindzimi leti kumiweke</string>
     <string name="clear_search">Ku lavisisa loku nga erivaleni</string>
+    <string name="zone_schedule">Xedulu</string>
+    <string name="schedule_always">Nkarhi hinkwawo</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Masiku ya vhiki</string>
+    <string name="schedule_weekdays_morning">Masiku ya vhiki 7–9 AM</string>
 </resources>

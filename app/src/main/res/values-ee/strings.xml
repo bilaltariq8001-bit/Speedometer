@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Trɔ ɖe nɔnɔmetata ŋu</string>
     <string name="no_languages_found">Womekpɔ gbegbɔgblɔ aɖeke o</string>
     <string name="clear_search">Didi si me kɔ nyuie</string>
+    <string name="zone_schedule">Ɖoɖo si dzi woazɔ</string>
+    <string name="schedule_always">Ɣe sia ɣi</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Kwasiɖagbewo</string>
+    <string name="schedule_weekdays_morning">Kwasiɖagbewo 7–9 AM</string>
 </resources>

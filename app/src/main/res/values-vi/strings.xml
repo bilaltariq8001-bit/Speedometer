@@ -477,4 +477,9 @@
     <string name="orientation_switch_to_portrait">Chuyển sang dọc</string>
     <string name="no_languages_found">Không tìm thấy ngôn ngữ</string>
     <string name="clear_search">Xóa tìm kiếm</string>
+    <string name="zone_schedule">Lịch trình</string>
+    <string name="schedule_always">Luôn luôn</string>
+    <string name="schedule_morning">7–9 giờ sáng</string>
+    <string name="schedule_weekdays">Các ngày trong tuần</string>
+    <string name="schedule_weekdays_morning">Các ngày trong tuần 7–9 giờ sáng</string>
 </resources>

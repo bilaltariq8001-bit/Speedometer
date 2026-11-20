@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">పోర్ట్రెయిట్‌కు మార్చు</string>
     <string name="no_languages_found">భాషలు కనుగొనబడలేదు</string>
     <string name="clear_search">శోధన క్లియర్ చేయి</string>
+    <string name="zone_schedule">షెడ్యూల్</string>
+    <string name="schedule_always">ఎల్లప్పుడూ</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">వారం రోజులు</string>
+    <string name="schedule_weekdays_morning">వారపు రోజులు 7–9 AM</string>
 </resources>

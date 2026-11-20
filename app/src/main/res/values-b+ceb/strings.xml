@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Pagbalhin sa portrait</string>
     <string name="no_languages_found">Walay mga pinulongan nga nakit-an</string>
     <string name="clear_search">Klaro nga pagpangita</string>
+    <string name="zone_schedule">Eskedyul</string>
+    <string name="schedule_always">Kanunay</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Mga adlaw sa semana</string>
+    <string name="schedule_weekdays_morning">Mga adlaw sa semana 7–9 AM</string>
 </resources>

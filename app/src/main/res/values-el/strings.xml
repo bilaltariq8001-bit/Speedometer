@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Αλλαγή σε κατακόρυφο</string>
     <string name="no_languages_found">Δεν βρέθηκαν γλώσσες</string>
     <string name="clear_search">Απαλοιφή αναζήτησης</string>
+    <string name="zone_schedule">Πρόγραμμα</string>
+    <string name="schedule_always">Πάντοτε</string>
+    <string name="schedule_morning">7–9 π.μ</string>
+    <string name="schedule_weekdays">Εργάσιμες</string>
+    <string name="schedule_weekdays_morning">Καθημερινές 7-9 π.μ</string>
 </resources>

@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Shintshela ekumeni ngobude</string>
     <string name="no_languages_found">Azikho izilimi ezitholakele</string>
     <string name="clear_search">Sula ukusesha</string>
+    <string name="zone_schedule">Isheduli</string>
+    <string name="schedule_always">Njalo</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Izinsuku zeviki</string>
+    <string name="schedule_weekdays_morning">Phakathi neviki 7–9 AM</string>
 </resources>

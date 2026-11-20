@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Хөрөг рүү шилжих</string>
     <string name="no_languages_found">Ямар ч хэл олдсонгүй</string>
     <string name="clear_search">Хайлтыг арилгах</string>
+    <string name="zone_schedule">Хуваарь</string>
+    <string name="schedule_always">Үргэлж</string>
+    <string name="schedule_morning">7-9 цаг</string>
+    <string name="schedule_weekdays">Ажлын өдрүүд</string>
+    <string name="schedule_weekdays_morning">Ажлын өдрүүдэд 7-9 цаг</string>
 </resources>

@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">পোর্ট্রেটে যান</string>
     <string name="no_languages_found">কোনো ভাষা পাওয়া যায়নি</string>
     <string name="clear_search">খোঁজ মুছুন</string>
+    <string name="zone_schedule">সময়সূচী</string>
+    <string name="schedule_always">সর্বদা</string>
+    <string name="schedule_morning">সকাল ৭-৯টা</string>
+    <string name="schedule_weekdays">সপ্তাহের দিন</string>
+    <string name="schedule_weekdays_morning">সপ্তাহের দিন 7-9 AM</string>
 </resources>

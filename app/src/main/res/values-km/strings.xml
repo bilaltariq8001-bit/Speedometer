@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">ប្តូរទៅបញ្ឈរ</string>
     <string name="no_languages_found">រកមិនឃើញភាសាទេ។</string>
     <string name="clear_search">ជម្រះការស្វែងរក</string>
+    <string name="zone_schedule">កាលវិភាគ</string>
+    <string name="schedule_always">ជានិច្ច</string>
+    <string name="schedule_morning">៧-៩ ព្រឹក</string>
+    <string name="schedule_weekdays">ថ្ងៃធ្វើការ</string>
+    <string name="schedule_weekdays_morning">ថ្ងៃធ្វើការ 7-9 ព្រឹក</string>
 </resources>

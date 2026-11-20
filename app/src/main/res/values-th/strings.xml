@@ -477,4 +477,9 @@
     <string name="orientation_switch_to_portrait">เปลี่ยนเป็นแนวตั้ง</string>
     <string name="no_languages_found">ไม่พบภาษา</string>
     <string name="clear_search">ล้างการค้นหา</string>
+    <string name="zone_schedule">กำหนดการ</string>
+    <string name="schedule_always">เสมอ</string>
+    <string name="schedule_morning">07.00-09.00 น</string>
+    <string name="schedule_weekdays">วันธรรมดา</string>
+    <string name="schedule_weekdays_morning">วันธรรมดา 7-9.00 น</string>
 </resources>

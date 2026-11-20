@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Retrato ukar mayjt’ayaña</string>
     <string name="no_languages_found">Janiw kuna arunakas jikxataskiti</string>
     <string name="clear_search">Qhana thaqhaña</string>
+    <string name="zone_schedule">Wakichäwi</string>
+    <string name="schedule_always">Ukhamapuni</string>
+    <string name="schedule_morning">7–9 AM pachakama</string>
+    <string name="schedule_weekdays">Semana urunakanxa</string>
+    <string name="schedule_weekdays_morning">Semana urunakaxa 7–9 AM</string>
 </resources>

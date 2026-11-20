@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">ናብ ስእሊ ምቕያር</string>
     <string name="no_languages_found">ቋንቋታት ኣይተረኽበን</string>
     <string name="clear_search">ንጹር ምድላይ</string>
+    <string name="zone_schedule">ናይ ግዘ ሰሌዳ</string>
+    <string name="schedule_always">ወትሪ</string>
+    <string name="schedule_morning">7–9 ቅ.ቀ</string>
+    <string name="schedule_weekdays">ናይ ሰሙን መዓልታት</string>
+    <string name="schedule_weekdays_morning">ኣብ ሰሙን ካብ ሰዓት 7–9 ቅ.ቀ</string>
 </resources>

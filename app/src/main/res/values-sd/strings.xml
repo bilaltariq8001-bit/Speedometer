@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">تبديل ڪريو پورٽريٽ ڏانهن</string>
     <string name="no_languages_found">ڪابه ٻولي نه ملي</string>
     <string name="clear_search">صاف ڳولا</string>
+    <string name="zone_schedule">شيڊول</string>
+    <string name="schedule_always">هميشه</string>
+    <string name="schedule_morning">7-9 ايم</string>
+    <string name="schedule_weekdays">هفتيوار ڏينهن</string>
+    <string name="schedule_weekdays_morning">هفتي جا ڏينهن 7-9 AM</string>
 </resources>

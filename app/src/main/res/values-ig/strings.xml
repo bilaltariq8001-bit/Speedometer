@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Banye na eserese</string>
     <string name="no_languages_found">Ọnweghị asụsụ ahụrụ</string>
     <string name="clear_search">Kpochapụ ọchụchọ</string>
+    <string name="zone_schedule">Nhazi oge</string>
+    <string name="schedule_always">Mgbe niile</string>
+    <string name="schedule_morning">7–9 nke ụtụtụ</string>
+    <string name="schedule_weekdays">Ụbọchị izu ụka</string>
+    <string name="schedule_weekdays_morning">Ụbọchị izu ụka 7–9 AM</string>
 </resources>

@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Zu Hochformat wechseln</string>
     <string name="no_languages_found">Keine Sprachen gefunden</string>
     <string name="clear_search">Suche löschen</string>
+    <string name="zone_schedule">Zeitplan</string>
+    <string name="schedule_always">Stets</string>
+    <string name="schedule_morning">7–9 Uhr</string>
+    <string name="schedule_weekdays">Wochentags</string>
+    <string name="schedule_weekdays_morning">Wochentags 7–9 Uhr</string>
 </resources>

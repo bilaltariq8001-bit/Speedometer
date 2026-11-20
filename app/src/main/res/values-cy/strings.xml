@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Newid i bortread</string>
     <string name="no_languages_found">Heb ganfod ieithoedd</string>
     <string name="clear_search">Chwiliad clir</string>
+    <string name="zone_schedule">Atodlen</string>
+    <string name="schedule_always">Bob amser</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Dyddiau\'r wythnos</string>
+    <string name="schedule_weekdays_morning">Dyddiau\'r wythnos 7–9 AM</string>
 </resources>

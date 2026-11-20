@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Skift til portræt</string>
     <string name="no_languages_found">Ingen sprog fundet</string>
     <string name="clear_search">Ryd søgning</string>
+    <string name="zone_schedule">Skema</string>
+    <string name="schedule_always">Altid</string>
+    <string name="schedule_morning">7-9 om morgenen</string>
+    <string name="schedule_weekdays">Hverdage</string>
+    <string name="schedule_weekdays_morning">Hverdage 7-9</string>
 </resources>

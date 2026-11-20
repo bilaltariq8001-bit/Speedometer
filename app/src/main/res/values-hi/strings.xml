@@ -501,4 +501,9 @@
     <string name="orientation_switch_to_portrait">पोर्ट्रेट में बदलें</string>
     <string name="no_languages_found">कोई भाषा नहीं मिली</string>
     <string name="clear_search">खोज साफ़ करें</string>
+    <string name="zone_schedule">अनुसूची</string>
+    <string name="schedule_always">हमेशा</string>
+    <string name="schedule_morning">सुबह 7-9 बजे</string>
+    <string name="schedule_weekdays">काम करने के दिन</string>
+    <string name="schedule_weekdays_morning">सप्ताह के दिनों में सुबह 7-9 बजे तक</string>
 </resources>

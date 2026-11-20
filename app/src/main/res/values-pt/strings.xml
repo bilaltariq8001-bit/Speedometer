@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Mudar para retrato</string>
     <string name="no_languages_found">Nenhum idioma encontrado</string>
     <string name="clear_search">Limpar pesquisa</string>
+    <string name="zone_schedule">Agendar</string>
+    <string name="schedule_always">Sempre</string>
+    <string name="schedule_morning">7h às 9h</string>
+    <string name="schedule_weekdays">Dias da semana</string>
+    <string name="schedule_weekdays_morning">Dias úteis, das 7h às 9h</string>
 </resources>

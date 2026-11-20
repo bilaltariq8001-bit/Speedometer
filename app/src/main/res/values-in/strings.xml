@@ -477,4 +477,9 @@
     <string name="orientation_switch_to_portrait">Beralih ke potret</string>
     <string name="no_languages_found">Bahasa tidak ditemukan</string>
     <string name="clear_search">Hapus pencarian</string>
+    <string name="zone_schedule">Jadwal</string>
+    <string name="schedule_always">Selalu</string>
+    <string name="schedule_morning">7–9 pagi</string>
+    <string name="schedule_weekdays">hari kerja</string>
+    <string name="schedule_weekdays_morning">Hari kerja pukul 07.00–09.00</string>
 </resources>

@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">പോർട്രെയ്‌റ്റിലേക്ക് മാറുക</string>
     <string name="no_languages_found">ഭാഷകളൊന്നും കണ്ടെത്തിയില്ല</string>
     <string name="clear_search">തിരയൽ മായ്‌ക്കുക</string>
+    <string name="zone_schedule">ഷെഡ്യൂൾ</string>
+    <string name="schedule_always">എപ്പോഴും</string>
+    <string name="schedule_morning">7-9 AM</string>
+    <string name="schedule_weekdays">പ്രവൃത്തിദിനങ്ങൾ</string>
+    <string name="schedule_weekdays_morning">പ്രവൃത്തിദിവസങ്ങളിൽ 7-9 AM</string>
 </resources>

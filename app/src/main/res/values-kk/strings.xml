@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Портретке ауысу</string>
     <string name="no_languages_found">Тілдер табылмады</string>
     <string name="clear_search">Іздеуді тазалау</string>
+    <string name="zone_schedule">Кесте</string>
+    <string name="schedule_always">Әрқашан</string>
+    <string name="schedule_morning">7–9</string>
+    <string name="schedule_weekdays">Жұмыс күндері</string>
+    <string name="schedule_weekdays_morning">Жұмыс күндері таңғы 7-9</string>
 </resources>

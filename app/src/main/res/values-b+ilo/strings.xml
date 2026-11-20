@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Agbalbaliwka iti retrato</string>
     <string name="no_languages_found">Awan dagiti nasarakan a pagsasao</string>
     <string name="clear_search">Nalawag ti panagbirok</string>
+    <string name="zone_schedule">Iskediul</string>
+    <string name="schedule_always">Kanayon</string>
+    <string name="schedule_morning">7–9 ti bigat</string>
+    <string name="schedule_weekdays">Aldaw ti lawas</string>
+    <string name="schedule_weekdays_morning">Aldaw ti lawas 7–9 AM</string>
 </resources>

@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">ਪੋਰਟਰੇਟ ਤੇ ਜਾਓ</string>
     <string name="no_languages_found">ਕੋਈ ਭਾਸ਼ਾ ਨਹੀਂ ਮਿਲੀ</string>
     <string name="clear_search">ਖੋਜ ਸਾਫ਼ ਕਰੋ</string>
+    <string name="zone_schedule">ਤਹਿ</string>
+    <string name="schedule_always">ਹਮੇਸ਼ਾ</string>
+    <string name="schedule_morning">ਸਵੇਰੇ 7-9 ਵਜੇ</string>
+    <string name="schedule_weekdays">ਹਫ਼ਤੇ ਦੇ ਦਿਨ</string>
+    <string name="schedule_weekdays_morning">ਹਫ਼ਤੇ ਦੇ ਦਿਨ ਸਵੇਰੇ 7-9 ਵਜੇ</string>
 </resources>

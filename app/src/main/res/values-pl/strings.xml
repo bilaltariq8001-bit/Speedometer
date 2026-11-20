@@ -480,4 +480,9 @@
     <string name="orientation_switch_to_portrait">Przełącz na pionową</string>
     <string name="no_languages_found">Nie znaleziono języków</string>
     <string name="clear_search">Wyczyść wyszukiwanie</string>
+    <string name="zone_schedule">Harmonogram</string>
+    <string name="schedule_always">Zawsze</string>
+    <string name="schedule_morning">7–9 rano</string>
+    <string name="schedule_weekdays">Dni powszednie</string>
+    <string name="schedule_weekdays_morning">W dni powszednie 7–9 rano</string>
 </resources>

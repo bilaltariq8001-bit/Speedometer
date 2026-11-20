@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">चित्रं प्रति स्विच कुर्वन्तु</string>
     <string name="no_languages_found">न भाषाः प्राप्ताः</string>
     <string name="clear_search">अन्वेषणं स्पष्टं कुरुत</string>
+    <string name="zone_schedule">कार्यक्रमः</string>
+    <string name="schedule_always">सर्वदा</string>
+    <string name="schedule_morning">७–९ प्रातः</string>
+    <string name="schedule_weekdays">सप्ताहदिनानि</string>
+    <string name="schedule_weekdays_morning">सप्ताहदिनानि प्रातः ७–९ वादने</string>
 </resources>

@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Perjungti į portretą</string>
     <string name="no_languages_found">Kalbų nerasta</string>
     <string name="clear_search">Išvalyti paiešką</string>
+    <string name="zone_schedule">Tvarkaraštis</string>
+    <string name="schedule_always">Visada</string>
+    <string name="schedule_morning">7–9 val</string>
+    <string name="schedule_weekdays">Darbo dienomis</string>
+    <string name="schedule_weekdays_morning">Darbo dienomis 7-9 val</string>
 </resources>

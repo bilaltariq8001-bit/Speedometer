@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Hiverina any amin\'ny portrait</string>
     <string name="no_languages_found">Tsy misy fiteny hita</string>
     <string name="clear_search">Fafao ny fikarohana</string>
+    <string name="zone_schedule">fandaharam-potoana</string>
+    <string name="schedule_always">foana</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">andavanandro</string>
+    <string name="schedule_weekdays_morning">Alahady 7–9 maraina</string>
 </resources>

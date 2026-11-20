@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">පෝට්රේට් වෙත මාරු වන්න</string>
     <string name="no_languages_found">භාෂා හමු නොවීය</string>
     <string name="clear_search">සෙවීම පැහැදිලි කරන්න</string>
+    <string name="zone_schedule">කාලසටහන</string>
+    <string name="schedule_always">සෑම විටම</string>
+    <string name="schedule_morning">7-9 පෙ.ව</string>
+    <string name="schedule_weekdays">සතියේ දිනවල</string>
+    <string name="schedule_weekdays_morning">සතියේ දිනවල පෙ.ව. 7-9</string>
 </resources>

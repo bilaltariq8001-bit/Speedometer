@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Wikselje nei portret</string>
     <string name="no_languages_found">Gjin talen fûn</string>
     <string name="clear_search">Wiskje sykjen</string>
+    <string name="zone_schedule">Skema</string>
+    <string name="schedule_always">Altyd</string>
+    <string name="schedule_morning">7–9 oere</string>
+    <string name="schedule_weekdays">Wikedagen</string>
+    <string name="schedule_weekdays_morning">Wurkdagen 7-9 AM</string>
 </resources>

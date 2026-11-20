@@ -5,4 +5,25 @@
         <item name="android:statusBarColor">#0B0E11</item>
         <item name="android:navigationBarColor">#0D1218</item>
     </style>
+
+    <!--
+        Overrides the Google Mobile Ads SDK's own AdActivity theme (same name, so the app's version wins), used by the app
+        open (launch and resume) and interstitial ads. The SDK's theme is translucent with a transparent background, so the
+        app showed through around and behind the ad. The window stays translucent (the app underneath is only paused, never
+        stopped, so trips and the app-open resume logic behave exactly as before) but is painted solid black edge to edge.
+    -->
+    <style name="Theme.GoogleMobileAds" parent="@android:style/Theme.Translucent">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:colorBackground">@android:color/black</item>
+        <item name="android:colorBackgroundCacheHint">@android:color/black</item>
+        <item name="android:statusBarColor">@android:color/black</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
 </resources>

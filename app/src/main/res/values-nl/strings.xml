@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Naar staand</string>
     <string name="no_languages_found">Geen talen gevonden</string>
     <string name="clear_search">Zoekopdracht wissen</string>
+    <string name="zone_schedule">Schema</string>
+    <string name="schedule_always">Altijd</string>
+    <string name="schedule_morning">07.00 - 09.00 uur</string>
+    <string name="schedule_weekdays">Weekdagen</string>
+    <string name="schedule_weekdays_morning">Weekdagen 07.00 - 09.00 uur</string>
 </resources>

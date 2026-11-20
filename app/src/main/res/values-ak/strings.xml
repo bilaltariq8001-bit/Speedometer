@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Dan kɔ mfonini so</string>
     <string name="no_languages_found">Kasa biara nni hɔ a wɔanhu</string>
     <string name="clear_search">Hwehwɛ nhwehwɛmu a emu da hɔ</string>
+    <string name="zone_schedule">Hyehyɛberɛ</string>
+    <string name="schedule_always">Berɛ biara</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Nnawɔtwe nna</string>
+    <string name="schedule_weekdays_morning">Nnawɔtwe nna 7–9 AM</string>
 </resources>

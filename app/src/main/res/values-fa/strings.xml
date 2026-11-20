@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">تغییر به عمودی</string>
     <string name="no_languages_found">زبانی پیدا نشد</string>
     <string name="clear_search">پاک کردن جستجو</string>
+    <string name="zone_schedule">برنامه ریزی کنید</string>
+    <string name="schedule_always">همیشه</string>
+    <string name="schedule_morning">7-9 صبح</string>
+    <string name="schedule_weekdays">روزهای هفته</string>
+    <string name="schedule_weekdays_morning">روزهای هفته 7 تا 9 صبح</string>
 </resources>

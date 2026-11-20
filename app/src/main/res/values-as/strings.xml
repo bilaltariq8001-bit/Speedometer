@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">প’ৰ্ট্ৰেইটলৈ সলনি কৰক</string>
     <string name="no_languages_found">কোনো ভাষা পোৱা নগ\'ল</string>
     <string name="clear_search">সন্ধান পৰিষ্কাৰ কৰক</string>
+    <string name="zone_schedule">অনুসূচী</string>
+    <string name="schedule_always">সদায়</string>
+    <string name="schedule_morning">পুৱা ৭–৯ বজাত</string>
+    <string name="schedule_weekdays">সপ্তাহৰ দিনত</string>
+    <string name="schedule_weekdays_morning">সপ্তাহৰ দিনত পুৱা ৭–৯ বজাত</string>
 </resources>

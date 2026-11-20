@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">პორტრეტზე გადართვა</string>
     <string name="no_languages_found">ენები ვერ მოიძებნა</string>
     <string name="clear_search">ძიების გასუფთავება</string>
+    <string name="zone_schedule">განრიგი</string>
+    <string name="schedule_always">ყოველთვის</string>
+    <string name="schedule_morning">დილის 7–9 საათი</string>
+    <string name="schedule_weekdays">სამუშაო დღეები</string>
+    <string name="schedule_weekdays_morning">სამუშაო დღეებში 7-9 სთ</string>
 </resources>

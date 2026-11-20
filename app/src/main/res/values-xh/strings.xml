@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Tshintshela kwi-portrait</string>
     <string name="no_languages_found">Akukho zilwimi zifunyenweyo</string>
     <string name="clear_search">Cima uphendlo</string>
+    <string name="zone_schedule">Ishedyuli</string>
+    <string name="schedule_always">Ngalo lonke ixesha</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Ngeentsuku zeveki</string>
+    <string name="schedule_weekdays_morning">Phakathi evekini 7–9 AM</string>
 </resources>

@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">Pindah ka potrét</string>
     <string name="no_languages_found">Teu kapanggih basa</string>
     <string name="clear_search">Hapus pilarian</string>
+    <string name="zone_schedule">Jadwal</string>
+    <string name="schedule_always">salawasna</string>
+    <string name="schedule_morning">7–9 AM</string>
+    <string name="schedule_weekdays">Poé minggu</string>
+    <string name="schedule_weekdays_morning">Weekdays 7–9 AM</string>
 </resources>

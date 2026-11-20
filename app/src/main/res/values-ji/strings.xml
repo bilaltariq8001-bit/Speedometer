@@ -478,4 +478,9 @@
     <string name="orientation_switch_to_portrait">באַשטימען צו פּאָרטרעט</string>
     <string name="no_languages_found">קיין שפראכן געפונען</string>
     <string name="clear_search">קלאָר זוכן</string>
+    <string name="zone_schedule">פּלאַן</string>
+    <string name="schedule_always">שטענדיק</string>
+    <string name="schedule_morning">7-9 בין</string>
+    <string name="schedule_weekdays">וויקדייז</string>
+    <string name="schedule_weekdays_morning">וויקדייז 7-9 AM</string>
 </resources>
