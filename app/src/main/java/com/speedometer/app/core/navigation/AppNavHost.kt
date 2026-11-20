@@ -557,5 +557,8 @@ private fun changeLanguage(context: android.content.Context, vm: OnboardingViewM
     if (AppLanguage.hasChoice(context) && AppLanguage.saved(context) == name) return
     vm.setLanguage(name)
     if (activity == null) { AppLanguage.save(context, name); return }
-    if (!AppLanguage.applyNow(activity, name)) activity.recreate()
+    // Switch the strings in place at once, then recreate the activity so every screen, cached text, date format and
+    // layout direction is rebuilt from the new locale. The in-place update alone is not kept on every Android version.
+    AppLanguage.applyNow(activity, name)
+    activity.window?.decorView?.post { activity.recreate() } ?: activity.recreate()
 }

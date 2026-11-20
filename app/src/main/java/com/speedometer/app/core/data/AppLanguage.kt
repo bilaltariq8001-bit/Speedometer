@@ -20,7 +20,10 @@ object AppLanguage {
     private const val KEY = "name"
     const val DEFAULT = "English"
 
-    /** Language name as saved in settings, to its BCP 47 tag. Each tag has a matching values-XX resource folder or falls back. */
+    /**
+     * Language name as saved in settings, to its BCP 47 tag. Every tag has its own translated strings: values-XX, or
+     * values-b+XXX for three-letter codes (scripts/translate_strings.py generates the ones not translated by hand).
+     */
     val tags: Map<String, String> = linkedMapOf(
         "English" to "en",
         "Chinese (Simplified)" to "zh-CN",
@@ -332,5 +335,7 @@ object AppLanguage {
     }
 
     /** Indonesian is "in" on older Android and "id" on newer; Hebrew and Yiddish have the same split. */
-    private fun normalize(lang: String) = when (lang) { "in" -> "id"; "iw" -> "he"; "ji" -> "yi"; else -> lang }
+    private fun normalize(lang: String) = when (lang) {
+        "in" -> "id"; "iw" -> "he"; "ji" -> "yi"; "nb", "nn" -> "no"; "tl" -> "fil"; "ak" -> "tw"; else -> lang
+    }
 }
