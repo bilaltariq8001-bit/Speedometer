@@ -36,6 +36,9 @@ class AdConfig @Inject constructor(@ApplicationContext private val context: Cont
 
     /** True once UMP says ads may be requested. Remembered, and checked before every ad request of every type. */
     fun canRequestAds(): Boolean =
+        // Debug test ads need no consent: Google's test units serve no personalised ads, and a UMP error (for example an
+        // app ID with no consent message set up in AdMob) would otherwise block every ad while testing.
+        if (testAds) true else
         // UMP keeps the user's answer across launches (offline too), and follows a withdrawal made in Privacy options.
         // The saved flag is only a fallback for when UMP itself cannot be read.
         runCatching { UserMessagingPlatform.getConsentInformation(context).canRequestAds() }

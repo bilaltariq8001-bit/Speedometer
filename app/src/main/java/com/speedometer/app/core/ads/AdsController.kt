@@ -55,7 +55,7 @@ class AdsController @Inject constructor(
     /** Called when UMP has answered (from MainActivity). Ads may load from here on, if consent allows. */
     fun onConsentResolved(app: Application, canRequestAds: Boolean) {
         config.setCanRequestAds(canRequestAds)
-        if (canRequestAds) {
+        if (config.canRequestAds()) { // also true for debug test ads when UMP failed
             AdMobInitializer.initializeAdmob(app) {}
             // New user: get the first app-open ad and the setup native ad ready while onboarding runs.
             appOpen.fetchAd()

@@ -173,7 +173,8 @@ object OfflineMaps {
                 if (currentRun === runToken) finish(app)
             }
         })
-        region.setDownloadState(OfflineRegion.STATE_ACTIVE)
+        activeRegion = region
+        if (loadingMaps.isEmpty()) { paused = false; region.setDownloadState(OfflineRegion.STATE_ACTIVE) } else paused = true
         // Never stay busy forever: after a while stop this run; the next call resumes where it left off.
         main.postDelayed({
             if (currentRun === runToken && busy) {
@@ -184,11 +185,42 @@ object OfflineMaps {
     }
 
     @Volatile private var currentRun: Any? = null
+
+    // ------------------------------------------------------------ yield to the map on screen
+    // The tile server allows only 4 requests at a time, so a background download would make the visible map wait for its
+    // tiles. While any map on screen is loading or moving, the download pauses; it resumes 3 s after every map is idle.
+    private var activeRegion: OfflineRegion? = null
+    private var paused = false
+    private val loadingMaps = HashSet<Any>()
+    private const val RESUME_AFTER_IDLE_MS = 3_000L
+    private val resume = Runnable {
+        if (loadingMaps.isEmpty() && paused) {
+            paused = false
+            activeRegion?.let { runCatching { it.setDownloadState(OfflineRegion.STATE_ACTIVE) } }
+        }
+    }
+
+    /** Called by each map: [loading] true while it loads tiles or moves, false when it is idle or gone. */
+    fun setMapBusy(owner: Any, loading: Boolean) {
+        main.post {
+            if (loading) loadingMaps.add(owner) else loadingMaps.remove(owner)
+            main.removeCallbacks(resume)
+            if (loadingMaps.isNotEmpty()) {
+                if (!paused) {
+                    paused = true
+                    activeRegion?.let { runCatching { it.setDownloadState(OfflineRegion.STATE_INACTIVE) } }
+                }
+            } else if (paused) {
+                main.postDelayed(resume, RESUME_AFTER_IDLE_MS)
+            }
+        }
+    }
     private var lastPoint: Pair<Double, Double>? = null
 
     /** Ends a run. With [again], checks once more (the world overview may still be missing), else runs a waiting request. */
     private fun finish(app: Context, again: Boolean = false) {
         currentRun = null
+        activeRegion = null
         busy = false
         val next = pending ?: if (again) lastPoint else null
         pending = null

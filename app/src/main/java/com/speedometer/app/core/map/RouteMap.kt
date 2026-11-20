@@ -175,6 +175,10 @@ fun RouteMap(
                     userPanning = true
                 }
             }
+            // Background offline downloads wait while this map loads tiles or moves, so what is on screen loads first.
+            mapView.addOnWillStartLoadingMapListener { OfflineMaps.setMapBusy(mapView, true) }
+            mapView.addOnCameraWillChangeListener { OfflineMaps.setMapBusy(mapView, true) }
+            mapView.addOnDidBecomeIdleListener { OfflineMaps.setMapBusy(mapView, false) }
             // The real style failed to load. Online (a server or network hiccup): try it again a few times. Offline before
             // the style was ever saved: draw the built-in world map instead, and switch to the real map once back online.
             var styleRetries = 0
@@ -210,6 +214,7 @@ fun RouteMap(
         }
         onDispose {
             disposed = true
+            OfflineMaps.setMapBusy(mapView, false)
             map = null
             styleReady = false
             fitKey = -1

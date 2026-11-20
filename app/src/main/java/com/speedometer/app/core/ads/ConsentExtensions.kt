@@ -42,7 +42,12 @@ fun Activity.showGDPRScreen(onScreenShown: (Boolean, Boolean) -> Unit) {
                 onScreenShown(false, consentInfo.canRequestAds())
             }
         },
-        { onScreenShown(false, consentInfo.canRequestAds()) },
+        { error ->
+            // Usually an AdMob setup problem (no consent message for this app ID) or no internet. Ads stay off in
+            // release until UMP answers; debug test ads ignore this (see AdConfig.canRequestAds).
+            AdLog.d("consent", "UMP error ${error.errorCode}: ${error.message}; canRequestAds=${consentInfo.canRequestAds()}")
+            onScreenShown(false, consentInfo.canRequestAds())
+        },
     )
 }
 
