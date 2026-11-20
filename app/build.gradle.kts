@@ -23,6 +23,10 @@ android {
         versionCode = 1
         versionName = "1.0.0"
 
+        ndk {
+            abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a"))
+        }
+
         // Map style (vector tiles). OpenFreeMap is free, needs no key, and its terms allow offline area downloads
         // (each at most 3,000 tiles / 50 MB, 4 parallel requests, app User-Agent), which OfflineMaps keeps to.
         // Set MAP_STYLE_URL in local.properties to use another MapLibre style.
@@ -42,16 +46,30 @@ android {
         buildConfigField("boolean", "FORCE_TEST_ADS", "$forceTestAds")
     }
 
+    splits {
+        abi {
+            isEnable = true
+            isUniversalApk = true
+            include("arm64-v8a", "armeabi-v7a")
+        }
+    }
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
     // Release signing reads keystore.properties (git-ignored, see keystore.properties.example). Without the file the
     // release build is unsigned, and nothing secret is ever stored in the project.
     val keystoreFile = rootProject.file("keystore.properties")
     val keystoreProps = Properties().apply { if (keystoreFile.exists()) keystoreFile.inputStream().use { load(it) } }
-     signingConfigs {
+    signingConfigs {
         create("release") {
-            storeFile = rootProject.file("../keystore/stylishkeyboardstation.keystore")
-            storePassword = "stylishkeyboardstation"
-            keyAlias = "stylishkeyboardstation"
-            keyPassword = "stylishkeyboardstation"
+            storeFile = rootProject.file("Key/stylishkeyboardstation.keystore")
+            storePassword = keystoreProps.getProperty("storePassword") ?: "stylishkeyboardstation"
+            keyAlias = keystoreProps.getProperty("keyAlias") ?: "stylishkeyboardstation"
+            keyPassword = keystoreProps.getProperty("keyPassword") ?: "stylishkeyboardstation"
         }
     }
 
