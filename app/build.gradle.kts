@@ -36,8 +36,9 @@ android {
         val admobTestDeviceId = providers.gradleProperty("admobTestDeviceId").orElse("").get()
             .replace("\\", "\\\\").replace("\"", "\\\"")
         buildConfigField("String", "ADMOB_TEST_DEVICE_ID", "\"$admobTestDeviceId\"")
-        // true: debug builds use Google's test ad units instead of the IDs from Remote Config.
-        val forceTestAds = providers.gradleProperty("forceTestAds").orElse("false").get().toBoolean()
+        // Debug builds show Google's test ads (sample app ID, test ad units, every placement on) unless
+        // forceTestAds=false is set in gradle.properties; then they use the IDs from Remote Config like release builds.
+        val forceTestAds = providers.gradleProperty("forceTestAds").orElse("true").get().toBoolean()
         buildConfigField("boolean", "FORCE_TEST_ADS", "$forceTestAds")
     }
 
@@ -57,10 +58,15 @@ android {
     buildTypes {
         debug {
             isMinifyEnabled = false
+            // AdMob app ID: Google's sample ID while debug shows test ads (forceTestAds, default true), else the real one.
+            val testAdsInDebug = providers.gradleProperty("forceTestAds").orElse("true").get().toBoolean()
+            resValue("string", "admob_app_id", if (testAdsInDebug) "ca-app-pub-3940256099942544~3347511713" else "ca-app-pub-7094796830915786~9068896024")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
         release {
             isMinifyEnabled = true
+            // Real AdMob app ID (fastTest inherits it).
+            resValue("string", "admob_app_id", "ca-app-pub-7094796830915786~9068896024")
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.findByName("release")
@@ -90,6 +96,7 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        resValues = true
     }
 }
 

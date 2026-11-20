@@ -2,7 +2,6 @@ package com.speedometer.app.core.map
 
 import android.content.Context
 import com.speedometer.app.BuildConfig
-import com.speedometer.app.core.common.isNetworkConnected
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import org.maplibre.android.MapLibre
@@ -15,7 +14,8 @@ import java.util.concurrent.TimeUnit
  * - an HTTP client that names the app in its User-Agent and makes at most 4 requests at a time to the tile server
  *   (OpenFreeMap's terms for offline downloads),
  * - a large tile cache (everything the user has looked at stays drawable with no internet),
- * - MapLibre told at once whether the phone is online, so with no internet it reads the phone's saved map straight away.
+ * MapLibre follows the phone's connection by itself: with no internet it reads the saved map from the phone. It is never
+ * forced offline by the app, because a brief "not validated yet" network state then made the style fail and the map blank.
  */
 object MapSetup {
     /** Style for every map (vector tiles, sharp at any zoom). Offline areas are saved from this same style. */
@@ -54,7 +54,6 @@ object MapSetup {
                     },
                 )
             }
-            runCatching { MapLibre.setConnected(app.isNetworkConnected()) }
         }
     }
 }

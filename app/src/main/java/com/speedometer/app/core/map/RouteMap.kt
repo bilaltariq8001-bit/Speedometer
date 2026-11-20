@@ -175,9 +175,25 @@ fun RouteMap(
                     userPanning = true
                 }
             }
-            // Offline before the style was ever saved, the real style cannot load: draw the built-in world map instead.
+            // The real style failed to load. Online (a server or network hiccup): try it again a few times. Offline before
+            // the style was ever saved: draw the built-in world map instead, and switch to the real map once back online.
+            var styleRetries = 0
             mapView.addOnDidFailLoadingMapListener { message ->
                 if (disposed || styleReady || onFallback) return@addOnDidFailLoadingMapListener
+                if (context.applicationContext.isNetworkConnected() && styleRetries < 3) {
+                    styleRetries++
+                    android.util.Log.w("RouteMap", "style failed: $message; retry $styleRetries")
+                    mapView.postDelayed({
+                        if (!disposed && !styleReady && !onFallback) {
+                            m.setStyle(Style.Builder().fromUri(MapSetup.styleUrl)) { style ->
+                                if (disposed) return@setStyle
+                                addLayers(style)
+                                styleReady = true
+                            }
+                        }
+                    }, 1500L * styleRetries)
+                    return@addOnDidFailLoadingMapListener
+                }
                 android.util.Log.w("RouteMap", "style failed: $message; using built-in map")
                 onFallback = true
                 m.setStyle(Style.Builder().fromJson(FALLBACK_STYLE_JSON)) { style ->
@@ -276,15 +292,14 @@ fun RouteMap(
         }
     }
 
-    // Offline: MapLibre is told so at once, so it draws saved streets (offline areas + tiles already seen) from the phone
-    // instead of waiting on requests that cannot finish. Online: the area around what this map shows is saved for later.
+    // Offline, MapLibre draws saved streets (offline areas + tiles already seen) from the phone. Online, the area around
+    // what this map shows is saved for later.
     val connected = com.speedometer.app.core.common.rememberInternetConnected()
-    LaunchedEffect(connected) { runCatching { MapLibre.setConnected(connected) } }
-    LaunchedEffect(connected, onFallback) {
+    LaunchedEffect(connected) {
         // Online while the built-in world map is shown: load the real map (it is then saved for next time). A short
         // wait first, so a server hiccup is not retried in a tight loop.
         if (!connected || !onFallback) return@LaunchedEffect
-        delay(15_000L)
+        delay(2_000L)
         val m = map
         if (m != null) {
             onFallback = false
@@ -367,7 +382,6 @@ private const val MIN_CAMERA_FOLLOW_DISTANCE_M = 2.0
 
 private fun createMapView(context: Context): MapView {
     MapSetup.init(context)
-    runCatching { MapLibre.setConnected(context.applicationContext.isNetworkConnected()) }
     return MapView(context).also { v ->
         v.setOnTouchListener { view, event ->
             if (event.actionMasked == android.view.MotionEvent.ACTION_DOWN) view.parent?.requestDisallowInterceptTouchEvent(true)

@@ -100,35 +100,44 @@ class AdConfig @Inject constructor(@ApplicationContext private val context: Cont
 
     // ---------------------------------------------------------------- placements
 
-    // Every build (debug and release) uses the ad unit IDs from Remote Config, so putting real IDs in Firebase shows real
-    // ads. Before the first fetch the IDs come from res/xml/remote_config_defaults.xml. To force Google's test ads in a
-    // debug build, set forceTestAds=true in gradle.properties. Testing real ads: register the phone as a test device
-    // (admobTestDeviceId in gradle.properties) and never tap them.
+    // Release builds use the ad unit IDs and on/off switches from Remote Config (real IDs there show real ads). Debug
+    // builds show Google's test ads on every placement, so the app can be tested safely; to try the Remote Config IDs in
+    // a debug build, set forceTestAds=false in gradle.properties (and register the phone as a test device).
     private val testAds: Boolean get() = BuildConfig.DEBUG && BuildConfig.FORCE_TEST_ADS
 
-    fun interstitial(prefix: String) = InterstitialAdModel(
-        adInterstitialId = if (testAds) TEST_INTERSTITIAL_AD_UNIT_ID else string("${prefix}_inter_id"),
-        isAdEnabled = boolean("${prefix}_inter_enabled"),
-        shouldLoadNextAd = boolean("${prefix}_inter_should_load"),
-        isCappingEnabled = boolean("${prefix}_inter_counter_enabled"),
-    )
+    fun interstitial(prefix: String) = if (testAds) {
+        InterstitialAdModel(adInterstitialId = TEST_INTERSTITIAL_AD_UNIT_ID, isAdEnabled = true, shouldLoadNextAd = true, isCappingEnabled = true)
+    } else {
+        InterstitialAdModel(
+            adInterstitialId = string("${prefix}_inter_id"),
+            isAdEnabled = boolean("${prefix}_inter_enabled"),
+            shouldLoadNextAd = boolean("${prefix}_inter_should_load"),
+            isCappingEnabled = boolean("${prefix}_inter_counter_enabled"),
+        )
+    }
 
-    fun inScreen(prefix: String) = InScreenAdModel(
-        adBannerId = if (testAds) TEST_BANNER_AD_UNIT_ID else string("${prefix}_banner_ad_id"),
-        isAdEnabled = boolean("${prefix}_in_screen_ad_enabled"),
-        isBannerCollapsing = boolean("${prefix}_banner_is_collapsing"),
-        isBannerTop = string("${prefix}_ad_position").trim().equals("TOP", ignoreCase = true),
-    )
+    fun inScreen(prefix: String) = if (testAds) {
+        InScreenAdModel(adBannerId = TEST_BANNER_AD_UNIT_ID, isAdEnabled = true)
+    } else {
+        InScreenAdModel(
+            adBannerId = string("${prefix}_banner_ad_id"),
+            isAdEnabled = boolean("${prefix}_in_screen_ad_enabled"),
+            isBannerCollapsing = boolean("${prefix}_banner_is_collapsing"),
+            isBannerTop = string("${prefix}_ad_position").trim().equals("TOP", ignoreCase = true),
+        )
+    }
 
-    fun appOpen() = AppOpenAdModel(
-        adAppOpenId = if (testAds) TEST_APP_OPEN_AD_UNIT_ID else string("app_open_id"),
-        isAdEnabled = boolean("app_open_enabled"),
-    )
+    fun appOpen() = if (testAds) {
+        AppOpenAdModel(adAppOpenId = TEST_APP_OPEN_AD_UNIT_ID, isAdEnabled = true)
+    } else {
+        AppOpenAdModel(adAppOpenId = string("app_open_id"), isAdEnabled = boolean("app_open_enabled"))
+    }
 
-    fun native(prefix: String) = NativeAdModel(
-        adNativeId = if (testAds) TEST_NATIVE_AD_UNIT_ID else string("${prefix}_native_id"),
-        isAdEnabled = boolean("${prefix}_native_enabled"),
-    )
+    fun native(prefix: String) = if (testAds) {
+        NativeAdModel(adNativeId = TEST_NATIVE_AD_UNIT_ID, isAdEnabled = true)
+    } else {
+        NativeAdModel(adNativeId = string("${prefix}_native_id"), isAdEnabled = boolean("${prefix}_native_enabled"))
+    }
 
     // ---------------------------------------------------------------- defaults file
 
