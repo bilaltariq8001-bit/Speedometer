@@ -78,11 +78,16 @@ fun InsightsScreen(vm: InsightsViewModel = hiltViewModel()) {
             modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp),
         )
     }
-    ScrollPage(maxWidth = if (landscape) LANDSCAPE_MAX_WIDTH else null) {
-        Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp)) {
-            Text(stringResource(R.string.tab_insights), style = displayStyle(26, FontWeight.SemiBold))
-            Text(stringResource(R.string.last_seven_days), Modifier.padding(top = 4.dp), style = bodyStyle(14))
-        }
+    // The title and "Last 7 days" stay fixed at the top (with the back button over them); only the cards below scroll.
+    ScrollPage(
+        maxWidth = if (landscape) LANDSCAPE_MAX_WIDTH else null,
+        top = {
+            Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 4.dp)) {
+                Text(stringResource(R.string.tab_insights), style = displayStyle(26, FontWeight.SemiBold))
+                Text(stringResource(R.string.last_seven_days), Modifier.padding(top = 4.dp), style = bodyStyle(14))
+            }
+        },
+    ) {
         if (i.avgScore == null) {
             Text(
                 stringResource(R.string.insights_empty), Modifier.fillMaxWidth().padding(40.dp),
