@@ -92,7 +92,8 @@ class MainActivity : ComponentActivity() {
 
     /** Start trip on the auto-detect notice opens the app with this action. */
     private fun handle(intent: Intent?) {
-        when (intent?.action) {
+        when (intent?.action)
+        {
             AutoDetect.ACTION_START_TRIP -> StartRequest.request()
             TripService.ACTION_OPEN_TRIP -> {
                 StartRequest.request()

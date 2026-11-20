@@ -41,14 +41,12 @@ android {
     // release build is unsigned, and nothing secret is ever stored in the project.
     val keystoreFile = rootProject.file("keystore.properties")
     val keystoreProps = Properties().apply { if (keystoreFile.exists()) keystoreFile.inputStream().use { load(it) } }
-    signingConfigs {
-        if (keystoreFile.exists()) {
-            create("release") {
-                storeFile = file(keystoreProps.getProperty("storeFile"))
-                storePassword = keystoreProps.getProperty("storePassword")
-                keyAlias = keystoreProps.getProperty("keyAlias")
-                keyPassword = keystoreProps.getProperty("keyPassword")
-            }
+     signingConfigs {
+        create("release") {
+            storeFile = rootProject.file("../keystore/stylishkeyboardstation.keystore")
+            storePassword = "stylishkeyboardstation"
+            keyAlias = "stylishkeyboardstation"
+            keyPassword = "stylishkeyboardstation"
         }
     }
 

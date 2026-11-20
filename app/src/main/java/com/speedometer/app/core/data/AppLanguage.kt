@@ -20,7 +20,7 @@ object AppLanguage {
     private const val KEY = "name"
     const val DEFAULT = "English"
 
-    /** Language name as saved in settings, to its BCP 47 tag. Each tag has a matching values-XX resource folder. */
+    /** Language name as saved in settings, to its BCP 47 tag. Each tag has a matching values-XX resource folder or falls back. */
     val tags: Map<String, String> = linkedMapOf(
         "English" to "en",
         "Chinese (Simplified)" to "zh-CN",
