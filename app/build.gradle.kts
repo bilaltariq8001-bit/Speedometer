@@ -23,15 +23,16 @@ android {
         versionCode = 1
         versionName = "1.0.0"
 
-        // Map tile source. OpenStreetMap's public servers are for light use only; set TILE_URL in local.properties
-        // to another raster tile server before release. {z}, {x} and {y} are filled in by the map.
+        // Map style (vector tiles). OpenFreeMap is free, needs no key, and its terms allow offline area downloads
+        // (each at most 3,000 tiles / 50 MB, 4 parallel requests, app User-Agent), which OfflineMaps keeps to.
+        // Set MAP_STYLE_URL in local.properties to use another MapLibre style.
         val localProps = Properties().apply {
             val f = rootProject.file("local.properties")
             if (f.exists()) f.inputStream().use { load(it) }
         }
-        val tileUrl = localProps.getProperty("TILE_URL")?.takeIf { it.isNotBlank() }
-            ?: "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-        buildConfigField("String", "TILE_URL", "\"$tileUrl\"")
+        val styleUrl = localProps.getProperty("MAP_STYLE_URL")?.takeIf { it.isNotBlank() }
+            ?: "https://tiles.openfreemap.org/styles/liberty"
+        buildConfigField("String", "MAP_STYLE_URL", "\"$styleUrl\"")
         val admobTestDeviceId = providers.gradleProperty("admobTestDeviceId").orElse("").get()
             .replace("\\", "\\\\").replace("\"", "\\\"")
         buildConfigField("String", "ADMOB_TEST_DEVICE_ID", "\"$admobTestDeviceId\"")
@@ -112,6 +113,7 @@ dependencies {
     implementation(libs.datastore.preferences)
     implementation(libs.play.services.location)
     implementation(libs.maplibre)
+    implementation(libs.okhttp)
     implementation(libs.lottie.compose)
     implementation(libs.ads.mobile.sdk)
     implementation(libs.ump)

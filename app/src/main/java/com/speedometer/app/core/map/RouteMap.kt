@@ -35,7 +35,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.speedometer.app.BuildConfig
+import com.speedometer.app.core.common.isNetworkConnected
 import com.speedometer.app.core.designsystem.Danger
 import com.speedometer.app.core.designsystem.Ok
 import kotlinx.coroutines.delay
@@ -71,8 +71,10 @@ data class MapDot(val at: LatLng, val color: Color, val radiusDp: Float = 6f, va
 data class MapZone(val at: LatLng, val radiusM: Int, val color: Color)
 
 /**
- * Map with OpenStreetMap raster tiles (no key), darkened to match the app. Lines, dots and zones are drawn from
- * GeoJSON sources. Tile use must stay inside the OSM tile usage policy; heavy use needs another tile source.
+ * Map with OpenFreeMap vector tiles (OpenStreetMap data, no key). Lines, dots and zones are drawn from GeoJSON sources.
+ * Works with no internet: the style and the streets around the user are saved by [OfflineMaps], everything already seen
+ * stays in the tile cache, and if nothing at all is saved yet a built-in world map ([FALLBACK_STYLE_JSON]) is drawn so
+ * routes, dots and zones still show.
  */
 @Composable
 fun RouteMap(
@@ -121,6 +123,8 @@ fun RouteMap(
     val mapView = remember(context, lifecycle) { createMapView(context) }
     var map by remember { mutableStateOf<MapLibreMap?>(null) }
     var styleReady by remember { mutableStateOf(false) }
+    // True while the built-in world map is shown because the real style could not load (offline before anything was saved).
+    var onFallback by remember { mutableStateOf(false) }
     var fitKey by remember { mutableIntStateOf(-1) }
     var userPanning by remember { mutableStateOf(false) }
     LaunchedEffect(flyTo) { if (flyTo != null) userPanning = false }
@@ -134,6 +138,7 @@ fun RouteMap(
         fitKey = -1
         introDone = false
         introSettled = false
+        onFallback = false
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_START -> mapView.onStart()
@@ -159,7 +164,10 @@ fun RouteMap(
             if (compassTopPx > 0) m.uiSettings.setCompassMargins(0, compassTopPx, 0, 0)
             m.addOnMapClickListener { p -> clickHandler?.let { it(p); true } ?: false }
             m.addOnCameraIdleListener { m.cameraPosition.target?.let { t -> idleHandler?.invoke(t) } }
-            m.uiSettings.isAttributionEnabled = false
+            // Map data credit (OpenStreetMap / OpenMapTiles), required by the tile licence: the small (i) in the corner.
+            m.uiSettings.isAttributionEnabled = true
+            m.uiSettings.setAttributionGravity(android.view.Gravity.BOTTOM or android.view.Gravity.START)
+            m.uiSettings.setAttributionMargins((6 * dens).toInt(), 0, 0, (6 * dens).toInt())
             m.uiSettings.setCompassGravity(android.view.Gravity.TOP or android.view.Gravity.END)
             m.uiSettings.setCompassMargins(0, if (compassTopPx > 0) compassTopPx else (24 * dens).toInt(), (24 * dens).toInt(), 0)
             m.addOnCameraMoveStartedListener { reason ->
@@ -167,7 +175,18 @@ fun RouteMap(
                     userPanning = true
                 }
             }
-            m.setStyle(Style.Builder().fromJson(MAP_STYLE_JSON)) { style ->
+            // Offline before the style was ever saved, the real style cannot load: draw the built-in world map instead.
+            mapView.addOnDidFailLoadingMapListener { message ->
+                if (disposed || styleReady || onFallback) return@addOnDidFailLoadingMapListener
+                android.util.Log.w("RouteMap", "style failed: $message; using built-in map")
+                onFallback = true
+                m.setStyle(Style.Builder().fromJson(FALLBACK_STYLE_JSON)) { style ->
+                    if (disposed) return@setStyle
+                    addLayers(style)
+                    styleReady = true
+                }
+            }
+            m.setStyle(Style.Builder().fromUri(MapSetup.styleUrl)) { style ->
                 if (disposed) return@setStyle
                 addLayers(style)
                 styleReady = true
@@ -260,10 +279,22 @@ fun RouteMap(
     // Offline: MapLibre is told so at once, so it draws saved streets (offline areas + tiles already seen) from the phone
     // instead of waiting on requests that cannot finish. Online: the area around what this map shows is saved for later.
     val connected = com.speedometer.app.core.common.rememberInternetConnected()
-    LaunchedEffect(connected, styleReady) {
-        runCatching { MapLibre.setConnected(connected) }
-        // Saved areas go to zoom 16; offline, allow one level of magnification beyond it instead of empty tiles.
-        map?.setMaxZoomPreference(if (connected) MAX_RASTER_ZOOM else OFFLINE_MAX_ZOOM)
+    LaunchedEffect(connected) { runCatching { MapLibre.setConnected(connected) } }
+    LaunchedEffect(connected, onFallback) {
+        // Online while the built-in world map is shown: load the real map (it is then saved for next time). A short
+        // wait first, so a server hiccup is not retried in a tight loop.
+        if (!connected || !onFallback) return@LaunchedEffect
+        delay(15_000L)
+        val m = map
+        if (m != null) {
+            onFallback = false
+            styleReady = false
+            m.setStyle(Style.Builder().fromUri(MapSetup.styleUrl)) { style ->
+                if (map !== m) return@setStyle
+                addLayers(style)
+                styleReady = true
+            }
+        }
     }
     val areaPoint = dots.lastOrNull()?.at ?: lines.lastOrNull()?.points?.lastOrNull()
     val areaKey = areaPoint?.let { (it.latitude * 20).toInt() to (it.longitude * 20).toInt() }
@@ -333,23 +364,10 @@ fun RouteMap(
 private const val MIN_CAMERA_FOLLOW_INTERVAL_MS = 1000L
 private const val MIN_CAMERA_FOLLOW_DISTANCE_M = 2.0
 
-@Volatile private var ambientCacheSet = false
 
 private fun createMapView(context: Context): MapView {
-    MapLibre.getInstance(context)
-    // Keep a bigger tile cache so the streets around places the user has driven still draw when the phone is offline.
-    if (!ambientCacheSet) {
-        ambientCacheSet = true
-        runCatching {
-            org.maplibre.android.offline.OfflineManager.getInstance(context.applicationContext).setMaximumAmbientCacheSize(
-                AMBIENT_CACHE_BYTES,
-                object : org.maplibre.android.offline.OfflineManager.FileSourceCallback {
-                    override fun onSuccess() = Unit
-                    override fun onError(message: String) = Unit
-                },
-            )
-        }
-    }
+    MapSetup.init(context)
+    runCatching { MapLibre.setConnected(context.applicationContext.isNetworkConnected()) }
     return MapView(context).also { v ->
         v.setOnTouchListener { view, event ->
             if (event.actionMasked == android.view.MotionEvent.ACTION_DOWN) view.parent?.requestDisallowInterceptTouchEvent(true)
@@ -375,9 +393,7 @@ private const val INTRO_MS = 800
 private const val FOLLOW_EASE_MS = 600
 private const val FLY_MS = 700
 private const val MAX_RASTER_ZOOM = 19.0
-private const val OFFLINE_MAX_ZOOM = 17.0
 private const val FIT_PADDING = 80
-private const val AMBIENT_CACHE_BYTES = 200L * 1024 * 1024
 
 private fun downsample(points: List<LatLng>, max: Int = 1000): List<LatLng> {
     if (points.size <= max) return points
@@ -434,14 +450,16 @@ private fun zonesJson(zones: List<MapZone>): String = zones.joinToString(
     """{"type":"Feature","properties":{"color":"${hex(z.color)}"},"geometry":{"type":"Polygon","coordinates":[[$ring]]}}"""
 }
 
-/** OSM raster tiles in their normal colours, so streets and labels are easy to read. Also used for offline areas. */
-internal val MAP_STYLE_JSON = """{
+/**
+ * Built-in world map used only when the real style is not on the phone yet and there is no internet: land and sea from
+ * Natural Earth (assets/offline/land.geojson, public domain), in the same colours as the real map.
+ */
+private const val FALLBACK_STYLE_JSON = """{
   "version": 8,
-  "sources": {"osm": {"type": "raster", "tiles": ["${BuildConfig.TILE_URL}"], "tileSize": 256,
-    "maxzoom": 19, "attribution": "© OpenStreetMap contributors"}},
+  "sources": {"land": {"type": "geojson", "data": "asset://offline/land.geojson"}},
   "layers": [
-    {"id": "bg", "type": "background", "paint": {"background-color": "#F2EFE9"}},
-    {"id": "osm", "type": "raster", "source": "osm",
-     "paint": {"raster-brightness-max": 1.0, "raster-saturation": 0.0, "raster-contrast": 0.0}}
+    {"id": "water", "type": "background", "paint": {"background-color": "#A0C8F0"}},
+    {"id": "land", "type": "fill", "source": "land", "paint": {"fill-color": "#F2EFE9"}},
+    {"id": "coast", "type": "line", "source": "land", "paint": {"line-color": "#9FB8CF", "line-width": 0.8}}
   ]
 }"""
