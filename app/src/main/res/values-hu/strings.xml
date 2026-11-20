@@ -483,4 +483,6 @@
     <string name="schedule_morning">7-9 óráig</string>
     <string name="schedule_weekdays">Hétköznapok</string>
     <string name="schedule_weekdays_morning">Hétköznap 7-9 óráig</string>
+    <string name="loading_ad">hirdetés betöltése…</string>
+    <string name="map_offline">Offline · mentett térkép</string>
 </resources>

@@ -483,4 +483,6 @@
     <string name="schedule_morning">7:00 – 9:00</string>
     <string name="schedule_weekdays">Pracovné dni</string>
     <string name="schedule_weekdays_morning">Pracovné dni od 7:00 do 9:00</string>
+    <string name="loading_ad">Načítava sa reklama…</string>
+    <string name="map_offline">Offline · uložená mapa</string>
 </resources>

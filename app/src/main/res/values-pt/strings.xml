@@ -483,4 +483,6 @@
     <string name="schedule_morning">7h às 9h</string>
     <string name="schedule_weekdays">Dias da semana</string>
     <string name="schedule_weekdays_morning">Dias úteis, das 7h às 9h</string>
+    <string name="loading_ad">Carregando anúncio…</string>
+    <string name="map_offline">Off-line · mapa salvo</string>
 </resources>

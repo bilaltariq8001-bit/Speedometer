@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 að morgni</string>
     <string name="schedule_weekdays">Virka daga</string>
     <string name="schedule_weekdays_morning">Virka daga 7–9</string>
+    <string name="loading_ad">Hleður auglýsingu…</string>
+    <string name="map_offline">Ótengdur · vistað kort</string>
 </resources>

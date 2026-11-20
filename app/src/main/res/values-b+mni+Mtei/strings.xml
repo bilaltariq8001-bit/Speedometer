@@ -483,4 +483,6 @@
     <string name="schedule_morning">꯷–꯹ ꯑꯦ.ꯑꯦꯝ.ꯗꯥ ꯌꯨ.ꯑꯦꯁ</string>
     <string name="schedule_weekdays">ꯅꯨꯃꯤꯠ ꯈꯨꯗꯤꯡꯒꯤ꯫</string>
     <string name="schedule_weekdays_morning">ꯅꯨꯃꯤꯠ ꯈꯨꯗꯤꯡꯒꯤ ꯑꯌꯨꯛ ꯄꯨꯡ ꯷–꯹ ꯐꯥꯑꯣꯕꯥ꯫</string>
+    <string name="loading_ad">ꯑꯦꯗ ꯂꯣꯗ ꯇꯧꯔꯤ…</string>
+    <string name="map_offline">ꯑꯣꯐꯂꯥꯏꯟ · ꯁꯦꯚ ꯇꯧꯔꯕꯥ ꯃꯦꯞ꯫</string>
 </resources>

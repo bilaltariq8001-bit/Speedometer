@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9:00</string>
     <string name="schedule_weekdays">Darba dienas</string>
     <string name="schedule_weekdays_morning">Darba dienās no 7 līdz 9</string>
+    <string name="loading_ad">Notiek reklāmas ielāde…</string>
+    <string name="map_offline">Bezsaistē · saglabāta karte</string>
 </resources>

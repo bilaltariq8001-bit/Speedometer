@@ -83,6 +83,7 @@ fun SettingsScreen(onZones: () -> Unit, onGaugeStyle: () -> Unit, onLanguage: ()
                     LimitGuardSection(settings, vm)
                 }
                 Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+                    SettingsNativeAd()
                     MoreSection(settings, context, onZones, onGaugeStyle, onLanguage)
                 }
             }
@@ -93,9 +94,23 @@ fun SettingsScreen(onZones: () -> Unit, onGaugeStyle: () -> Unit, onLanguage: ()
             SpeedLimitSection(settings, vm)
             AutoDetectSection(settings, setAutoDetect)
             LimitGuardSection(settings, vm)
+            SettingsNativeAd()
             MoreSection(settings, context, onZones, onGaugeStyle, onLanguage)
         }
     }
+}
+
+/** Slim native banner (icon, headline, one line, button) between the settings groups. Draws nothing until an ad loads. */
+@Composable
+private fun SettingsNativeAd() {
+    val ads = hiltViewModel<com.speedometer.app.core.ads.AdsViewModel>().ads
+    val consent by ads.config.consent.collectAsStateWithLifecycle()
+    val unlocked by com.speedometer.app.core.ads.AdGate.adsUnlocked.collectAsStateWithLifecycle()
+    val nativeAd = androidx.compose.runtime.remember { ads.config.native("settings") }
+    if (consent && unlocked) com.speedometer.app.core.ads.NativeAdCard(
+        nativeAd, ads.analytics, placement = "settings", compact = true,
+        modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp),
+    )
 }
 
 @Composable

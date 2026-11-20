@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 aravo jave</string>
     <string name="schedule_weekdays">Arapokõindy ára</string>
     <string name="schedule_weekdays_morning">Arapokõindy ára 7–9 AM</string>
+    <string name="loading_ad">Ojekargávo marandu….</string>
+    <string name="map_offline">Offline · mapa oñeñongatúva</string>
 </resources>

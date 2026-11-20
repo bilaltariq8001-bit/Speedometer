@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 AM</string>
     <string name="schedule_weekdays">Dyddiau\'r wythnos</string>
     <string name="schedule_weekdays_morning">Dyddiau\'r wythnos 7–9 AM</string>
+    <string name="loading_ad">Wrthi\'n llwytho hysbyseb…</string>
+    <string name="map_offline">All-lein · map wedi\'i gadw</string>
 </resources>

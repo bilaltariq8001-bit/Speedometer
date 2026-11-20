@@ -205,12 +205,23 @@ fun HomeScreen(
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
 
 
+    val ads = hiltViewModel<com.speedometer.app.core.ads.AdsViewModel>().ads
+    // From the 4th trip on (3 trips saved, Remote Config `start_trip_inter_after_trips`), have the Start trip ad ready early.
+    LaunchedEffect(Unit) {
+        if (ads.startTripAdDue(context)) ads.warmUp(context, com.speedometer.app.core.navigation.START_TRIP_PLACEMENT)
+    }
+
     /**
-     * Start trip: records at once, with no ad. A full-screen ad here would cover the speedometer while the trip (and the
-     * drive) is starting, which is unsafe and an "unexpected interstitial" under AdMob policy, so this placement is retired.
+     * Start trip. After 3 completed trips, every Start trip tap shows an interstitial first (waiting a moment for one if
+     * needed); recording begins when the ad is closed, so the ad never covers the speedometer during the drive.
      */
     fun begin() {
-        TripService.start(context)
+        val activity = context.findActivity()
+        if (activity != null && ads.startTripAdDue(context)) {
+            ads.showMustShowAd(activity, com.speedometer.app.core.navigation.START_TRIP_PLACEMENT) { TripService.start(context) }
+        } else {
+            TripService.start(context)
+        }
     }
 
     val notificationLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { begin() }
@@ -251,6 +262,12 @@ fun HomeScreen(
     val layout = rememberLayout()
     var here by remember { mutableStateOf<GeoPoint?>(vm.lastHere) }
     LaunchedEffect(granted) { if (granted) vm.locate()?.let { here = it } }
+    // Save the streets around the user for offline use (once per area, only while online), so the map works with no internet.
+    val online = com.speedometer.app.core.common.rememberInternetConnected()
+    LaunchedEffect(here, online) {
+        val p = here ?: return@LaunchedEffect
+        if (online) com.speedometer.app.core.map.OfflineMaps.ensureArea(context, p.lat, p.lon)
+    }
     val place by androidx.compose.runtime.produceState(vm.lastPlace?.takeIf { it.first == here }?.second, here) {
         val p = here
         if (p == null) { value = null; return@produceState }

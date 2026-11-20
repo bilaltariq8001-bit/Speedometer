@@ -506,4 +506,6 @@
     <string name="schedule_morning">7-9 AM</string>
     <string name="schedule_weekdays">ہفتے کے دن</string>
     <string name="schedule_weekdays_morning">ہفتے کے دن صبح 7-9 بجے</string>
+    <string name="loading_ad">اشتہار لوڈ ہو رہا ہے…</string>
+    <string name="map_offline">آف لائن · محفوظ کردہ نقشہ</string>
 </resources>

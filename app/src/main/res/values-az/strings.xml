@@ -483,4 +483,6 @@
     <string name="schedule_morning">Səhər 7-9</string>
     <string name="schedule_weekdays">Həftə içi</string>
     <string name="schedule_weekdays_morning">Həftə içi 7-9</string>
+    <string name="loading_ad">Elan yüklənir…</string>
+    <string name="map_offline">Oflayn · yaddaşda saxlanılan xəritə</string>
 </resources>

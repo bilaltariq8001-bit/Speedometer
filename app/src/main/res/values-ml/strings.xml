@@ -483,4 +483,6 @@
     <string name="schedule_morning">7-9 AM</string>
     <string name="schedule_weekdays">പ്രവൃത്തിദിനങ്ങൾ</string>
     <string name="schedule_weekdays_morning">പ്രവൃത്തിദിവസങ്ങളിൽ 7-9 AM</string>
+    <string name="loading_ad">പരസ്യം ലോഡ് ചെയ്യുന്നു…</string>
+    <string name="map_offline">ഓഫ്‌ലൈൻ · സംരക്ഷിച്ച മാപ്പ്</string>
 </resources>

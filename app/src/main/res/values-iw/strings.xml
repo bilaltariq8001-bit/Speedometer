@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 בבוקר</string>
     <string name="schedule_weekdays">ימי חול</string>
     <string name="schedule_weekdays_morning">ימי חול 7-9 בבוקר</string>
+    <string name="loading_ad">טוען מודעה…</string>
+    <string name="map_offline">לא מקוון · מפה שמורה</string>
 </resources>

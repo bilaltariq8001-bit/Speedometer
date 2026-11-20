@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 AM</string>
     <string name="schedule_weekdays">Dynç günleri</string>
     <string name="schedule_weekdays_morning">Dynç günleri sagat 7–9</string>
+    <string name="loading_ad">Mahabat ýüklenýär …</string>
+    <string name="map_offline">Oflayn · ýatda saklanan karta</string>
 </resources>

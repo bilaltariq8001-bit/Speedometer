@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 Uhr</string>
     <string name="schedule_weekdays">Wochentags</string>
     <string name="schedule_weekdays_morning">Wochentags 7–9 Uhr</string>
+    <string name="loading_ad">Anzeige wird geladen…</string>
+    <string name="map_offline">Offline · gespeicherte Karte</string>
 </resources>

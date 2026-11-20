@@ -483,4 +483,6 @@
     <string name="schedule_morning">7-9:00etan</string>
     <string name="schedule_weekdays">Astegunetan</string>
     <string name="schedule_weekdays_morning">Astegunetan 7:00etatik 9:00etara</string>
+    <string name="loading_ad">Iragarkia kargatzen…</string>
+    <string name="map_offline">Lineaz kanpo · gordetako mapa</string>
 </resources>

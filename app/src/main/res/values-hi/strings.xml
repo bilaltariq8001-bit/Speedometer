@@ -506,4 +506,6 @@
     <string name="schedule_morning">सुबह 7-9 बजे</string>
     <string name="schedule_weekdays">काम करने के दिन</string>
     <string name="schedule_weekdays_morning">सप्ताह के दिनों में सुबह 7-9 बजे तक</string>
+    <string name="loading_ad">विज्ञापन लोड हो रहा है…</string>
+    <string name="map_offline">ऑफ़लाइन · सहेजा गया मानचित्र</string>
 </resources>

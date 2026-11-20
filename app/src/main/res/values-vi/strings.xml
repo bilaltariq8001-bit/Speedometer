@@ -482,4 +482,6 @@
     <string name="schedule_morning">7–9 giờ sáng</string>
     <string name="schedule_weekdays">Các ngày trong tuần</string>
     <string name="schedule_weekdays_morning">Các ngày trong tuần 7–9 giờ sáng</string>
+    <string name="loading_ad">Đang tải quảng cáo…</string>
+    <string name="map_offline">Ngoại tuyến · bản đồ đã lưu</string>
 </resources>

@@ -167,7 +167,7 @@ fun RouteMap(
                     userPanning = true
                 }
             }
-            m.setStyle(Style.Builder().fromJson(DARK_OSM_STYLE)) { style ->
+            m.setStyle(Style.Builder().fromJson(MAP_STYLE_JSON)) { style ->
                 if (disposed) return@setStyle
                 addLayers(style)
                 styleReady = true
@@ -257,6 +257,21 @@ fun RouteMap(
         }
     }
 
+    // Offline: MapLibre is told so at once, so it draws saved streets (offline areas + tiles already seen) from the phone
+    // instead of waiting on requests that cannot finish. Online: the area around what this map shows is saved for later.
+    val connected = com.speedometer.app.core.common.rememberInternetConnected()
+    LaunchedEffect(connected, styleReady) {
+        runCatching { MapLibre.setConnected(connected) }
+        // Saved areas go to zoom 16; offline, allow one level of magnification beyond it instead of empty tiles.
+        map?.setMaxZoomPreference(if (connected) MAX_RASTER_ZOOM else OFFLINE_MAX_ZOOM)
+    }
+    val areaPoint = dots.lastOrNull()?.at ?: lines.lastOrNull()?.points?.lastOrNull()
+    val areaKey = areaPoint?.let { (it.latitude * 20).toInt() to (it.longitude * 20).toInt() }
+    LaunchedEffect(connected, areaKey) {
+        val p = areaPoint ?: return@LaunchedEffect
+        if (connected) OfflineMaps.ensureArea(context, p.latitude, p.longitude)
+    }
+
     // C. Camera follow effect for smooth continuous tracking
     val followPoint = dots.lastOrNull()?.at ?: lines.lastOrNull()?.points?.lastOrNull()
     val latestFollowPoint by androidx.compose.runtime.rememberUpdatedState(followPoint)
@@ -296,6 +311,16 @@ fun RouteMap(
 
     Box(modifier) {
         AndroidView(factory = { mapView }, modifier = Modifier.fillMaxSize())
+        if (!connected) {
+            Text(
+                androidx.compose.ui.res.stringResource(com.speedometer.app.R.string.map_offline),
+                Modifier.align(Alignment.TopCenter)
+                    .padding(top = (maxOf(fitTopPaddingDp, compassTopPaddingDp) + 10).dp)
+                    .clip(CircleShape).background(Color(0xE614181D))
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.SemiBold,
+            )
+        }
         if (zoomControls) {
             Column(Modifier.align(Alignment.CenterEnd).padding(end = 10.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 ZoomButton("+") { map?.animateCamera(CameraUpdateFactory.zoomIn(), 350) }
@@ -350,6 +375,7 @@ private const val INTRO_MS = 800
 private const val FOLLOW_EASE_MS = 600
 private const val FLY_MS = 700
 private const val MAX_RASTER_ZOOM = 19.0
+private const val OFFLINE_MAX_ZOOM = 17.0
 private const val FIT_PADDING = 80
 private const val AMBIENT_CACHE_BYTES = 200L * 1024 * 1024
 
@@ -408,8 +434,8 @@ private fun zonesJson(zones: List<MapZone>): String = zones.joinToString(
     """{"type":"Feature","properties":{"color":"${hex(z.color)}"},"geometry":{"type":"Polygon","coordinates":[[$ring]]}}"""
 }
 
-/** OSM raster tiles in their normal colours, so streets and labels are easy to read. */
-private val DARK_OSM_STYLE = """{
+/** OSM raster tiles in their normal colours, so streets and labels are easy to read. Also used for offline areas. */
+internal val MAP_STYLE_JSON = """{
   "version": 8,
   "sources": {"osm": {"type": "raster", "tiles": ["${BuildConfig.TILE_URL}"], "tileSize": 256,
     "maxzoom": 19, "attribution": "© OpenStreetMap contributors"}},

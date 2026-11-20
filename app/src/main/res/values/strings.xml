@@ -520,4 +520,6 @@
     <string name="admob_app_id" translatable="false">ca-app-pub-3940256099942544~3347511713</string>
     <string name="no_languages_found">No languages found</string>
     <string name="clear_search">Clear search</string>
+    <string name="loading_ad">Loading ad…</string>
+    <string name="map_offline">Offline · saved map</string>
 </resources>

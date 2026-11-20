@@ -483,4 +483,6 @@
     <string name="schedule_morning">7-9 AM</string>
     <string name="schedule_weekdays">અઠવાડિયાના દિવસો</string>
     <string name="schedule_weekdays_morning">અઠવાડિયાના દિવસો 7-9 AM</string>
+    <string name="loading_ad">જાહેરાત લોડ કરી રહ્યું છે…</string>
+    <string name="map_offline">ઑફલાઇન · સાચવેલ નકશો</string>
 </resources>

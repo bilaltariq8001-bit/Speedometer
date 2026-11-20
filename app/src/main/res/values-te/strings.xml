@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 AM</string>
     <string name="schedule_weekdays">వారం రోజులు</string>
     <string name="schedule_weekdays_morning">వారపు రోజులు 7–9 AM</string>
+    <string name="loading_ad">ప్రకటన లోడ్ అవుతోంది…</string>
+    <string name="map_offline">ఆఫ్‌లైన్ · సేవ్ చేయబడిన మ్యాప్</string>
 </resources>

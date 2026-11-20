@@ -483,4 +483,6 @@
     <string name="schedule_morning">ከቀኑ 7–9 ጥዋት</string>
     <string name="schedule_weekdays">የሳምንት ቀናት</string>
     <string name="schedule_weekdays_morning">የሳምንት ቀናት 7-9 AM</string>
+    <string name="loading_ad">ማስታወቂያ በመጫን ላይ…</string>
+    <string name="map_offline">ከመስመር ውጭ · የተቀመጠ ካርታ</string>
 </resources>

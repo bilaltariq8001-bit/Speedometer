@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 nke ụtụtụ</string>
     <string name="schedule_weekdays">Ụbọchị izu ụka</string>
     <string name="schedule_weekdays_morning">Ụbọchị izu ụka 7–9 AM</string>
+    <string name="loading_ad">Na-ebubata mgbasa ozi…</string>
+    <string name="map_offline">Na-anọghị n\'ịntanetị · maapụ echekwara</string>
 </resources>

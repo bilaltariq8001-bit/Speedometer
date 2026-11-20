@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 сәгать</string>
     <string name="schedule_weekdays">Ял көннәре</string>
     <string name="schedule_weekdays_morning">Ял көннәре 7–9</string>
+    <string name="loading_ad">Реклама йөкләү …</string>
+    <string name="map_offline">Оффлайн · сакланган карта</string>
 </resources>

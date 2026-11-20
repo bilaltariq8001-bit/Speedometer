@@ -483,4 +483,6 @@
     <string name="schedule_morning">7-9 цаг</string>
     <string name="schedule_weekdays">Ажлын өдрүүд</string>
     <string name="schedule_weekdays_morning">Ажлын өдрүүдэд 7-9 цаг</string>
+    <string name="loading_ad">Зарыг ачаалж байна…</string>
+    <string name="map_offline">Офлайн · хадгалсан газрын зураг</string>
 </resources>

@@ -483,4 +483,6 @@
     <string name="schedule_morning">7-9 AM</string>
     <string name="schedule_weekdays">I ghjorni di settimana</string>
     <string name="schedule_weekdays_morning">A settimana 7-9 AM</string>
+    <string name="loading_ad">Carica l\'annunziu…</string>
+    <string name="map_offline">Offline · mappa salvata</string>
 </resources>

@@ -483,4 +483,6 @@
     <string name="schedule_morning">د سهار له ۷ تر ۹ بجو</string>
     <string name="schedule_weekdays">د اونۍ ورځې</string>
     <string name="schedule_weekdays_morning">د اونۍ ورځې 7-9 AM</string>
+    <string name="loading_ad">د اعلان پورته کول…</string>
+    <string name="map_offline">آفلاین · خوندي شوی نقشه</string>
 </resources>

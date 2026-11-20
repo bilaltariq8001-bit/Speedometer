@@ -483,4 +483,6 @@
     <string name="schedule_morning">7-9 AM</string>
     <string name="schedule_weekdays">Weekdays</string>
     <string name="schedule_weekdays_morning">Rojên hefteyê 7-9 AM</string>
+    <string name="loading_ad">Reklam tê barkirin…</string>
+    <string name="map_offline">Offline · nexşeya tomarkirî</string>
 </resources>

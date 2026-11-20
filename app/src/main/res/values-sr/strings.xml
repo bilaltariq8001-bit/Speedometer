@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 пре подне</string>
     <string name="schedule_weekdays">Радним данима</string>
     <string name="schedule_weekdays_morning">Радним данима 7-9 ујутру</string>
+    <string name="loading_ad">Учитавање огласа…</string>
+    <string name="map_offline">Офлајн · сачувана мапа</string>
 </resources>

@@ -483,4 +483,6 @@
     <string name="schedule_morning">klo 7-9</string>
     <string name="schedule_weekdays">Arkisin</string>
     <string name="schedule_weekdays_morning">Arkisin klo 7-9</string>
+    <string name="loading_ad">Ladataan mainosta…</string>
+    <string name="map_offline">Offline · tallennettu kartta</string>
 </resources>

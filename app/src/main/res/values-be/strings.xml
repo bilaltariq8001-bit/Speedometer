@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 раніцы</string>
     <string name="schedule_weekdays">будні</string>
     <string name="schedule_weekdays_morning">Па буднях 7–9 раніцы</string>
+    <string name="loading_ad">Загрузка аб\'явы…</string>
+    <string name="map_offline">Пазасеткавы · захаваная карта</string>
 </resources>

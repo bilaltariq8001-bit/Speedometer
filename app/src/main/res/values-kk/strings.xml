@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9</string>
     <string name="schedule_weekdays">Жұмыс күндері</string>
     <string name="schedule_weekdays_morning">Жұмыс күндері таңғы 7-9</string>
+    <string name="loading_ad">Жарнама жүктелуде…</string>
+    <string name="map_offline">Офлайн · сақталған карта</string>
 </resources>

@@ -21,6 +21,9 @@ object AdGate {
     /** Full-screen ads must wait until the saved trip write and its progress state have both completed. */
     @Volatile var tripSaving = false
 
+    /** True while a must-show interstitial (trip saved, Start trip) is still loading: the app draws a short "Loading ad" screen. */
+    val adLoading = MutableStateFlow(false)
+
     /** When the last full-screen ad (interstitial or app-open) closed. Both kinds respect the same cooldown. */
     @Volatile var lastFullScreenAdMs = 0L
 
@@ -92,10 +95,10 @@ object AdGate {
     private val noAppOpenRoutes = onboardingRoutes + setOf(Routes.LanguageChange, Routes.Live, Routes.LiveMap, Routes.Hud)
 
     /**
-     * Screens without the banner: setup, Settings (as before), and every screen shown while driving (live speedometer,
-     * live map, HUD): an ad there distracts the driver and invites accidental taps on a mounted phone.
+     * Screens without the banner: setup, and every screen shown while driving (live speedometer, live map, HUD): an ad
+     * there distracts the driver and invites accidental taps on a mounted phone. Settings shows the bottom banner.
      */
-    private val noBannerRoutes = onboardingRoutes + setOf(Routes.Settings, Routes.Hud, Routes.Live, Routes.LiveMap)
+    private val noBannerRoutes = onboardingRoutes + setOf(Routes.Hud, Routes.Live, Routes.LiveMap)
 
     fun isRestrictedRoute(): Boolean = currentRoute == null || currentRoute in noAppOpenRoutes
 

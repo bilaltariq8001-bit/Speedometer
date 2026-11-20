@@ -483,4 +483,6 @@
     <string name="schedule_morning">7-9 صبح</string>
     <string name="schedule_weekdays">روزهای هفته</string>
     <string name="schedule_weekdays_morning">روزهای هفته 7 تا 9 صبح</string>
+    <string name="loading_ad">در حال بارگیری آگهی…</string>
+    <string name="map_offline">آفلاین · نقشه ذخیره شده</string>
 </resources>

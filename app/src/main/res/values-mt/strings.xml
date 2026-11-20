@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 AM</string>
     <string name="schedule_weekdays">Ġranet tal-ġimgħa</string>
     <string name="schedule_weekdays_morning">Ġranet tal-ġimgħa 7–9 AM</string>
+    <string name="loading_ad">Tagħbija ad…</string>
+    <string name="map_offline">Offline · mappa salvata</string>
 </resources>

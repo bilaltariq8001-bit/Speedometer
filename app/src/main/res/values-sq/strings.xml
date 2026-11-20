@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 e mëngjesit</string>
     <string name="schedule_weekdays">Ditët e javës</string>
     <string name="schedule_weekdays_morning">Ditëve të javës 7-9 AM</string>
+    <string name="loading_ad">Po ngarkohet reklama…</string>
+    <string name="map_offline">Jashtë linje · harta e ruajtur</string>
 </resources>

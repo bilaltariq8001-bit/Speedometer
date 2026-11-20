@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 AM pachakama</string>
     <string name="schedule_weekdays">Semana urunakanxa</string>
     <string name="schedule_weekdays_morning">Semana urunakaxa 7–9 AM</string>
+    <string name="loading_ad">Ukax mä anuncio… .</string>
+    <string name="map_offline">Offline · mapa qhispiyata</string>
 </resources>

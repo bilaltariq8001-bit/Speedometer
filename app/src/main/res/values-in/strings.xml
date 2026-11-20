@@ -482,4 +482,6 @@
     <string name="schedule_morning">7–9 pagi</string>
     <string name="schedule_weekdays">hari kerja</string>
     <string name="schedule_weekdays_morning">Hari kerja pukul 07.00–09.00</string>
+    <string name="loading_ad">Memuat iklan…</string>
+    <string name="map_offline">Offline · peta tersimpan</string>
 </resources>

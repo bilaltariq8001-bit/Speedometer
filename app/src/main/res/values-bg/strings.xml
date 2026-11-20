@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 сутринта</string>
     <string name="schedule_weekdays">Делнични дни</string>
     <string name="schedule_weekdays_morning">Делнични дни 7-9 сутринта</string>
+    <string name="loading_ad">Зареждане на рекламата…</string>
+    <string name="map_offline">Офлайн · запазена карта</string>
 </resources>

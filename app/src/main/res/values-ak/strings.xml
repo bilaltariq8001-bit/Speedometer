@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 AM</string>
     <string name="schedule_weekdays">Nnawɔtwe nna</string>
     <string name="schedule_weekdays_morning">Nnawɔtwe nna 7–9 AM</string>
+    <string name="loading_ad">Wɔde dawurubɔ… regu mu.</string>
+    <string name="map_offline">Offline · map a wɔakora so</string>
 </resources>

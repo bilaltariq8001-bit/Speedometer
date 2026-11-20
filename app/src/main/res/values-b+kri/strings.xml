@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 AM</string>
     <string name="schedule_weekdays">Di wikde dɛn</string>
     <string name="schedule_weekdays_morning">Wikde 7–9 AM</string>
+    <string name="loading_ad">Lod ad… we yu de lod.</string>
+    <string name="map_offline">Ɔflayn · map we dɛn dɔn sev</string>
 </resources>

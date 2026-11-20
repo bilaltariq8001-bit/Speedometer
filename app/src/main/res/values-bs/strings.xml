@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 ujutro</string>
     <string name="schedule_weekdays">Radnim danima</string>
     <string name="schedule_weekdays_morning">Radnim danima 7–9 ujutro</string>
+    <string name="loading_ad">Učitavanje oglasa…</string>
+    <string name="map_offline">Van mreže · sačuvana mapa</string>
 </resources>

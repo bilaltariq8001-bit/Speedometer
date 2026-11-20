@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 vm</string>
     <string name="schedule_weekdays">Weeksdae</string>
     <string name="schedule_weekdays_morning">Weeksdae 7–9 VM</string>
+    <string name="loading_ad">Laai tans advertensie…</string>
+    <string name="map_offline">Vanlyn · gestoorde kaart</string>
 </resources>

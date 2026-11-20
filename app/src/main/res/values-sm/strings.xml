@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 AM</string>
     <string name="schedule_weekdays">Aso vaiaso</string>
     <string name="schedule_weekdays_morning">Aso vaiaso 7–9 AM</string>
+    <string name="loading_ad">Tu\'u fa\'asalalauga…</string>
+    <string name="map_offline">Fa\'afanua fa\'asao</string>
 </resources>

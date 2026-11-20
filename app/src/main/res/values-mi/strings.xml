@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 AM</string>
     <string name="schedule_weekdays">Nga wiki</string>
     <string name="schedule_weekdays_morning">Rā wiki 7–9 AM</string>
+    <string name="loading_ad">Uta ana pānuitanga…</string>
+    <string name="map_offline">Tuimotu · mahere kua tiakina</string>
 </resources>

@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 da mañá</string>
     <string name="schedule_weekdays">Días laborables</string>
     <string name="schedule_weekdays_morning">Días laborables de 7 a 9 da mañá</string>
+    <string name="loading_ad">Cargando anuncio…</string>
+    <string name="map_offline">Sen conexión · mapa gardado</string>
 </resources>

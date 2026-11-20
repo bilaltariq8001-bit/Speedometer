@@ -483,4 +483,6 @@
     <string name="schedule_morning">सकाळी ७-९</string>
     <string name="schedule_weekdays">आठवड्याचे दिवस</string>
     <string name="schedule_weekdays_morning">आठवड्याचे दिवस 7-9 AM</string>
+    <string name="loading_ad">जाहिरात लोड करत आहे…</string>
+    <string name="map_offline">ऑफलाइन · जतन केलेला नकाशा</string>
 </resources>

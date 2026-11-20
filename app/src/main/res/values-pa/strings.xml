@@ -483,4 +483,6 @@
     <string name="schedule_morning">ਸਵੇਰੇ 7-9 ਵਜੇ</string>
     <string name="schedule_weekdays">ਹਫ਼ਤੇ ਦੇ ਦਿਨ</string>
     <string name="schedule_weekdays_morning">ਹਫ਼ਤੇ ਦੇ ਦਿਨ ਸਵੇਰੇ 7-9 ਵਜੇ</string>
+    <string name="loading_ad">ਵਿਗਿਆਪਨ ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…</string>
+    <string name="map_offline">ਔਫਲਾਈਨ · ਸੁਰੱਖਿਅਤ ਕੀਤਾ ਨਕਸ਼ਾ</string>
 </resources>

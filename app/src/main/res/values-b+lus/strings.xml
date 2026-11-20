@@ -483,4 +483,6 @@
     <string name="schedule_morning">Zing dar 7–9 AM a ni</string>
     <string name="schedule_weekdays">Kar khat chhungin</string>
     <string name="schedule_weekdays_morning">Kartin zing dar 7–9 AM</string>
+    <string name="loading_ad">Ad load mek… a ni.</string>
+    <string name="map_offline">Offline · map saved a ni</string>
 </resources>

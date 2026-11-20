@@ -209,6 +209,64 @@ class InterstitialManager @Inject constructor(
         }
     }
 
+    /**
+     * Must-show interstitial (trip saved, Start trip from the 4th trip): no cooldown or click cap. When no ad is ready yet,
+     * it asks for one and waits up to [maxWaitMs] behind a short "Loading ad" screen ([AdGate.adLoading]), then shows it.
+     * If nothing loads in time (no internet, no fill, ads off) the user simply goes on. [onDismiss] runs exactly once.
+     */
+    fun showMustShow(
+        activity: Activity,
+        placement: String,
+        onDismiss: () -> Unit,
+        onShowAd: () -> Unit = {},
+        maxWaitMs: Long = MUST_SHOW_WAIT_MS,
+    ) {
+        val model = config.interstitial(placement)
+        onMain {
+            if (!canShow(activity, model) || showPending) {
+                AdLog.skipped("interstitial", "[$placement] must-show not eligible (consent/onboarding/offline/disabled/another ad)")
+                onDismiss()
+                return@onMain
+            }
+            cachedAds.firstOrNull { it.adUnitId == model.adInterstitialId }?.let { ready ->
+                cachedAds.remove(ready)
+                showReservedAd(activity, ready.ad, model, placement, onShowAd, onDismiss)
+                return@onMain
+            }
+            // Nothing ready: this placement jumps the queue, then the screen waits for it.
+            queue.removeAll { it.second == placement }
+            if ((pendingLoads[model.adInterstitialId] ?: 0) == 0) {
+                if (loadInFlight()) queue.addFirst(activity.applicationContext to placement)
+                else requestOne(activity, model, placement, "must-show")
+            }
+            showPending = true
+            AdGate.adLoading.value = true
+            val deadline = android.os.SystemClock.elapsedRealtime() + maxWaitMs
+            fun stopWaiting() { showPending = false; AdGate.adLoading.value = false }
+            val poll = object : Runnable {
+                override fun run() {
+                    val ready = cachedAds.firstOrNull { it.adUnitId == model.adInterstitialId }
+                    val stillHere = activity is LifecycleOwner && activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) &&
+                        !activity.isFinishing && !activity.isDestroyed
+                    when {
+                        ready != null && stillHere -> {
+                            stopWaiting()
+                            cachedAds.remove(ready)
+                            showReservedAd(activity, ready.ad, model, placement, onShowAd, onDismiss)
+                        }
+                        !stillHere || android.os.SystemClock.elapsedRealtime() >= deadline -> {
+                            stopWaiting()
+                            AdLog.skipped("interstitial", "[$placement] must-show: no ad within ${maxWaitMs}ms")
+                            onDismiss()
+                        }
+                        else -> main.postDelayed(this, MUST_SHOW_POLL_MS)
+                    }
+                }
+            }
+            main.postDelayed(poll, MUST_SHOW_POLL_MS)
+        }
+    }
+
     private fun showReservedAd(
         activity: Activity,
         ad: InterstitialAd,
@@ -270,5 +328,7 @@ class InterstitialManager @Inject constructor(
         const val TAG = "InterstitialManager"
         const val MAX_RETRIES = 2
         const val RETRY_BASE_MS = 10_000L
+        const val MUST_SHOW_WAIT_MS = 4_000L
+        const val MUST_SHOW_POLL_MS = 150L
     }
 }

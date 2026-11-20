@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9</string>
     <string name="schedule_weekdays">Hafta kunlari</string>
     <string name="schedule_weekdays_morning">Ish kunlari soat 7-9</string>
+    <string name="loading_ad">Reklama yuklanmoqda…</string>
+    <string name="map_offline">Oflayn · saqlangan xarita</string>
 </resources>

@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 AM</string>
     <string name="schedule_weekdays">andavanandro</string>
     <string name="schedule_weekdays_morning">Alahady 7–9 maraina</string>
+    <string name="loading_ad">Mametraka doka…</string>
+    <string name="map_offline">Offline · sari-tany voatahiry</string>
 </resources>

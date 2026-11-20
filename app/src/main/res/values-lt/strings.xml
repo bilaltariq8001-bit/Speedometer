@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 val</string>
     <string name="schedule_weekdays">Darbo dienomis</string>
     <string name="schedule_weekdays_morning">Darbo dienomis 7-9 val</string>
+    <string name="loading_ad">Įkeliamas skelbimas…</string>
+    <string name="map_offline">Neprisijungęs · išsaugotas žemėlapis</string>
 </resources>

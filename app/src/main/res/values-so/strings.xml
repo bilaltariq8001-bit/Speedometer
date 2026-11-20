@@ -483,4 +483,6 @@
     <string name="schedule_morning">7-9 subaxnimo</string>
     <string name="schedule_weekdays">Maalmaha shaqada</string>
     <string name="schedule_weekdays_morning">Maalmaha shaqada 7-9 subaxnimo</string>
+    <string name="loading_ad">Soodejinaya xayeysiiska…</string>
+    <string name="map_offline">Khadka tooska ah · khariidad kaydsan</string>
 </resources>

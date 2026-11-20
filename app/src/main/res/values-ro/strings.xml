@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 AM</string>
     <string name="schedule_weekdays">În zilele lucrătoare</string>
     <string name="schedule_weekdays_morning">În zilele lucrătoare 7–9 AM</string>
+    <string name="loading_ad">Se încarcă anunț…</string>
+    <string name="map_offline">Offline · hartă salvată</string>
 </resources>

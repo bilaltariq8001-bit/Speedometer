@@ -483,4 +483,6 @@
     <string name="schedule_morning">পুৱা ৭–৯ বজাত</string>
     <string name="schedule_weekdays">সপ্তাহৰ দিনত</string>
     <string name="schedule_weekdays_morning">সপ্তাহৰ দিনত পুৱা ৭–৯ বজাত</string>
+    <string name="loading_ad">বিজ্ঞাপন লোড কৰা হৈছে…</string>
+    <string name="map_offline">অফলাইন · সংৰক্ষিত মানচিত্ৰ</string>
 </resources>

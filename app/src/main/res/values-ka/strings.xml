@@ -483,4 +483,6 @@
     <string name="schedule_morning">დილის 7–9 საათი</string>
     <string name="schedule_weekdays">სამუშაო დღეები</string>
     <string name="schedule_weekdays_morning">სამუშაო დღეებში 7-9 სთ</string>
+    <string name="loading_ad">რეკლამის ჩატვირთვა…</string>
+    <string name="map_offline">ხაზგარეშე · შენახული რუკა</string>
 </resources>

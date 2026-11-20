@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 AM</string>
     <string name="schedule_weekdays">Labortagoj</string>
     <string name="schedule_weekdays_morning">Labortagoj 7–9 AM</string>
+    <string name="loading_ad">Ŝargante anoncon…</string>
+    <string name="map_offline">Senrete · konservita mapo</string>
 </resources>

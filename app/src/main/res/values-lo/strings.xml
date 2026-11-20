@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 ໂມງເຊົ້າ</string>
     <string name="schedule_weekdays">ມື້ອາທິດ</string>
     <string name="schedule_weekdays_morning">ອາທິດ 7-9 ໂມງເຊົ້າ</string>
+    <string name="loading_ad">ກຳລັງໂຫຼດໂຄສະນາ…</string>
+    <string name="map_offline">ອອບໄລນ໌ · ບັນທຶກແຜນທີ່</string>
 </resources>

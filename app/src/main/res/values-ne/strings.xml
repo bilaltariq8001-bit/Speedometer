@@ -483,4 +483,6 @@
     <string name="schedule_morning">बिहान ७-९ बजे</string>
     <string name="schedule_weekdays">हप्ताका दिनहरू</string>
     <string name="schedule_weekdays_morning">हप्ताका दिनहरू 7-9 AM</string>
+    <string name="loading_ad">विज्ञापन लोड गर्दै…</string>
+    <string name="map_offline">अफलाइन · सुरक्षित नक्सा</string>
 </resources>

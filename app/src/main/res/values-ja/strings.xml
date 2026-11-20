@@ -482,4 +482,6 @@
     <string name="schedule_morning">午前7時～9時</string>
     <string name="schedule_weekdays">平日</string>
     <string name="schedule_weekdays_morning">平日午前7時～9時</string>
+    <string name="loading_ad">広告を読み込み中…</string>
+    <string name="map_offline">オフライン・保存済みマップ</string>
 </resources>

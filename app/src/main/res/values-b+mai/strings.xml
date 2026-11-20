@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 बजे भोर</string>
     <string name="schedule_weekdays">सप्ताह के दिन</string>
     <string name="schedule_weekdays_morning">सप्ताह के दिन 7–9 बजे</string>
+    <string name="loading_ad">विज्ञापन लोड हो रहल अछि…।</string>
+    <string name="map_offline">ऑफलाइन · सहेजल गेल नक्शा</string>
 </resources>

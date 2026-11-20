@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 AM</string>
     <string name="schedule_weekdays">Kwasiɖagbewo</string>
     <string name="schedule_weekdays_morning">Kwasiɖagbewo 7–9 AM</string>
+    <string name="loading_ad">Wole boblododoa tsɔm… .</string>
+    <string name="map_offline">Offline · anyigbatata si wodzra ɖo</string>
 </resources>

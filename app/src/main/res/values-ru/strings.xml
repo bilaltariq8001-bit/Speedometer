@@ -485,4 +485,6 @@
     <string name="schedule_morning">7–9 утра</string>
     <string name="schedule_weekdays">Будни</string>
     <string name="schedule_weekdays_morning">Будние дни 7–9 утра</string>
+    <string name="loading_ad">Загрузка объявления…</string>
+    <string name="map_offline">Оффлайн · сохраненная карта</string>
 </resources>

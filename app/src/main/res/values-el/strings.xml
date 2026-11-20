@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 π.μ</string>
     <string name="schedule_weekdays">Εργάσιμες</string>
     <string name="schedule_weekdays_morning">Καθημερινές 7-9 π.μ</string>
+    <string name="loading_ad">Φόρτωση διαφήμισης…</string>
+    <string name="map_offline">Εκτός σύνδεσης · ​​αποθηκευμένος χάρτης</string>
 </resources>

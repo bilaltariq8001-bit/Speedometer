@@ -482,4 +482,6 @@
     <string name="schedule_morning">7–9 PG</string>
     <string name="schedule_weekdays">hari minggu</string>
     <string name="schedule_weekdays_morning">Hari bekerja 7–9 PG</string>
+    <string name="loading_ad">Memuatkan iklan…</string>
+    <string name="map_offline">Luar talian · peta disimpan</string>
 </resources>

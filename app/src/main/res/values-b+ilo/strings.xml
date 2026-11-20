@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 ti bigat</string>
     <string name="schedule_weekdays">Aldaw ti lawas</string>
     <string name="schedule_weekdays_morning">Aldaw ti lawas 7–9 AM</string>
+    <string name="loading_ad">Agkarkarga ti anunsio….</string>
+    <string name="map_offline">Offline · naidulin a mapa</string>
 </resources>

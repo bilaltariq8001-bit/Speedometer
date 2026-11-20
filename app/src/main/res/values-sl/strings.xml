@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 zjutraj</string>
     <string name="schedule_weekdays">Delovni dnevi</string>
     <string name="schedule_weekdays_morning">Delovniki 7–9</string>
+    <string name="loading_ad">Nalaganje oglasa…</string>
+    <string name="map_offline">Brez povezave · shranjen zemljevid</string>
 </resources>

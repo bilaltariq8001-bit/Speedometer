@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 r.n</string>
     <string name="schedule_weekdays">Laethanta na seachtaine</string>
     <string name="schedule_weekdays_morning">Laethanta na seachtaine 7-9 AM</string>
+    <string name="loading_ad">Fógra á lódáil…</string>
+    <string name="map_offline">As líne · léarscáil sábháilte</string>
 </resources>

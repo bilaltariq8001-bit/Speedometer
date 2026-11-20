@@ -482,4 +482,6 @@
     <string name="schedule_morning">上午 7 点至 9 点</string>
     <string name="schedule_weekdays">平日</string>
     <string name="schedule_weekdays_morning">工作日上午 7 点至 9 点</string>
+    <string name="loading_ad">加载广告…</string>
+    <string name="map_offline">离线·已保存地图</string>
 </resources>

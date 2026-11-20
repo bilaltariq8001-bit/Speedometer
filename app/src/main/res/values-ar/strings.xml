@@ -510,4 +510,6 @@
     <string name="schedule_morning">7-9 صباحًا</string>
     <string name="schedule_weekdays">أيام الأسبوع</string>
     <string name="schedule_weekdays_morning">أيام الأسبوع من 7 إلى 9 صباحًا</string>
+    <string name="loading_ad">جارٍ تحميل الإعلان…</string>
+    <string name="map_offline">غير متصل · الخريطة المحفوظة</string>
 </resources>

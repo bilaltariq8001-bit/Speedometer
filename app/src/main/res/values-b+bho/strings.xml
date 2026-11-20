@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 बजे के बा</string>
     <string name="schedule_weekdays">हफ्ता के दिन में</string>
     <string name="schedule_weekdays_morning">सप्ताह के दिन सबेरे 7–9 बजे से</string>
+    <string name="loading_ad">विज्ञापन लोड हो रहल बा…।</string>
+    <string name="map_offline">ऑफलाइन · सहेजल गइल नक्शा</string>
 </resources>

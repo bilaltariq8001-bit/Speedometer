@@ -483,4 +483,6 @@
     <string name="schedule_morning">7-9 ايم</string>
     <string name="schedule_weekdays">هفتيوار ڏينهن</string>
     <string name="schedule_weekdays_morning">هفتي جا ڏينهن 7-9 AM</string>
+    <string name="loading_ad">اشتهار لوڊ ڪندي…</string>
+    <string name="map_offline">آف لائن · محفوظ ڪيل نقشو</string>
 </resources>

@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9m</string>
     <string name="schedule_weekdays">Làithean na seachdain</string>
     <string name="schedule_weekdays_morning">Làithean seachdaineach 7-9m</string>
+    <string name="loading_ad">Sanas a\' luchdachadh…</string>
+    <string name="map_offline">Far-loidhne · mapa air a shàbhaladh</string>
 </resources>

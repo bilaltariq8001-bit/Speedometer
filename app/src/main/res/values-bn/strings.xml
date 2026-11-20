@@ -483,4 +483,6 @@
     <string name="schedule_morning">সকাল ৭-৯টা</string>
     <string name="schedule_weekdays">সপ্তাহের দিন</string>
     <string name="schedule_weekdays_morning">সপ্তাহের দিন 7-9 AM</string>
+    <string name="loading_ad">বিজ্ঞাপন লোড হচ্ছে…</string>
+    <string name="map_offline">অফলাইন · সংরক্ষিত মানচিত্র</string>
 </resources>

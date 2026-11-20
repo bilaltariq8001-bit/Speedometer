@@ -483,4 +483,6 @@
     <string name="schedule_morning">७–९ प्रातः</string>
     <string name="schedule_weekdays">सप्ताहदिनानि</string>
     <string name="schedule_weekdays_morning">सप्ताहदिनानि प्रातः ७–९ वादने</string>
+    <string name="loading_ad">विज्ञापनं लोडयति… ।</string>
+    <string name="map_offline">अफलाइन · रक्षित नक्शा</string>
 </resources>

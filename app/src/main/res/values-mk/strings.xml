@@ -483,4 +483,6 @@
     <string name="schedule_morning">7-9 часот наутро</string>
     <string name="schedule_weekdays">Работнички денови</string>
     <string name="schedule_weekdays_morning">Работни денови 7-9 часот</string>
+    <string name="loading_ad">Се вчитува реклама…</string>
+    <string name="map_offline">Офлајн · зачувана карта</string>
 </resources>

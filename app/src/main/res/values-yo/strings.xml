@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 AM</string>
     <string name="schedule_weekdays">Awọn ọjọ ọsẹ</string>
     <string name="schedule_weekdays_morning">Awọn ọjọ ọsẹ 7-9 AM</string>
+    <string name="loading_ad">Ikojọpọ ipolowo…</string>
+    <string name="map_offline">Aisinipo · maapu ti o fipamọ</string>
 </resources>

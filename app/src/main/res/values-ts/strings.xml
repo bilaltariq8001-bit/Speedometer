@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 AM</string>
     <string name="schedule_weekdays">Masiku ya vhiki</string>
     <string name="schedule_weekdays_morning">Masiku ya vhiki 7–9 AM</string>
+    <string name="loading_ad">Ku layicha xitiviso….</string>
+    <string name="map_offline">Offline · mepe lowu hlayisiweke</string>
 </resources>

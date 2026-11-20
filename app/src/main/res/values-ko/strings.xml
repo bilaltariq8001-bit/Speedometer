@@ -482,4 +482,6 @@
     <string name="schedule_morning">오전 7~9시</string>
     <string name="schedule_weekdays">평일</string>
     <string name="schedule_weekdays_morning">평일 오전 7~9시</string>
+    <string name="loading_ad">광고 로드 중…</string>
+    <string name="map_offline">오프라인 · 저장된 지도</string>
 </resources>

@@ -485,4 +485,6 @@
     <string name="schedule_morning">7–9 rano</string>
     <string name="schedule_weekdays">Dni powszednie</string>
     <string name="schedule_weekdays_morning">W dni powszednie 7–9 rano</string>
+    <string name="loading_ad">Ładowanie reklamy…</string>
+    <string name="map_offline">Offline · zapisana mapa</string>
 </resources>

@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 AM</string>
     <string name="schedule_weekdays">Nā lā pule</string>
     <string name="schedule_weekdays_morning">Nā lā pule 7–9 AM</string>
+    <string name="loading_ad">Ke hoʻouka nei i ka hoʻolaha…</string>
+    <string name="map_offline">Pahemo · palapala ʻāina mālama ʻia</string>
 </resources>

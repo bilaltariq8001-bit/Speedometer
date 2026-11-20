@@ -483,4 +483,6 @@
     <string name="schedule_morning">Առավոտյան 7–9</string>
     <string name="schedule_weekdays">Շաբաթվա օրերը</string>
     <string name="schedule_weekdays_morning">Աշխատանքային օրերը 7-9 AM</string>
+    <string name="loading_ad">Գովազդի բեռնում…</string>
+    <string name="map_offline">Անցանց · Պահված քարտեզ</string>
 </resources>

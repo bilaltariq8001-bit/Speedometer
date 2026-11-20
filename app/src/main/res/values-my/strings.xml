@@ -483,4 +483,6 @@
     <string name="schedule_morning">၇-၉ နာရီ</string>
     <string name="schedule_weekdays">ရက်သတ္တပတ်များ</string>
     <string name="schedule_weekdays_morning">အပတ်စဉ် 7-9 AM</string>
+    <string name="loading_ad">ကြော်ငြာကိုဖွင့်နေသည်…</string>
+    <string name="map_offline">အော့ဖ်လိုင်း · သိမ်းထားသောမြေပုံ</string>
 </resources>

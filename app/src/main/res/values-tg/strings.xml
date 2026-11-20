@@ -483,4 +483,6 @@
     <string name="schedule_morning">7-9</string>
     <string name="schedule_weekdays">Рӯзҳои ҳафта</string>
     <string name="schedule_weekdays_morning">Рӯзҳои корӣ аз 7 то 9 саҳар</string>
+    <string name="loading_ad">Боркунии реклама…</string>
+    <string name="map_offline">Оффлайн · харитаи захирашуда</string>
 </resources>

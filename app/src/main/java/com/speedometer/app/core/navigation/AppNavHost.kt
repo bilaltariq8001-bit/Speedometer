@@ -419,9 +419,9 @@ fun AppNavHost() {
                     val seconds = tripPhase.trip.value.durationSec
                     analytics.tripSaved(if (seconds < 60) "under_1m" else if (seconds < 300) "1_to_5m" else if (seconds < 1800) "5_to_30m" else "over_30m")
                     TripAdCounter.onTripSaved(startContext)
-                    // The save (and its progress bar) has reached 100%: a natural break, but capped like every other
-                    // interstitial (shared cooldown + click cap) so it never shows after every trip by rule.
-                    if (activity != null) adsVm.ads.showClickAd(activity, "trip_saved_click") { }
+                    // The save (and its progress bar) has reached 100%: the trip-saved interstitial shows every time
+                    // (no cooldown or click cap), waiting a moment for an ad if none is ready yet.
+                    if (activity != null) adsVm.ads.showMustShowAd(activity, "trip_saved_click") { }
                 },
                 onSavedDone = { nav.popBackStack(Routes.Home, inclusive = false); Unit },
             )
@@ -544,6 +544,27 @@ fun AppNavHost() {
     }
     }
     Box(Modifier.fillMaxWidth().align(if (bannerTop) Alignment.TopCenter else Alignment.BottomCenter)) { banner() }
+    // A must-show interstitial (trip saved, Start trip) is still loading: a short "Loading ad" screen that takes the taps.
+    val adLoading by AdGate.adLoading.collectAsStateWithLifecycle()
+    if (adLoading) AdLoadingScreen()
+    }
+}
+
+@Composable
+private fun AdLoadingScreen() {
+    Box(
+        Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Color(0xF2000000))
+            .pointerInput(Unit) { detectTapGestures { } },
+        contentAlignment = Alignment.Center,
+    ) {
+        androidx.compose.foundation.layout.Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            androidx.compose.material3.CircularProgressIndicator(color = androidx.compose.ui.graphics.Color.White)
+            androidx.compose.material3.Text(
+                androidx.compose.ui.res.stringResource(R.string.loading_ad),
+                Modifier.padding(top = 16.dp),
+                color = androidx.compose.ui.graphics.Color.White,
+            )
+        }
     }
 }
 

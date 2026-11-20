@@ -483,4 +483,6 @@
     <string name="schedule_morning">De 7 a 9 del matí</string>
     <string name="schedule_weekdays">Dies laborables</string>
     <string name="schedule_weekdays_morning">Dies laborables de 7 a 9 del matí</string>
+    <string name="loading_ad">S\'està carregant l\'anunci…</string>
+    <string name="map_offline">Fora de línia · mapa desat</string>
 </resources>

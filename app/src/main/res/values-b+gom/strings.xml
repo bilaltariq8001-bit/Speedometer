@@ -483,4 +483,6 @@
     <string name="schedule_morning">७-९ सकाळीं</string>
     <string name="schedule_weekdays">सप्तकाचे दीस</string>
     <string name="schedule_weekdays_morning">सप्तकाचे दीस सकाळीं 7-9 वरांचेर</string>
+    <string name="loading_ad">जाहिरात लोड करप…</string>
+    <string name="map_offline">ऑफलायन · जतनाय केल्लो नकासो</string>
 </resources>

@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9:00</string>
     <string name="schedule_weekdays">Giorni feriali</string>
     <string name="schedule_weekdays_morning">Giorni feriali dalle 7:00 alle 9:00</string>
+    <string name="loading_ad">Caricamento annuncio…</string>
+    <string name="map_offline">Offline · mappa salvata</string>
 </resources>

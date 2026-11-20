@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 AM</string>
     <string name="schedule_weekdays">Hafta içi</string>
     <string name="schedule_weekdays_morning">Hafta içi 07.00-9.00</string>
+    <string name="loading_ad">Reklam yükleniyor…</string>
+    <string name="map_offline">Çevrimdışı · kayıtlı harita</string>
 </resources>

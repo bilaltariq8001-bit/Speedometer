@@ -483,4 +483,6 @@
     <string name="schedule_morning">៧-៩ ព្រឹក</string>
     <string name="schedule_weekdays">ថ្ងៃធ្វើការ</string>
     <string name="schedule_weekdays_morning">ថ្ងៃធ្វើការ 7-9 ព្រឹក</string>
+    <string name="loading_ad">កំពុងផ្ទុកការផ្សាយពាណិជ្ជកម្ម…</string>
+    <string name="map_offline">ក្រៅបណ្តាញ · ផែនទីដែលបានរក្សាទុក</string>
 </resources>

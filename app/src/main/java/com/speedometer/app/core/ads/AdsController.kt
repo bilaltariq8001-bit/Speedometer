@@ -143,6 +143,12 @@ class AdsController @Inject constructor(
         )
     }
 
+    /** Interstitial that always shows when an ad can be had (waits briefly for one): trip saved, Start trip from the 4th trip. */
+    fun showMustShowAd(activity: Activity, placement: String, onDismiss: () -> Unit) {
+        val once = AtomicBoolean(false)
+        interstitial.showMustShow(activity, placement, onDismiss = { if (once.compareAndSet(false, true)) onDismiss() })
+    }
+
     /** Whether the Start trip tap should show an interstitial first: from the 4th trip on (after 3 completed trips). */
     fun startTripAdDue(context: android.content.Context): Boolean =
         TripAdCounter.startAdDue(context, config.startTripInterAfterTrips)

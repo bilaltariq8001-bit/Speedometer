@@ -210,7 +210,7 @@
   </entry>
   <entry>
     <key>start_trip_click_inter_enabled</key>
-    <value>false</value>
+    <value>true</value>
   </entry>
   <entry>
     <key>start_trip_click_inter_should_load</key>
@@ -479,6 +479,14 @@
     </entry>
     <entry>
         <key>settings_open_click_inter_counter_enabled</key>
+        <value>true</value>
+    </entry>
+    <entry>
+        <key>settings_native_id</key>
+        <value>ca-app-pub-3940256099942544/2247696110</value>
+    </entry>
+    <entry>
+        <key>settings_native_enabled</key>
         <value>true</value>
     </entry>
 </defaultsMap>

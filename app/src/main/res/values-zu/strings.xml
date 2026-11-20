@@ -483,4 +483,6 @@
     <string name="schedule_morning">7–9 AM</string>
     <string name="schedule_weekdays">Izinsuku zeviki</string>
     <string name="schedule_weekdays_morning">Phakathi neviki 7–9 AM</string>
+    <string name="loading_ad">Ilayisha isikhangiso…</string>
+    <string name="map_offline">Okungaxhunyiwe ku-inthanethi · imephu egciniwe</string>
 </resources>

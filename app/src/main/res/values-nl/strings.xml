@@ -483,4 +483,6 @@
     <string name="schedule_morning">07.00 - 09.00 uur</string>
     <string name="schedule_weekdays">Weekdagen</string>
     <string name="schedule_weekdays_morning">Weekdagen 07.00 - 09.00 uur</string>
+    <string name="loading_ad">Advertentie laden…</string>
+    <string name="map_offline">Offline · opgeslagen kaart</string>
 </resources>
