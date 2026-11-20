@@ -96,26 +96,22 @@ fun PausedView(trip: TripState, unit: SpeedUnit, mi: Boolean, pausedAtMs: Long, 
     LaunchedEffect(Unit) { while (true) { delay(1000); now = System.currentTimeMillis() } }
     val pausedSec = ((now - pausedAtMs) / 1000).coerceAtLeast(0)
 
-    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            StatusPill {
-                StrokeIcon("M6 5h4v14H6z M14 5h4v14h-4z", Amber, size = 14.dp, box = 24f, filled = true)
-                Text(stringResource(R.string.paused_pill, clock(trip.durationSec)), style = bodyStyle(13, color = TextSoft))
-            }
-            StatusPill {
-                Box(Modifier.size(8.dp).background(if (trip.gps == GpsQuality.Strong) Ok else Amber, CircleShape))
-                Text(stringResource(if (trip.gps == GpsQuality.Strong) R.string.gps_strong_pill else R.string.gps_weak_pill), style = bodyStyle(13, color = TextSoft))
-            }
-        }
-        Box(Modifier.widthIn(max = 300.dp).fillMaxWidth().padding(top = 20.dp), contentAlignment = Alignment.Center) {
-            SpeedGauge(
-                speedKmh = 0f,
-                limitKmh = null,
-                toDisplayUnit = { unit.fromKmh(it) },
-            )
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("0", style = displayStyle(80, FontWeight.Bold, PausedGrey).copy(lineHeight = 80.sp))
-                Text(stringResource(R.string.trip_paused), Modifier.padding(top = 4.dp), style = bodyStyle(15))
+    // Fixed screen (no scrolling) and no status pills: the gauge takes whatever height is left and shrinks to fit,
+    // so the stats, the note and the buttons always stay on screen.
+    Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(Modifier.weight(1f).widthIn(max = 300.dp).fillMaxWidth().padding(top = 8.dp), contentAlignment = Alignment.Center) {
+            com.speedometer.app.core.designsystem.FitInside(Modifier.fillMaxSize()) {
+                Box(contentAlignment = Alignment.Center) {
+                    SpeedGauge(
+                        speedKmh = 0f,
+                        limitKmh = null,
+                        toDisplayUnit = { unit.fromKmh(it) },
+                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("0", style = displayStyle(80, FontWeight.Bold, PausedGrey).copy(lineHeight = 80.sp))
+                        Text(stringResource(R.string.trip_paused), Modifier.padding(top = 4.dp), style = bodyStyle(15))
+                    }
+                }
             }
         }
         Row(Modifier.fillMaxWidth().padding(top = 8.dp).height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {

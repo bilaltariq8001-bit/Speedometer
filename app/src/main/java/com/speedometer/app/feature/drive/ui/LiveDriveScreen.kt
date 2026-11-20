@@ -252,10 +252,10 @@ fun LiveDriveScreen(
             }
         } else if (userPaused) {
             Column(
-                Modifier.fillMaxSize().background(Bg).statusBarsPadding().verticalScroll(rememberScrollState()),
+                Modifier.fillMaxSize().background(Bg).statusBarsPadding().navigationBarsPadding(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Column(Modifier.widthIn(max = layout.contentMax).fillMaxWidth().padding(20.dp)) {
+                Column(Modifier.widthIn(max = layout.contentMax).fillMaxSize().padding(20.dp)) {
                     PausedView(trip, unit, activeSettings.mph, vm.pausedAtMs(), onResume = vm::resume, onEnd = { vm.end(); onEnd() })
                 }
             }
