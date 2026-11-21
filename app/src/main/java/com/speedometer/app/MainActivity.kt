@@ -26,6 +26,7 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
     @Inject lateinit var settingsRepository: com.speedometer.app.core.data.SettingsRepository
     @Inject lateinit var ads: com.speedometer.app.core.ads.AdsController
+    @Inject lateinit var guardAlerts: com.speedometer.app.core.alerts.GuardAlerts
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(AppLanguage.wrap(newBase))
@@ -33,10 +34,22 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val freshStart = savedInstanceState == null
+        // A new start of the app (after it was closed) always opens in portrait, even if it was left in landscape.
+        // A rebuild (rotation, language change, restore) keeps the current choice.
+        if (freshStart) com.speedometer.app.core.common.OrientationLock.apply(this, com.speedometer.app.core.data.ScreenOrientation.Portrait)
         lifecycleScope.launch {
+            if (freshStart) runCatching { settingsRepository.setScreenOrientation(com.speedometer.app.core.data.ScreenOrientation.Portrait) }
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 settingsRepository.settings.collect { settings ->
-                    com.speedometer.app.core.common.OrientationLock.apply(this@MainActivity, settings.screenOrientation)
+                    // While a full-screen ad is up it decides the screen's turn; fighting it rebuilt the activity again and
+                    // again behind the ad. The saved choice is applied once the app is back in front (onResume).
+                    if (!com.speedometer.app.core.ads.AdGate.fullScreenAdVisible) {
+                        com.speedometer.app.core.common.OrientationLock.apply(this@MainActivity, settings.screenOrientation)
+                    } else {
+                        com.speedometer.app.core.common.OrientationLock.remember(settings.screenOrientation)
+                    }
+                    com.speedometer.app.core.common.OrientationLock.markKnown()
                 }
             }
         }
@@ -77,6 +90,19 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         AppVisibility.set(true)
+        com.speedometer.app.core.common.OrientationLock.reapply(this)
+    }
+
+    /** Home or Recents pressed: if the over-speed alarm is ringing, the trip pauses right away. */
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        guardAlerts.pauseIfAlarmRinging()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // Minimised any other way (another app opened over it, screen off). Not for a rotation or a full-screen ad.
+        if (!isChangingConfigurations && !com.speedometer.app.core.ads.AdGate.fullScreenAdVisible) guardAlerts.pauseIfAlarmRinging()
     }
 
     override fun onPause() {

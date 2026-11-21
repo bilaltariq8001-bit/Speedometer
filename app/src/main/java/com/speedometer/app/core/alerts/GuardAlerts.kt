@@ -114,7 +114,13 @@ class GuardAlerts @Inject constructor(
         }
     }
 
-    private fun onAppHidden() {
+    private fun onAppHidden() = pauseIfAlarmRinging()
+
+    /**
+     * Pauses the trip when the over-speed alarm is going off. Called when the app is minimised: from the activity at once
+     * (Home or Recents pressed, or the activity stopped) and from the process lifecycle as a backup.
+     */
+    fun pauseIfAlarmRinging() {
         val s = trips.state.value
         val ringing = s.phase == TripPhase.Recording && s.guard != GuardLevel.Off && !isMuted
         if (!ringing || com.speedometer.app.core.ads.AdGate.fullScreenAdVisible) return

@@ -183,13 +183,9 @@ fun AppNavHost() {
         if (tripPhase.tripActive() && target in setOf(Routes.History, Routes.Insights, Routes.Settings)) {
             AppMessages.show(tripNavigationBlockedMessage, MessageKind.Info)
         } else {
-            val go = {
-                nav.navigate(target) {
-                    popUpTo(Routes.Home) { saveState = true }
-                    launchSingleTop = true
-                    restoreState = true
-                }
-            }
+            // Goes through LiveNav: the ad's callback may come after the activity was rebuilt (rotation), and the old
+            // controller must not be used then.
+            val go = { LiveNav.openTab(target) }
             // Trips, Insights and Settings tabs: the interstitial first, then the screen (right away if no ad is ready).
             // Remote Config `tab_inter_always` = true shows it on every tap; false applies the shared cooldown + click cap.
             // Each tab is switched on or off with `<placement>_inter_enabled`.
@@ -206,6 +202,14 @@ fun AppNavHost() {
     val s = settings ?: Settings()
 
     val route = nav.currentBackStackEntryAsState().value?.destination?.route
+    androidx.compose.runtime.DisposableEffect(nav) {
+        LiveNav.attach(nav)
+        onDispose { LiveNav.detach(nav) }
+    }
+    // A tab chosen while the activity was being rebuilt (behind a full-screen ad) opens now.
+    LaunchedEffect(route) {
+        if (route != null && route != Routes.Splash) LiveNav.takePending()?.let { if (it != route) runCatching { LiveNav.navigateTab(nav, it) } }
+    }
     // The ad managers and the analytics both need to know the screen. Route arguments are cut off, so tripmap?id=3 is tripmap.
     LaunchedEffect(route) {
         AdGate.currentRoute = route

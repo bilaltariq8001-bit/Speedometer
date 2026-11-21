@@ -286,10 +286,10 @@ fun HomeScreen(
             // Back in landscape: the screen turns to portrait first, then the exit dialog shows there.
             context.findActivity()?.let { com.speedometer.app.core.common.OrientationLock.portraitForExit(it, true) }
             showExit = true
-        } else if (now - lastBackPressAt < 2000L) {
-            showExit = true
         } else {
+            // One press is enough: the exit dialog shows at once.
             lastBackPressAt = now
+            showExit = true
         }
     }
 

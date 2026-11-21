@@ -27,6 +27,17 @@ object OrientationLock {
         apply(activity, chosen)
     }
 
+    /** True once [apply] has run with the saved choice, so [reapply] never turns the screen to a default by mistake. */
+    @Volatile private var known = false
+
+    /** Records the saved choice without turning the screen (a full-screen ad is up). */
+    fun remember(orientation: ScreenOrientation) { chosen = orientation }
+
+    /** The saved choice applied again, when the app comes back to the front (a full-screen ad may have turned it). */
+    fun reapply(activity: Activity) { if (known) apply(activity, chosen) }
+
+    fun markKnown() { known = true }
+
     /** Drops the portrait hold without turning the screen (the app is closing). */
     fun clearHold() { holdPortrait = false }
 }

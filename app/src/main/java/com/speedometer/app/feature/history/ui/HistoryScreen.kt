@@ -111,7 +111,8 @@ fun HistoryScreen(
         return
     }
 
-    if (rememberLayout().isLandscape && u.trips.isNotEmpty()) {
+    val landscape = rememberLayout().isLandscape
+    if (landscape && u.trips.isNotEmpty()) {
         HistoryLandscape(u, onViewMap, onReplay, selected, showNativeAd, nativeAd, ads.analytics, loadRoute = vm::routeOf, onSelect = { selected = it })
     } else {
         // A lazy list: only the rows on screen are composed, so a long "All" history opens and scrolls without jank.
@@ -170,8 +171,9 @@ fun HistoryScreen(
         }
     }
 
+    // In landscape a tap only selects the trip for the map pane; the sheet would cover the whole list there.
     val trip = u.trips.firstOrNull { it.id == selected }
-    if (trip != null) {
+    if (trip != null && !(landscape && u.trips.isNotEmpty())) {
         TripSheet(
             trip, u.unit,
             onViewMap = { selected = null; onViewTripMap(trip.id) },
