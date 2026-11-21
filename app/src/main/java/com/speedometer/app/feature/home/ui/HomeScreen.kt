@@ -206,18 +206,19 @@ fun HomeScreen(
 
 
     val ads = hiltViewModel<com.speedometer.app.core.ads.AdsViewModel>().ads
-    // From the 4th trip on (3 trips saved, Remote Config `start_trip_inter_after_trips`), have the Start trip ad ready early.
+    // On an ad trip (4th, 7th, 11th... of this session), have the Start trip ad ready early.
     LaunchedEffect(Unit) {
         if (ads.startTripAdDue(context)) ads.warmUp(context, com.speedometer.app.core.navigation.START_TRIP_PLACEMENT)
     }
 
     /**
-     * Start trip. After 3 completed trips, every Start trip tap shows an interstitial first (waiting a moment for one if
-     * needed); recording begins when the ad is closed, so the ad never covers the speedometer during the drive.
+     * Start trip. On this session's 4th, 7th, 11th, 16th... trip the tap shows an interstitial first (waiting a moment for
+     * one if needed); recording begins when the ad is closed, so the ad never covers the speedometer during the drive.
      */
     fun begin() {
         val activity = context.findActivity()
         if (activity != null && ads.startTripAdDue(context)) {
+            com.speedometer.app.core.ads.TripAdCounter.onStartAdShown()
             ads.showMustShowAd(activity, com.speedometer.app.core.navigation.START_TRIP_PLACEMENT) { TripService.start(context) }
         } else {
             TripService.start(context)
@@ -559,6 +560,8 @@ fun HomeScreen(
             onExit = {
                 // Leaving: no turn back to landscape on the way out; the next start uses the Settings choice again.
                 com.speedometer.app.core.common.OrientationLock.clearHold()
+                // Quitting starts the Start trip ad count again (4th, 7th, 11th... of the next session).
+                com.speedometer.app.core.ads.TripAdCounter.resetSession()
                 context.findActivity()?.finish()
             },
         )

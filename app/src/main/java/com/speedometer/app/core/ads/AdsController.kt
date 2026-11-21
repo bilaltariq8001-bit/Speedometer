@@ -149,7 +149,7 @@ class AdsController @Inject constructor(
         interstitial.showMustShow(activity, placement, onDismiss = { if (once.compareAndSet(false, true)) onDismiss() })
     }
 
-    /** Whether the Start trip tap should show an interstitial first: from the 4th trip on (after 3 completed trips). */
+    /** Whether the Start trip tap should show an interstitial first: this session's 4th, 7th, 11th, 16th... trip. */
     fun startTripAdDue(context: android.content.Context): Boolean =
         TripAdCounter.startAdDue(context, config.startTripInterAfterTrips)
 
