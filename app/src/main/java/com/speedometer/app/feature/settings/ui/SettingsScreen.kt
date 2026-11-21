@@ -73,7 +73,7 @@ fun SettingsScreen(onZones: () -> Unit, onGaugeStyle: () -> Unit, onLanguage: ()
 
     if (rememberLayout().isLandscape) {
         // Title stays fixed above both columns; only the columns scroll.
-        Column(Modifier.fillMaxSize().background(Bg).padding(top = 16.dp, end = 4.dp)) {
+        Column(Modifier.fillMaxSize().background(Bg).padding(end = 4.dp)) {
             SettingsTopBar()
             Row(Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(0.dp)) {
                 Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
@@ -115,7 +115,9 @@ private fun SettingsNativeAd() {
 
 @Composable
 private fun SettingsTopBar() {
-    Text(stringResource(R.string.tab_settings), Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp), style = displayStyle(26, FontWeight.SemiBold))
+    // Landscape: level with the back button beside it (see SECONDARY_TITLE_TOP_LANDSCAPE).
+    val top = if (rememberLayout().isLandscape) com.speedometer.app.core.designsystem.SECONDARY_TITLE_TOP_LANDSCAPE else 20.dp
+    Text(stringResource(R.string.tab_settings), Modifier.padding(start = 20.dp, end = 20.dp, top = top), style = displayStyle(26, FontWeight.SemiBold))
 }
 
 @Composable

@@ -185,7 +185,9 @@ fun HistoryScreen(
 
 @Composable
 private fun HistoryTopBar(u: HistoryUi, mi: Boolean, onViewMap: (Range) -> Unit) {
-    Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp)) {
+    // Landscape (a filter with no trips): the back button is beside the title, so the title sits level with it.
+    val top = if (rememberLayout().isLandscape) com.speedometer.app.core.designsystem.SECONDARY_TITLE_TOP_LANDSCAPE else 20.dp
+    Column(Modifier.padding(start = 20.dp, end = 20.dp, top = top)) {
         Text(stringResource(R.string.tab_trips), style = displayStyle(26, FontWeight.SemiBold))
         val range = stringResource(
             when (u.range) {
@@ -362,8 +364,8 @@ private fun HistoryLandscape(
     }
 
     Row(Modifier.fillMaxSize().background(Bg)) {
-        Column(Modifier.width(380.dp).fillMaxHeight().padding(start = 20.dp, top = 16.dp)) {
-            Text(stringResource(R.string.tab_trips), style = displayStyle(22, FontWeight.SemiBold))
+        Column(Modifier.width(380.dp).fillMaxHeight().padding(start = 20.dp, top = com.speedometer.app.core.designsystem.SECONDARY_TITLE_TOP_LANDSCAPE)) {
+            Text(stringResource(R.string.tab_trips), style = displayStyle(26, FontWeight.SemiBold))
             val range = stringResource(
                 when (u.range) {
                     Range.Week -> R.string.range_week
@@ -387,7 +389,7 @@ private fun HistoryLandscape(
                 if (showNativeAd) item(key = "native_ad", contentType = "ad") { HistoryNativeAd(nativeAd, analytics) }
             }
         }
-        Column(Modifier.weight(1f).fillMaxHeight().padding(start = 8.dp, end = 20.dp, top = 16.dp, bottom = 16.dp)) {
+        Column(Modifier.weight(1f).fillMaxHeight().padding(start = 8.dp, end = 20.dp, top = 12.dp, bottom = 12.dp)) {
             Box(Modifier.weight(1f).fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(Surface1)) {
                 val l = line
                 if (l == null || !com.speedometer.app.core.designsystem.LocalScreenSettled.current.value) {

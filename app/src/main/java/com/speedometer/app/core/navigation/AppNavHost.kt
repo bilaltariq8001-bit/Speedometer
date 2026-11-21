@@ -114,6 +114,8 @@ private const val ALERT_RETURN_MS = 10_000L
 private fun RouteFrame(route: String, content: @Composable () -> Unit) {
     val fullBleed = route in fullBleedRoutes
     val secondary = route == Routes.History || route == Routes.Insights || route == Routes.Settings
+    // Landscape has little height: the back button sits beside the title instead of in a strip above it.
+    val backBeside = secondary && rememberLayout().isLandscape
     // Room for the banner depends only on this screen's own route, so it stays fixed while screens change.
     val banner = com.speedometer.app.core.ads.LocalBannerReserve.current
     val reserve = banner.available && com.speedometer.app.core.ads.AdGate.bannerAllowedOn(route)
@@ -132,7 +134,13 @@ private fun RouteFrame(route: String, content: @Composable () -> Unit) {
                 if (fullBleed) Modifier
                 else Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Bottom)),
             )
-            .then(if (secondary) Modifier.padding(top = BACK_STRIP_HEIGHT) else Modifier),
+            .then(
+                when {
+                    backBeside -> Modifier.padding(start = BACK_BESIDE_WIDTH)
+                    secondary -> Modifier.padding(top = BACK_STRIP_HEIGHT)
+                    else -> Modifier
+                },
+            ),
     ) {
         androidx.compose.runtime.CompositionLocalProvider(com.speedometer.app.core.ads.LocalBannerBelow provides bannerBelow) { content() }
     }
@@ -157,6 +165,8 @@ private const val BANNER_SLOT = "bottom_banner"
 const val START_TRIP_PLACEMENT = "start_trip_click"
 private const val AD_WARM_AFTER_NAV_MS = 450L
 private val BACK_STRIP_HEIGHT = 52.dp
+/** Landscape: room kept at the start of Trips, Insights and Settings for the back button beside their title. */
+private val BACK_BESIDE_WIDTH = 40.dp
 
 /** Remote Config prefix of the click interstitial shown before opening a tab, or null for tabs without one. */
 private fun tabClickPlacement(route: String): String? = when (route) {
@@ -520,7 +530,10 @@ fun AppNavHost() {
         exit = androidx.compose.animation.fadeOut(androidx.compose.animation.core.tween(120)),
     ) {
         Box(
-            Modifier.statusBarsPadding().padding(start = 8.dp, top = 6.dp).size(44.dp)
+            Modifier.statusBarsPadding()
+                // Clear of a camera cutout or the navigation bar at the side in landscape, like the screen beside it.
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Start))
+                .padding(start = 8.dp, top = 6.dp).size(44.dp)
                 .clip(androidx.compose.foundation.shape.CircleShape)
                 .clickable(role = androidx.compose.ui.semantics.Role.Button) {
                     if (!nav.popBackStack(Routes.Home, inclusive = false)) nav.navigate(Routes.Home) { launchSingleTop = true }

@@ -90,3 +90,9 @@ fun FitColumn(
         )
     }
 }
+
+/**
+ * Landscape top padding of the title on Trips, Insights and Settings: the back button (44 dp, 6 dp from the top) sits
+ * beside the title there, and this puts a 26 sp title level with it. Portrait keeps the back button in a strip above.
+ */
+val SECONDARY_TITLE_TOP_LANDSCAPE = 11.dp

@@ -82,7 +82,7 @@ fun InsightsScreen(vm: InsightsViewModel = hiltViewModel()) {
     ScrollPage(
         maxWidth = if (landscape) LANDSCAPE_MAX_WIDTH else null,
         top = {
-            Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 4.dp)) {
+            Column(Modifier.padding(start = 20.dp, end = 20.dp, top = if (landscape) com.speedometer.app.core.designsystem.SECONDARY_TITLE_TOP_LANDSCAPE else 20.dp, bottom = 4.dp)) {
                 Text(stringResource(R.string.tab_insights), style = displayStyle(26, FontWeight.SemiBold))
                 Text(stringResource(R.string.last_seven_days), Modifier.padding(top = 4.dp), style = bodyStyle(14))
             }
