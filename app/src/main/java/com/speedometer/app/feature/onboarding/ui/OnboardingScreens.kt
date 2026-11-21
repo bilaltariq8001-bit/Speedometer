@@ -149,12 +149,17 @@ private fun body(sizeSp: Int, weight: FontWeight = FontWeight.Normal, color: Col
 private fun Frame(
     top: @Composable () -> Unit = {},
     bottom: @Composable () -> Unit = {},
+    /** False for screens whose middle must fit the screen without scrolling (it gets the space left, bounded). */
+    scroll: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Box(Modifier.fillMaxSize().background(Bg).systemBarsPadding(), contentAlignment = Alignment.TopCenter) {
         Column(Modifier.widthIn(max = com.speedometer.app.core.designsystem.rememberLayout().contentMax).fillMaxSize()) {
             top()
-            Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()), content = content)
+            Column(
+                Modifier.weight(1f).fillMaxWidth().then(if (scroll) Modifier.verticalScroll(rememberScrollState()) else Modifier),
+                content = content,
+            )
             bottom()
         }
     }
@@ -758,8 +763,9 @@ fun OnboardingScreen(page: Int, onPage: (Int) -> Unit, onBackHome: () -> Unit, o
             },
             bottom = {
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-                    // One ad for all five pages: it stays put while the pages slide.
-                    SetupNativeAd()
+                    // The ad shows on every other page (2 and 4), never on two pages in a row: the pages look alike, and
+                    // an ad on each could read as the same ad repeated on near-identical screens. Each ad page loads its own ad.
+                    if (onboardingAdPage(page)) androidx.compose.runtime.key(page) { SetupNativeAd() }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp, bottom = 24.dp)) {
                         repeat(ONBOARDING_PAGES) { i ->
                             val width by androidx.compose.animation.core.animateDpAsState(if (i == page) 28.dp else 8.dp, androidx.compose.animation.core.tween(260), label = "dot")
@@ -772,11 +778,18 @@ fun OnboardingScreen(page: Int, onPage: (Int) -> Unit, onBackHome: () -> Unit, o
                     }
                 }
             },
+            scroll = false,
         ) {
-            OnboardingPageContent(page, reduceMotion, landscape = false)
+            // The whole page fits the screen: when it is taller than the space left, it is scaled down evenly, never scrolled.
+            com.speedometer.app.core.designsystem.FitInside(Modifier.fillMaxSize()) {
+                OnboardingPageContent(page, reduceMotion, landscape = false)
+            }
         }
     }
 }
+
+/** Pages that carry the native ad: every other page, starting with the second. */
+private fun onboardingAdPage(page: Int) = page % 2 == 1
 
 private fun Modifier.onboardingSwipe(page: Int, onPage: (Int) -> Unit): Modifier = pointerInput(page) {
     var dragX = 0f
@@ -816,12 +829,12 @@ private fun OnboardingPageContent(
         if (landscape) {
             Row(Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 Box(Modifier.weight(1.1f).fillMaxHeight(), contentAlignment = Alignment.Center) { OnboardingArt(p, reduceMotion) }
-                Column(
-                    Modifier.weight(0.9f).fillMaxHeight().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(stringResource(onboardingTitles[p]), style = display(30, FontWeight.Bold, lineHeightEm = 1.15f), textAlign = TextAlign.Center)
-                    Text(stringResource(onboardingBodies[p]), Modifier.padding(top = 12.dp), style = body(16).copy(lineHeight = 24.sp), textAlign = TextAlign.Center)
+                // Title and text fit beside the picture: scaled down when a long translation would not fit, never scrolled.
+                com.speedometer.app.core.designsystem.FitInside(Modifier.weight(0.9f).fillMaxHeight().padding(horizontal = 16.dp)) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(stringResource(onboardingTitles[p]), style = display(26, FontWeight.Bold, lineHeightEm = 1.15f), textAlign = TextAlign.Center)
+                        Text(stringResource(onboardingBodies[p]), Modifier.padding(top = 10.dp), style = body(15).copy(lineHeight = 22.sp), textAlign = TextAlign.Center)
+                    }
                 }
             }
         } else {
@@ -1005,7 +1018,10 @@ fun VehicleScreen(
             SetupNativeAd()
             PrimaryBar(stringResource(R.string.finish_setup), onFinish)
         }
-    }) {
+    }, scroll = false) {
+      // Everything fits the screen, scaled down evenly on a short screen instead of scrolling.
+      com.speedometer.app.core.designsystem.FitInside(Modifier.fillMaxSize()) {
+       Column {
         if (landscape) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Column(Modifier.weight(1.1f)) {
@@ -1024,6 +1040,8 @@ fun VehicleScreen(
             autoDetectSection()
             Spacer(Modifier.height(16.dp))
         }
+       }
+      }
     }
 }
 

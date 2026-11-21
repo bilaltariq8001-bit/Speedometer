@@ -11,9 +11,8 @@ import java.util.Locale
  * The app's language, applied by wrapping the activity's context in the chosen locale. The choice is also kept in
  * SharedPreferences, because the context is wrapped before DataStore can be read.
  *
- * Changing it while the app runs ([applyNow]) updates the activity's resources in place and bumps [revision], which the
- * root composable turns into a new configuration: every string redraws in the new language at once, with no activity
- * recreate, no white flash and no lost screen state.
+ * Changing it while the app runs ([applyNow]) saves it, updates the application's resources and bumps [revision]; the
+ * caller then recreates the activity, which wraps a fresh context in the new language.
  */
 object AppLanguage {
     private const val PREFS = "app_language"
@@ -333,12 +332,15 @@ object AppLanguage {
         val locale = locale(name)
         Locale.setDefault(locale)
         return runCatching {
-            listOf(activity.resources, activity.applicationContext.resources).distinct().forEach { res ->
-                val config = Configuration(res.configuration)
-                config.setLocale(locale)
-                config.setLayoutDirection(locale)
-                res.updateConfiguration(config, res.displayMetrics)
-            }
+            // Only the application's resources are updated in place (services, notifications and alerts read them).
+            // The activity's resources are never changed in place: Android caches them per language, so changing the
+            // English set to Urdu in place meant that going back to English later found that cached set, still in
+            // Urdu, until the app was closed. The caller recreates the activity, which builds them fresh.
+            val res = activity.applicationContext.resources
+            val config = Configuration(res.configuration)
+            config.setLocale(locale)
+            config.setLayoutDirection(locale)
+            res.updateConfiguration(config, res.displayMetrics)
             revision.intValue++
         }.isSuccess
     }

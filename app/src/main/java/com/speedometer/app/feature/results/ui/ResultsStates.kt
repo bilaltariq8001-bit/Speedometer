@@ -93,9 +93,9 @@ fun SavingView(r: ResultsUi) {
         progress.animateTo(1f, tween(1500, easing = androidx.compose.animation.core.LinearOutSlowInEasing))
     }
     Box(Modifier.fillMaxSize().background(Bg).systemBarsPadding(), contentAlignment = Alignment.TopCenter) {
-        Column(
-            Modifier.widthIn(max = com.speedometer.app.core.designsystem.rememberLayout().contentMax).fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+        // Fits the screen in portrait and landscape: scaled down when short, never scrolled.
+        com.speedometer.app.core.designsystem.FitColumn(
+            Modifier.widthIn(max = com.speedometer.app.core.designsystem.rememberLayout().contentMax).fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(stringResource(R.string.saving_title), Modifier.padding(top = 24.dp), style = displayStyle(22, FontWeight.SemiBold))

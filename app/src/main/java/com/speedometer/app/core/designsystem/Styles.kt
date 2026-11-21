@@ -69,14 +69,21 @@ fun ScrollPage(
     maxWidth: Dp? = null,
     /** Fixed header (title bar with back button) that stays put while the content scrolls. */
     top: @Composable () -> Unit = {},
+    /** In landscape, fit the content to the screen (scaled down when short) instead of scrolling. For fixed content only. */
+    fitInLandscape: Boolean = false,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    val fit = fitInLandscape && rememberLayout().isLandscape
     // Above the gesture or navigation bar. On the tab screens the bar already took that room, so nothing is added there.
     Column(modifier.fillMaxSize().background(Bg).navigationBarsPadding()) {
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
             Column(Modifier.widthIn(max = maxWidth ?: rememberLayout().contentMax).fillMaxWidth()) { top() }
         }
-        Column(
+        if (fit) {
+            FitColumn(Modifier.weight(1f).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(Modifier.widthIn(max = maxWidth ?: rememberLayout().contentMax).fillMaxWidth(), content = content)
+            }
+        } else Column(
             Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {

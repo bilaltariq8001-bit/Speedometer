@@ -116,17 +116,33 @@ fun ScoreIllustration(modifier: Modifier = Modifier, progress: Float = 1f) {
 @Composable
 fun StrokeIcon(
     pathData: String, color: Color, modifier: Modifier = Modifier, size: Dp = 32.dp, box: Float = 32f, filled: Boolean = false,
+    /** Flip left to right in right-to-left languages. By default only back and forward arrows do. */
+    autoMirror: Boolean = pathData in directionalIcons,
 ) {
     // Parsing SVG path data is costly and used to run on every recomposition of every icon; parse each string once.
     val path = remember(pathData) { parsedIconPath(pathData) }
+    val mirror = autoMirror &&
+        androidx.compose.ui.platform.LocalLayoutDirection.current == androidx.compose.ui.unit.LayoutDirection.Rtl
     Canvas(modifier.size(size)) {
         val sc = this.size.width / box
-        withTransform({ scale(sc, sc, Offset.Zero) }) {
+        withTransform({
+            // In Arabic, Urdu, Hebrew and the other RTL languages "back" points right and "forward" points left.
+            if (mirror) scale(-1f, 1f, center)
+            scale(sc, sc, Offset.Zero)
+        }) {
             if (filled) drawPath(path, color)
             else drawPath(path, color, style = Stroke(2f, cap = StrokeCap.Round, join = StrokeJoin.Round))
         }
     }
 }
+
+/** Arrows and chevrons that point along the reading direction, so they flip in right-to-left languages. */
+private val directionalIcons = setOf(
+    "M15 5l-7 7 7 7", // back
+    "M9 6l6 6-6 6", // forward / open
+    "M15 18l-6-6 6-6",
+    "M9 18l6-6-6-6",
+)
 
 /** Parsed icon paths by their path data. Icons use a fixed set of strings, so this stays small. Main thread only. */
 private val iconPathCache = HashMap<String, androidx.compose.ui.graphics.Path>()

@@ -239,8 +239,8 @@ fun LiveDriveScreen(
 
     Box(Modifier.fillMaxSize()) {
         if (signalLost) {
-            Column(
-                Modifier.fillMaxSize().background(Bg).statusBarsPadding().verticalScroll(rememberScrollState()),
+            com.speedometer.app.core.designsystem.FitColumn(
+                Modifier.fillMaxSize().background(Bg).statusBarsPadding().navigationBarsPadding(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Column(Modifier.widthIn(max = layout.contentMax).fillMaxWidth().padding(20.dp)) {
@@ -271,8 +271,9 @@ fun LiveDriveScreen(
                     Column(
                         Modifier.weight(1f).fillMaxHeight(),
                     ) {
-                        Column(
-                            Modifier.weight(1f).verticalScroll(rememberScrollState())
+                        // Landscape: the stats fit beside the meter, scaled down on a short screen, never scrolled.
+                        com.speedometer.app.core.designsystem.FitColumn(
+                            Modifier.weight(1f).fillMaxWidth()
                                 .padding(start = 0.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp),
                         ) {

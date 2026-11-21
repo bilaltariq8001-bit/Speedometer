@@ -93,7 +93,7 @@ fun LiveShareScreen(onBack: () -> Unit, vm: LiveShareViewModel = hiltViewModel()
         }
     }
 
-    ScrollPage(bottom = {
+    ScrollPage(fitInLandscape = true, bottom = {
         Box(Modifier.padding(start = 20.dp, end = 20.dp, bottom = 28.dp, top = 8.dp)) {
             if (s != null) {
                 Box(

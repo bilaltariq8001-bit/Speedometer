@@ -224,6 +224,7 @@ fun ResultsScreen(
         }
     }
 
+    val landscapeLayout = rememberLayout().isLandscape
     val details: @Composable ColumnScope.() -> Unit = {
         // Stats row: Distance, Duration, Avg speed, Max speed
         Column(
@@ -242,8 +243,8 @@ fun ResultsScreen(
 
         FromToCard(startTime, endTime, r.startPoint, r.endPoint, r.startPlace, r.endPlace, r.placesLoading)
 
-        // Route Map (Trip line from start to finish/destination)
-        if (line.size >= 2) {
+        // Route Map (Trip line from start to finish/destination). In landscape it has a column of its own.
+        if (line.size >= 2 && !landscapeLayout) {
             Box(
                 Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, top = 12.dp)
                     .height(220.dp).clip(RoundedCornerShape(20.dp)).background(Surface1),
@@ -279,14 +280,27 @@ fun ResultsScreen(
 
     val layout = rememberLayout()
     if (layout.isLandscape) {
+        // Landscape: score | stats and buttons | route map, each fitting the screen height (scaled down, never scrolled).
         Row(Modifier.fillMaxSize().background(Bg)) {
-            Column(
-                Modifier.width(300.dp).fillMaxHeight().verticalScroll(rememberScrollState()).padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
+            com.speedometer.app.core.designsystem.FitColumn(
+                Modifier.width(280.dp).fillMaxHeight().padding(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally, alignTop = false,
             ) { summary() }
-            Column(Modifier.weight(1f).fillMaxHeight().padding(end = 4.dp, top = 20.dp)) {
-                Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) { details() }
+            Column(Modifier.weight(1f).fillMaxHeight().padding(top = 8.dp)) {
+                com.speedometer.app.core.designsystem.FitColumn(Modifier.weight(1f).fillMaxWidth()) { details() }
                 bottom()
+            }
+            if (line.size >= 2) {
+                Box(
+                    Modifier.weight(0.8f).fillMaxHeight().padding(top = 12.dp, end = 12.dp, bottom = 12.dp)
+                        .clip(RoundedCornerShape(20.dp)).background(Surface1),
+                ) {
+                    RouteMap(
+                        lines = listOf(MapLine(line, Amber)),
+                        dots = listOf(MapDot(line.first(), Danger, 12f, Bg), MapDot(line.last(), Ok, 7f, Bg)),
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
             }
         }
     } else {

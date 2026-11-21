@@ -74,7 +74,7 @@ fun GpsStatusScreen(onBack: () -> Unit, vm: GpsStatusViewModel = hiltViewModel()
     val q = s.quality
     val color = when (q) { GpsQuality.Strong -> Ok; GpsQuality.Weak -> Amber; GpsQuality.Lost -> Danger }
 
-    ScrollPage(bottom = {
+    ScrollPage(fitInLandscape = true, bottom = {
         Box(
             Modifier.padding(start = 20.dp, end = 20.dp, bottom = 24.dp, top = 8.dp).fillMaxWidth().height(52.dp)
                 .border(1.dp, Line3, RoundedCornerShape(26.dp)).clickable(role = Role.Button, onClick = onBack),

@@ -277,9 +277,15 @@ fun HomeScreen(
     val homeUnit = settings?.unit ?: SpeedUnit.Kmh
     var showExit by rememberSaveable { mutableStateOf(false) }
     var lastBackPressAt by rememberSaveable { mutableLongStateOf(0L) }
+    val landscapeNow = androidx.compose.ui.platform.LocalConfiguration.current.orientation ==
+        android.content.res.Configuration.ORIENTATION_LANDSCAPE
     BackHandler(enabled = dialog == Dialog.None) {
         val now = SystemClock.elapsedRealtime()
-        if (now - lastBackPressAt < 2000L) {
+        if (landscapeNow) {
+            // Back in landscape: the screen turns to portrait first, then the exit dialog shows there.
+            context.findActivity()?.let { com.speedometer.app.core.common.OrientationLock.portraitForExit(it, true) }
+            showExit = true
+        } else if (now - lastBackPressAt < 2000L) {
             showExit = true
         } else {
             lastBackPressAt = now
@@ -480,7 +486,8 @@ fun HomeScreen(
                     }
                 }
                 Column(Modifier.weight(1f - gaugePaneWeight).fillMaxHeight().padding(end = 4.dp)) {
-                    Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+                    // Landscape: header, vehicle and stats fit beside the gauge, scaled down when short, never scrolled.
+                    com.speedometer.app.core.designsystem.FitColumn(Modifier.weight(1f).fillMaxWidth()) {
                         header()
                         Spacer(Modifier.height(4.dp))
                         if (homeTab != 2) vehicleMenu()
@@ -543,7 +550,18 @@ fun HomeScreen(
     }
 
     if (showExit) {
-        ExitRateSheet(onStay = { showExit = false }, onExit = { context.findActivity()?.finish() })
+        ExitRateSheet(
+            onStay = {
+                showExit = false
+                // Staying: back to the orientation chosen in Settings (landscape, if that is what it was).
+                context.findActivity()?.let { com.speedometer.app.core.common.OrientationLock.portraitForExit(it, false) }
+            },
+            onExit = {
+                // Leaving: no turn back to landscape on the way out; the next start uses the Settings choice again.
+                com.speedometer.app.core.common.OrientationLock.clearHold()
+                context.findActivity()?.finish()
+            },
+        )
     }
 
     when (dialog) {

@@ -67,6 +67,7 @@ class GuardAlerts @Inject constructor(
 
     /** Starts watching the live trip. Safe to call more than once. */
     fun start() {
+        watchAppHidden()
         if (job?.isActive == true) return
         // The voice takes a moment to start, but binding to the speech engine on every launch slowed app start. It is now
         // started the moment a trip begins recording, still well before the first warning can fire.
@@ -92,6 +93,35 @@ class GuardAlerts @Inject constructor(
                 if (wantBuzz && !buzzing) runCatching { startBuzz() } else if (!wantBuzz && buzzing) stopBuzz()
             }
         }
+    }
+
+    private var watchingHidden = false
+
+    /**
+     * Minimising the app (Home, the app switcher, another app) while the over-speed alarm is going off pauses the trip:
+     * the alarm stops at once and the trip waits for the driver. Rotation does not count (the process lifecycle ignores
+     * it), and neither does a full-screen ad.
+     */
+    private fun watchAppHidden() {
+        if (watchingHidden) return
+        watchingHidden = true
+        runCatching {
+            androidx.lifecycle.ProcessLifecycleOwner.get().lifecycle.addObserver(
+                androidx.lifecycle.LifecycleEventObserver { _, event ->
+                    if (event == androidx.lifecycle.Lifecycle.Event.ON_STOP) onAppHidden()
+                },
+            )
+        }
+    }
+
+    private fun onAppHidden() {
+        val s = trips.state.value
+        val ringing = s.phase == TripPhase.Recording && s.guard != GuardLevel.Off && !isMuted
+        if (!ringing || com.speedometer.app.core.ads.AdGate.fullScreenAdVisible) return
+        trips.pause()
+        stopBuzz()
+        runCatching { tts?.stop() }
+        analytics.event("trip_auto_paused_alarm")
     }
 
     /** Silences alerts for [minutes]. */

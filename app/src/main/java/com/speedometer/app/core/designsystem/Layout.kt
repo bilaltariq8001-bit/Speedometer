@@ -45,7 +45,12 @@ fun rememberLayout(): WindowLayout {
  * run over the cards below; this keeps them whole and in place instead. With unbounded height nothing is scaled.
  */
 @Composable
-fun FitInside(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+fun FitInside(
+    modifier: Modifier = Modifier,
+    /** When the content is shorter than the space, place it at the top instead of the centre. */
+    alignTop: Boolean = false,
+    content: @Composable () -> Unit,
+) {
     androidx.compose.ui.layout.Layout(content = content, modifier = modifier.clipToBounds()) { measurables, constraints ->
         val placeable = measurables.first().measure(
             androidx.compose.ui.unit.Constraints(maxWidth = constraints.maxWidth),
@@ -57,10 +62,31 @@ fun FitInside(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
         val w = constraints.maxWidth
         val h = if (boundedHeight) constraints.maxHeight else placeable.height
         layout(w, h) {
-            placeable.placeWithLayer((w - placeable.width) / 2, (h - placeable.height) / 2) {
+            val y = if (alignTop && scale >= 1f) 0 else (h - placeable.height) / 2
+            placeable.placeWithLayer((w - placeable.width) / 2, y) {
                 scaleX = scale
                 scaleY = scale
             }
         }
+    }
+}
+
+/**
+ * A column that always fits the space it is given and never scrolls: on a short screen (a phone in landscape, a big
+ * font size) its content is scaled down evenly so every icon and line of text stays fully visible. Its children must
+ * not use vertical weight or fillMaxHeight, since the column is measured at its natural height first.
+ */
+@Composable
+fun FitColumn(
+    modifier: Modifier = Modifier,
+    verticalArrangement: androidx.compose.foundation.layout.Arrangement.Vertical = androidx.compose.foundation.layout.Arrangement.Top,
+    horizontalAlignment: androidx.compose.ui.Alignment.Horizontal = androidx.compose.ui.Alignment.Start,
+    alignTop: Boolean = true,
+    content: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit,
+) {
+    FitInside(modifier, alignTop) {
+        androidx.compose.foundation.layout.Column(
+            verticalArrangement = verticalArrangement, horizontalAlignment = horizontalAlignment, content = content,
+        )
     }
 }

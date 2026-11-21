@@ -183,23 +183,23 @@ fun GuardAlertView(trip: TripState, unit: SpeedUnit, onMute: () -> Unit, onDismi
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Column(
-                    Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.Center,
+                com.speedometer.app.core.designsystem.FitColumn(
+                    Modifier.weight(1f).fillMaxHeight(),
+                    alignTop = false,
                 ) {
                     AlertHeader(over, unit, limit)
                     AlertGauge(trip, unit, limit, maxSize = 240.dp)
                 }
-                Column(
-                    Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.Center,
+                com.speedometer.app.core.designsystem.FitColumn(
+                    Modifier.weight(1f).fillMaxHeight(),
+                    alignTop = false,
                 ) {
                     AlertLevel(level)
                     AlertActions(onMute, onDismiss, landscape = true)
                 }
             }
         } else {
-            Column(Modifier.widthIn(max = 560.dp).fillMaxSize().verticalScroll(rememberScrollState())) {
+            com.speedometer.app.core.designsystem.FitColumn(Modifier.widthIn(max = 560.dp).fillMaxSize()) {
                 AlertHeader(over, unit, limit)
                 AlertGauge(trip, unit, limit, maxSize = 320.dp)
                 AlertLevel(level)
