@@ -69,6 +69,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.em
+import androidx.compose.ui.draw.drawBehind
 import com.speedometer.app.R
 import com.speedometer.app.core.data.AppLanguage
 import com.speedometer.app.core.data.Vehicle
@@ -744,10 +746,31 @@ fun OnboardingScreen(page: Int, onPage: (Int) -> Unit, onBackHome: () -> Unit, o
                 }
             }
         }
-    } else Box(Modifier.fillMaxSize().onboardingSwipe(page, onPage)) {
-        Frame(
-            top = {
-                Row(Modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp, top = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+    } else {
+        // Portrait. Every page is laid out in the same fixed frame: top bar, page area, a fixed slot for the ad, dots and
+        // button. Nothing is measured per page and nothing is scaled, so moving between pages never zooms in or out;
+        // only the page's own design changes. The slot keeps its height on every page: on pages 2 and 4 it holds the ad,
+        // on the others a small part of that page's design.
+        val accent = pageAccent(page)
+        val glow by androidx.compose.animation.animateColorAsState(accent, tween(420), label = "pageGlow")
+        Column(
+            Modifier.fillMaxSize().background(Bg)
+                .drawBehind {
+                    val center = when (page) {
+                        0 -> Offset(size.width * 0.5f, size.height * 0.28f)
+                        1 -> Offset(size.width * 0.9f, size.height * 0.55f)
+                        2 -> Offset(size.width * 0.5f, size.height * 0.12f)
+                        3 -> Offset(size.width * 0.1f, size.height * 0.3f)
+                        else -> Offset(size.width * 0.5f, size.height * 0.62f)
+                    }
+                    drawRect(Brush.radialGradient(listOf(glow.copy(alpha = 0.20f), Color.Transparent), center, size.width * 0.85f))
+                }
+                .systemBarsPadding()
+                .onboardingSwipe(page, onPage),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Column(Modifier.widthIn(max = com.speedometer.app.core.designsystem.rememberLayout().contentMax).fillMaxSize()) {
+                Row(Modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp, top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                     Box(
                         Modifier.heightIn(min = 48.dp).widthIn(min = 64.dp).then(if (page > 0) Modifier.clickable(role = Role.Button) { onPage(page - 1) } else Modifier),
                         contentAlignment = Alignment.Center,
@@ -760,16 +783,35 @@ fun OnboardingScreen(page: Int, onPage: (Int) -> Unit, onBackHome: () -> Unit, o
                         ) { Text(stringResource(R.string.skip), style = body(15)) }
                     }
                 }
-            },
-            bottom = {
+                androidx.compose.animation.AnimatedContent(
+                    targetState = page,
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    transitionSpec = {
+                        if (reduceMotion) androidx.compose.animation.EnterTransition.None togetherWith androidx.compose.animation.ExitTransition.None
+                        else {
+                            val dir = if (targetState > initialState) 1 else -1
+                            (androidx.compose.animation.slideInHorizontally(tween(320, easing = androidx.compose.animation.core.FastOutSlowInEasing)) { dir * it / 3 } +
+                                androidx.compose.animation.fadeIn(tween(320))) togetherWith
+                                (androidx.compose.animation.slideOutHorizontally(tween(320, easing = androidx.compose.animation.core.FastOutSlowInEasing)) { -dir * it / 3 } +
+                                    androidx.compose.animation.fadeOut(tween(200)))
+                        }
+                    },
+                    label = "onboardingPage",
+                ) { p -> OnboardingPagePortrait(p, reduceMotion) }
+                // The fixed slot: the same height on every page.
+                Box(Modifier.fillMaxWidth().height(OB_SLOT_HEIGHT), contentAlignment = Alignment.Center) {
+                    if (onboardingAdPage(page)) {
+                        // Every other page only (2 and 4): the pages never show an ad twice in a row. Each loads its own.
+                        androidx.compose.runtime.key(page) { SetupNativeAd() }
+                    } else {
+                        androidx.compose.animation.Crossfade(page, animationSpec = tween(300), label = "slot") { p -> OnboardingSlotExtra(p) }
+                    }
+                }
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-                    // The ad shows on every other page (2 and 4), never on two pages in a row: the pages look alike, and
-                    // an ad on each could read as the same ad repeated on near-identical screens. Each ad page loads its own ad.
-                    if (onboardingAdPage(page)) androidx.compose.runtime.key(page) { SetupNativeAd() }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp, bottom = 24.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)) {
                         repeat(ONBOARDING_PAGES) { i ->
-                            val width by androidx.compose.animation.core.animateDpAsState(if (i == page) 28.dp else 8.dp, androidx.compose.animation.core.tween(260), label = "dot")
-                            val color by androidx.compose.animation.animateColorAsState(if (i == page) Amber else Line3, androidx.compose.animation.core.tween(260), label = "dotColor")
+                            val width by androidx.compose.animation.core.animateDpAsState(if (i == page) 28.dp else 8.dp, tween(260), label = "dot")
+                            val color by androidx.compose.animation.animateColorAsState(if (i == page) accent else Line3, tween(260), label = "dotColor")
                             Box(Modifier.size(width = width, height = 8.dp).background(color, RoundedCornerShape(4.dp)))
                         }
                     }
@@ -777,14 +819,214 @@ fun OnboardingScreen(page: Int, onPage: (Int) -> Unit, onBackHome: () -> Unit, o
                         if (last) finish() else onPage((page + 1).coerceAtMost(ONBOARDING_PAGES - 1))
                     }
                 }
-            },
-            scroll = false,
-        ) {
-            // The whole page fits the screen: when it is taller than the space left, it is scaled down evenly, never scrolled.
-            com.speedometer.app.core.designsystem.FitInside(Modifier.fillMaxSize()) {
-                OnboardingPageContent(page, reduceMotion, landscape = false)
             }
         }
+    }
+}
+
+/** Height of the slot above the dots; the compact native ad fits inside it. */
+private val OB_SLOT_HEIGHT = 112.dp
+
+/** Each page has its own colour: amber, blue, red, green, amber again for the start. */
+private fun pageAccent(page: Int): Color = when (page) {
+    0 -> Amber
+    1 -> Ice
+    2 -> com.speedometer.app.core.designsystem.Danger
+    3 -> Ok
+    else -> Amber
+}
+
+/**
+ * Text that shrinks its own font until it fits the room it is given (long translations), instead of overflowing or
+ * pushing the page around. Only the text changes size; the page frame stays fixed.
+ */
+@Composable
+private fun FitText(text: String, style: TextStyle, modifier: Modifier = Modifier, textAlign: TextAlign = TextAlign.Start) {
+    var scale by remember(text) { mutableFloatStateOf(1f) }
+    Text(
+        text, modifier,
+        style = style.copy(
+            fontSize = style.fontSize * scale,
+            lineHeight = if (style.lineHeight.isSp) style.lineHeight * scale else style.lineHeight,
+        ),
+        textAlign = textAlign,
+        onTextLayout = { if (it.hasVisualOverflow && scale > 0.55f) scale *= 0.92f },
+    )
+}
+
+private val obTitleStyle get() = display(30, FontWeight.Bold, lineHeightEm = 1.12f)
+private val obBodyStyle get() = body(16).copy(lineHeight = 1.45.em)
+
+/**
+ * The five portrait pages, each with its own composition so no two look alike. Every page fills the same fixed area
+ * and splits it by fixed fractions of that area (never by its content), so all pages share one scale.
+ */
+@Composable
+private fun OnboardingPagePortrait(p: Int, reduceMotion: Boolean) {
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        val h = maxHeight
+        when (p) {
+            // 1. Hero: the live dial large and centred, the words underneath, centred.
+            0 -> Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(Modifier.fillMaxWidth().height(h * 0.64f).padding(horizontal = 12.dp), contentAlignment = Alignment.Center) {
+                    OnboardingArt(0, reduceMotion)
+                }
+                Column(Modifier.fillMaxWidth().weight(1f).padding(horizontal = 28.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    FitText(stringResource(onboardingTitles[0]), obTitleStyle, textAlign = TextAlign.Center)
+                    FitText(stringResource(onboardingBodies[0]), obBodyStyle, Modifier.padding(top = 10.dp).weight(1f, fill = false), TextAlign.Center)
+                }
+            }
+            // 2. Words first, start-aligned with a coloured rule; the meters cycle on a card below.
+            1 -> Column(Modifier.fillMaxSize().padding(horizontal = ScreenPad)) {
+                Column(Modifier.fillMaxWidth().height(h * 0.36f).padding(top = 8.dp)) {
+                    Box(Modifier.size(width = 40.dp, height = 4.dp).background(Ice, RoundedCornerShape(2.dp)))
+                    FitText(stringResource(onboardingTitles[1]), obTitleStyle, Modifier.padding(top = 14.dp))
+                    FitText(stringResource(onboardingBodies[1]), obBodyStyle, Modifier.padding(top = 10.dp).weight(1f, fill = false))
+                }
+                Box(
+                    Modifier.fillMaxWidth().weight(1f).padding(bottom = 8.dp)
+                        .background(Surface1, RoundedCornerShape(28.dp)).border(1.dp, Ice.copy(alpha = 0.35f), RoundedCornerShape(28.dp))
+                        .padding(12.dp),
+                    contentAlignment = Alignment.Center,
+                ) { OnboardingArt(1, reduceMotion) }
+            }
+            // 3. Warning card: the limit gauge on a red-edged panel, the words start-aligned beside a red bar.
+            2 -> Column(Modifier.fillMaxSize().padding(horizontal = ScreenPad)) {
+                Box(
+                    Modifier.fillMaxWidth().height(h * 0.6f).padding(top = 4.dp)
+                        .background(
+                            Brush.verticalGradient(listOf(com.speedometer.app.core.designsystem.Danger.copy(alpha = 0.16f), Surface1)),
+                            RoundedCornerShape(32.dp),
+                        )
+                        .border(1.dp, com.speedometer.app.core.designsystem.Danger.copy(alpha = 0.45f), RoundedCornerShape(32.dp))
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center,
+                ) { OnboardingArt(2, reduceMotion) }
+                Row(Modifier.fillMaxWidth().weight(1f).padding(top = 20.dp)) {
+                    Box(Modifier.width(4.dp).fillMaxHeight(0.8f).background(com.speedometer.app.core.designsystem.Danger, RoundedCornerShape(2.dp)))
+                    Column(Modifier.padding(start = 14.dp).weight(1f)) {
+                        FitText(stringResource(onboardingTitles[2]), obTitleStyle)
+                        FitText(stringResource(onboardingBodies[2]), obBodyStyle, Modifier.padding(top = 8.dp).weight(1f, fill = false))
+                    }
+                }
+            }
+            // 4. Score: a big step number and the words on top, the score ring to the end side with its parts.
+            3 -> Column(Modifier.fillMaxSize().padding(horizontal = ScreenPad)) {
+                Row(Modifier.fillMaxWidth().height(h * 0.34f).padding(top = 8.dp)) {
+                    Text("04", style = display(64, FontWeight.Bold, Ok.copy(alpha = 0.85f), lineHeightEm = 1f))
+                    Column(Modifier.padding(start = 16.dp).weight(1f)) {
+                        FitText(stringResource(onboardingTitles[3]), obTitleStyle)
+                        FitText(stringResource(onboardingBodies[3]), obBodyStyle, Modifier.padding(top = 8.dp).weight(1f, fill = false))
+                    }
+                }
+                Row(Modifier.fillMaxWidth().weight(1f).padding(bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(0.42f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        ScorePartPill(R.string.part_braking)
+                        ScorePartPill(R.string.part_acceleration)
+                        ScorePartPill(R.string.part_cornering)
+                        ScorePartPill(R.string.part_limit)
+                    }
+                    Box(Modifier.weight(0.58f).fillMaxHeight(), contentAlignment = Alignment.Center) { OnboardingArt(3, reduceMotion) }
+                }
+            }
+            // 5. Start: a large centred title on top, the vehicles as a 2 x 2 grid, the words at the bottom.
+            else -> Column(Modifier.fillMaxSize().padding(horizontal = ScreenPad), horizontalAlignment = Alignment.CenterHorizontally) {
+                FitText(
+                    stringResource(onboardingTitles[4]), display(34, FontWeight.Bold, lineHeightEm = 1.1f),
+                    Modifier.fillMaxWidth().height(h * 0.2f).padding(top = 12.dp), TextAlign.Center,
+                )
+                Box(Modifier.fillMaxWidth().height(h * 0.52f), contentAlignment = Alignment.Center) { VehicleGridArt(reduceMotion) }
+                FitText(
+                    stringResource(onboardingBodies[4]), obBodyStyle,
+                    Modifier.fillMaxWidth().weight(1f).padding(top = 12.dp, start = 8.dp, end = 8.dp), TextAlign.Center,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ScorePartPill(label: Int) {
+    Row(
+        Modifier.fillMaxWidth().background(Surface1, RoundedCornerShape(14.dp)).padding(horizontal = 10.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(Modifier.size(8.dp).background(Ok, CircleShape))
+        Text(
+            stringResource(label), Modifier.padding(start = 8.dp), style = body(13, FontWeight.Medium, TextPrimary),
+            maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+        )
+    }
+}
+
+/** Page 5's picture: the four vehicles as big tiles, the selection moving between them. */
+@Composable
+private fun VehicleGridArt(reduceMotion: Boolean) {
+    val choices = listOf(Vehicle.Walking, Vehicle.Bicycle, Vehicle.Motorbike, Vehicle.Car)
+    var on by rememberSaveable { mutableStateOf(3) }
+    LaunchedEffect(Unit) { if (!reduceMotion) while (true) { delay(1500); on = (on + 1) % choices.size } }
+    BoxWithConstraints(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        val tile = minOf((maxWidth - 16.dp) / 2, (maxHeight - 16.dp) / 2, 150.dp)
+        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            choices.chunked(2).forEachIndexed { row, pair ->
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    pair.forEachIndexed { col, v ->
+                        val selected = row * 2 + col == on
+                        val border by androidx.compose.animation.animateColorAsState(if (selected) Amber else Color.Transparent, tween(300), label = "vehicleBorder")
+                        val tint by androidx.compose.animation.animateColorAsState(if (selected) Amber else TextSoft, tween(300), label = "vehicleTint")
+                        Box(
+                            Modifier.size(tile).background(Surface1, RoundedCornerShape(28.dp)).border(2.dp, border, RoundedCornerShape(28.dp)),
+                            contentAlignment = Alignment.Center,
+                        ) { StrokeIcon(vehicleIcons.getValue(v), tint, size = tile * 0.42f) }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** What fills the fixed slot on the pages without an ad (1, 3 and 5): a small part of that page's own design. */
+@Composable
+private fun OnboardingSlotExtra(p: Int) {
+    Box(Modifier.fillMaxSize().padding(horizontal = ScreenPad, vertical = 12.dp), contentAlignment = Alignment.Center) {
+        when (p) {
+            0 -> Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                SlotStat(R.string.max_speed_label, "112", Modifier.weight(1f))
+                SlotStat(R.string.avg_speed_label, "64", Modifier.weight(1f))
+                SlotStat(R.string.distance, "12.4", Modifier.weight(1f))
+            }
+            2 -> Row(
+                Modifier.fillMaxWidth().background(com.speedometer.app.core.designsystem.Danger.copy(alpha = 0.14f), RoundedCornerShape(20.dp))
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box(Modifier.size(44.dp).background(Color.White, CircleShape).border(5.dp, com.speedometer.app.core.designsystem.Danger, CircleShape), contentAlignment = Alignment.Center) {
+                    Text("60", style = display(16, FontWeight.Bold, Bg))
+                }
+                Spacer(Modifier.weight(1f))
+                Text("72", style = display(30, FontWeight.Bold, com.speedometer.app.core.designsystem.Danger))
+                Text(" " + stringResource(R.string.unit_kmh), style = body(14, FontWeight.Medium, com.speedometer.app.core.designsystem.Danger))
+            }
+            else -> Row(
+                Modifier.fillMaxWidth(0.8f).height(56.dp).clip(RoundedCornerShape(28.dp)).border(2.dp, Amber, RoundedCornerShape(28.dp)),
+                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally), verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Canvas(Modifier.size(20.dp)) {
+                    val sc = size.width / 24f
+                    val tri = androidx.compose.ui.graphics.Path().apply { moveTo(7f * sc, 4f * sc); lineTo(20f * sc, 12f * sc); lineTo(7f * sc, 20f * sc); close() }
+                    drawPath(tri, Amber)
+                }
+                Text(stringResource(R.string.start_trip), style = body(17, FontWeight.Bold, Amber))
+            }
+        }
+    }
+}
+
+@Composable
+private fun SlotStat(label: Int, value: String, modifier: Modifier) {
+    Column(modifier.background(Surface1, RoundedCornerShape(18.dp)).padding(horizontal = 12.dp, vertical = 10.dp)) {
+        Text(stringResource(label), style = body(12), maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+        Text(value, Modifier.padding(top = 4.dp), style = display(22, FontWeight.Bold, Amber))
     }
 }
 
