@@ -102,7 +102,7 @@ internal fun animatedMeterFraction(value: Float): androidx.compose.runtime.State
         animationSpec = if (com.speedometer.app.core.navigation.NavTransitions.reduceMotion(context)) {
             snap()
         } else {
-            spring(dampingRatio = 0.88f, stiffness = 220f)
+            spring(dampingRatio = 1f, stiffness = 1200f)
         },
         label = "meterFill",
     )
@@ -130,7 +130,7 @@ internal fun AnimatedSpeedText(speedText: String, style: androidx.compose.ui.tex
         animationSpec = if (com.speedometer.app.core.navigation.NavTransitions.reduceMotion(context)) {
             snap()
         } else {
-            spring(dampingRatio = 0.9f, stiffness = 360f)
+            spring(dampingRatio = 1f, stiffness = 1500f)
         },
         label = "speedReadout",
     ).value
@@ -430,7 +430,7 @@ fun NeonDialMeter(d: MeterData, modifier: Modifier = Modifier) {
     val frac = (d.speedKmh / d.maxKmh).coerceIn(0f, 1f)
     // Read in the Canvas only, so the needle animation redraws without recomposing.
     val pos by androidx.compose.animation.core.animateFloatAsState(
-        frac, androidx.compose.animation.core.spring(dampingRatio = 0.88f, stiffness = 220f), label = "needle",
+        frac, androidx.compose.animation.core.spring(dampingRatio = 1f, stiffness = 1200f), label = "needle",
     )
     val labels = androidx.compose.ui.text.rememberTextMeasurer()
     val over = d.over

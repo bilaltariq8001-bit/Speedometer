@@ -104,21 +104,39 @@ class SpeedSmoother {
     var value = 0f
         private set
     private var started = false
+    /** How many fixes in a row were far off the shown speed in the same direction (a real speed change, not noise). */
+    private var trend = 0
+    private var trendSign = 0
 
-    fun reset() { value = 0f; started = false }
+    fun reset() { value = 0f; started = false; trend = 0; trendSign = 0 }
 
     fun next(rawKmh: Float, dtSec: Double, accuracyM: Float?): Float {
         if (!started) { started = true; value = rawKmh; return value }
-        // No car changes speed faster than about 6 m/s2 (22 km/h every second); anything beyond that is noise.
-        val maxStep = (MAX_ACCEL_KMH_PER_S * dtSec.coerceIn(0.2, MAX_DT_SEC)).toFloat()
+        // Moving off from 0: the motion gate has already proved the movement, so show the real speed at once instead of
+        // climbing up to it from 0 over several seconds.
+        if (value == 0f && rawKmh >= TAKE_OFF_KMH && accuracyM != null && accuracyM <= POOR_ACCURACY_M) {
+            value = rawKmh; trend = 0; trendSign = 0; return value
+        }
+        val diff = rawKmh - value
+        val sign = if (diff > 0f) 1 else -1
+        trend = if (abs(diff) >= TREND_KMH) (if (sign == trendSign) trend + 1 else 1) else 0
+        trendSign = if (trend > 0) sign else 0
+        val following = trend >= TREND_FIXES
+        // One wild fix is limited to about 6 m/s2 (22 km/h a second). When fixes agree (two in a row far off in the
+        // same direction) the speed really changed: follow it straight away. Before, the shown speed climbed in
+        // 20 to 30 km/h steps (10, 40, 70, 90) while the rider was already at 90.
+        val accel = if (following) MAX_FOLLOW_KMH_PER_S else MAX_ACCEL_KMH_PER_S
+        val maxStep = (accel * dtSec.coerceIn(0.2, MAX_DT_SEC)).toFloat()
         val clamped = rawKmh.coerceIn(value - maxStep, value + maxStep)
         val error = clamped - value
         var next = value
         // Small differences are ignored: 0.5 km/h, or 1% of the speed when that is more, so the digits hold still at cruise.
         if (abs(error) >= maxOf(DEAD_BAND_KMH, value * DEAD_BAND_FRACTION)) {
-            // Calm for small differences, quick for big ones, so real braking and acceleration show without delay.
-            val base = if (accuracyM == null || accuracyM > POOR_ACCURACY_M) ALPHA_POOR else ALPHA_GOOD
-            val alpha = (base + abs(error) / ALPHA_RAMP_KMH).coerceAtMost(ALPHA_MAX)
+            val alpha = if (following) ALPHA_FOLLOW else {
+                // Calm for small differences, quick for big ones.
+                val base = if (accuracyM == null || accuracyM > POOR_ACCURACY_M) ALPHA_POOR else ALPHA_GOOD
+                (base + abs(error) / ALPHA_RAMP_KMH).coerceAtMost(ALPHA_MAX)
+            }
             next = value + error * alpha
         }
         if (rawKmh < STANDSTILL_KMH && next < STANDSTILL_HOLD_KMH) next = 0f
@@ -128,14 +146,19 @@ class SpeedSmoother {
 
     private companion object {
         const val MAX_ACCEL_KMH_PER_S = 22.0
+        const val MAX_FOLLOW_KMH_PER_S = 60.0
         const val MAX_DT_SEC = 3.0
         const val ALPHA_GOOD = 0.3f
         const val ALPHA_POOR = 0.15f
+        const val ALPHA_FOLLOW = 1f
         const val POOR_ACCURACY_M = 25f
         const val DEAD_BAND_KMH = 0.5f
         const val DEAD_BAND_FRACTION = 0.01f
         const val ALPHA_RAMP_KMH = 30f
         const val ALPHA_MAX = 0.8f
+        const val TREND_KMH = 7f
+        const val TREND_FIXES = 2
+        const val TAKE_OFF_KMH = 6f
         const val STANDSTILL_KMH = 2f
         const val STANDSTILL_HOLD_KMH = 3f
     }

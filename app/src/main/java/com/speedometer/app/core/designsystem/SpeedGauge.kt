@@ -50,7 +50,7 @@ fun SpeedGauge(
         animationSpec = if (com.speedometer.app.core.navigation.NavTransitions.reduceMotion(context)) {
             snap()
         } else {
-            spring(dampingRatio = 0.82f, stiffness = 145f)
+            spring(dampingRatio = 1f, stiffness = 1200f)
         },
         label = "gaugeProgress",
     )

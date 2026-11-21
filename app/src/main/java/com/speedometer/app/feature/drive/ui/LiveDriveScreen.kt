@@ -129,9 +129,16 @@ fun LiveDriveScreen(
     }
 
     val unit = activeSettings.unit
+    // GPS gives one speed a second. The shown speed glides to each new one over about that second, so the needle and
+    // digits move continuously instead of jumping and then waiting for the next fix.
+    val shownKmh by androidx.compose.animation.core.animateFloatAsState(
+        trip.speedKmh,
+        androidx.compose.animation.core.tween(SPEED_GLIDE_MS, easing = androidx.compose.animation.core.LinearEasing),
+        label = "shownSpeed",
+    )
     val data = MeterData(
-        speedKmh = trip.speedKmh,
-        speedText = unit.fromKmh(trip.speedKmh).roundToInt().toString(),
+        speedKmh = shownKmh,
+        speedText = unit.fromKmh(shownKmh).roundToInt().toString(),
         unit = unit.label,
         limitKmh = trip.limitKmh,
         limitText = trip.limitKmh?.let { unit.fromKmh(it).roundToInt().toString() },
@@ -365,3 +372,6 @@ internal object StatIcons {
     const val Average = "M3 15c3-8 5 6 9-2s6 4 9-4"
     const val Max = "M4.9 19a9 9 0 1 1 14.2 0 M12 13l4-4"
 }
+
+/** How long the shown speed takes to glide to a new GPS speed; just under the 1 s between fixes. */
+private const val SPEED_GLIDE_MS = 850
