@@ -28,6 +28,9 @@ class TripPhaseViewModel @Inject constructor(
     /** True while a trip is recording or paused. */
     fun tripActive(): Boolean = trips.state.value.phase.let { it == TripPhase.Recording || it == TripPhase.Paused }
 
+    /** True while an ended trip waits on Save or Discard (its summary is open, or was left by the system). */
+    fun reviewing(): Boolean = trips.reviewing
+
     val phase: Flow<TripPhase> = trips.state.map { it.phase }.distinctUntilChanged()
 
     /**

@@ -111,3 +111,26 @@ class TripEngineTest {
         assertEquals(200f, s.maxKmh, 10f)
     }
 }
+
+class TripReopenTest {
+    @Test fun backOnSummaryContinuesTheTimer() {
+        val e = TripEngine()
+        e.start()
+        e.tick(10.0)
+        e.finish()
+        org.junit.Assert.assertTrue(e.reviewing)
+        e.tick(5.0) // time on the summary is not counted
+        org.junit.Assert.assertTrue(e.reopen())
+        org.junit.Assert.assertEquals(TripPhase.Recording, e.state.value.phase)
+        e.tick(3.0)
+        org.junit.Assert.assertEquals(13, e.state.value.durationSec)
+    }
+
+    @Test fun savedTripCannotBeReopened() {
+        val e = TripEngine()
+        e.start()
+        e.finish()
+        e.closeReview()
+        org.junit.Assert.assertFalse(e.reopen())
+    }
+}

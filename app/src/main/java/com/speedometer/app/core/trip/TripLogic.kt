@@ -154,3 +154,86 @@ object DistanceUnit {
     const val MILES_PER_KM = 0.621371f
     fun fromKm(km: Float, mph: Boolean) = if (mph) km * MILES_PER_KM else km
 }
+
+/**
+ * Stops a phone that is standing still (indoors, on a table, in a pocket) from showing speed. Indoors the GPS bounces
+ * off walls, so its position jumps by tens of metres and it can report 10 to 25 km/h while nobody moves.
+ *
+ * While standing still, speed reads 0 until movement is proven: [CONFIRM_FIXES] fixes in a row with a good fix
+ * (accuracy within [MAX_START_ACCURACY_M]), a speed of at least [START_KMH] that is clearly larger than its own error,
+ * and the position at least [START_DISTANCE_M] (or the two fixes' accuracy, when larger) away from where the phone
+ * stood. Once moving, speeds pass straight through, and [STOP_FIXES] slow fixes in a row count as standing still again.
+ * Pure Kotlin so it can be tested; the trip service feeds it every accepted fix.
+ */
+class MotionGate {
+    var moving = false
+        private set
+    private var anchorLat = Double.NaN
+    private var anchorLon = Double.NaN
+    private var anchorAcc = 0f
+    private var goodFixes = 0
+    private var slowFixes = 0
+
+    fun reset() {
+        moving = false
+        anchorLat = Double.NaN
+        anchorLon = Double.NaN
+        anchorAcc = 0f
+        goodFixes = 0
+        slowFixes = 0
+    }
+
+    /** Returns the speed to use in m/s: [speedMps] once the phone is really moving, 0 while it stands still. */
+    fun filter(speedMps: Float, speedAccuracyMps: Float?, accuracyM: Float?, lat: Double, lon: Double): Float {
+        val hasPos = !lat.isNaN() && !lon.isNaN()
+        val kmh = speedMps * 3.6f
+        if (moving) {
+            slowFixes = if (kmh < STOP_KMH) slowFixes + 1 else 0
+            if (slowFixes >= STOP_FIXES) {
+                moving = false
+                goodFixes = 0
+                if (hasPos) setAnchor(lat, lon, accuracyM ?: UNKNOWN_ACCURACY_M)
+                return 0f
+            }
+            return speedMps
+        }
+        val acc = accuracyM ?: UNKNOWN_ACCURACY_M
+        if (!hasPos) { goodFixes = 0; return 0f }
+        if (anchorLat.isNaN()) setAnchor(lat, lon, acc)
+        val speedTrusted = speedAccuracyMps == null || speedAccuracyMps <= 0f || speedMps >= SPEED_ERROR_FACTOR * speedAccuracyMps
+        val credible = acc <= MAX_START_ACCURACY_M && kmh >= START_KMH && speedTrusted
+        if (!credible) {
+            goodFixes = 0
+            // A good slow fix moves the standing point along (walking to the car), so it never goes stale.
+            if (acc <= MAX_START_ACCURACY_M && kmh < START_KMH) setAnchor(lat, lon, acc)
+            return 0f
+        }
+        goodFixes++
+        val away = GeoMath.distanceM(anchorLat, anchorLon, lat, lon)
+        val needed = (acc + anchorAcc).toDouble().coerceIn(START_DISTANCE_M, MAX_START_DISTANCE_M)
+        if (goodFixes >= CONFIRM_FIXES && away >= needed) {
+            moving = true
+            slowFixes = 0
+            return speedMps
+        }
+        return 0f
+    }
+
+    private fun setAnchor(lat: Double, lon: Double, acc: Float) {
+        anchorLat = lat
+        anchorLon = lon
+        anchorAcc = acc
+    }
+
+    companion object {
+        const val START_KMH = 6f
+        const val STOP_KMH = 3f
+        const val CONFIRM_FIXES = 3
+        const val STOP_FIXES = 3
+        const val MAX_START_ACCURACY_M = 25f
+        const val START_DISTANCE_M = 25.0
+        const val MAX_START_DISTANCE_M = 40.0
+        const val SPEED_ERROR_FACTOR = 2f
+        const val UNKNOWN_ACCURACY_M = 100f
+    }
+}

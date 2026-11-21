@@ -58,6 +58,12 @@ class TripRepository @Inject constructor() {
     }
     fun resume() = engine.resume()
     fun finish() = engine.finish()
+    /** True while an ended trip waits on Save or Discard and can still be continued. */
+    val reviewing: Boolean get() = engine.reviewing
+    /** Continues an ended, unsaved trip (Back on the trip summary). */
+    fun reopen(): Boolean = engine.reopen()
+    /** The ended trip was saved, so it can no longer be continued. */
+    fun closeReview() = engine.closeReview()
     fun reset() = engine.reset()
     fun onSample(sample: LocationSample) = engine.onSample(sample)
     fun onNoFix(seconds: Int) = engine.onNoFix(seconds)

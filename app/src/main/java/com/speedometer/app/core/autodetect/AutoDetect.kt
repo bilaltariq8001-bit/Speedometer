@@ -73,12 +73,14 @@ class AutoDetect @Inject constructor(
         val client = ActivityRecognition.getClient(context)
         val pending = transitionIntent(context)
         if (enabled && hasPermission()) {
+            fun transition(type: Int, kind: Int) =
+                ActivityTransition.Builder().setActivityType(type).setActivityTransition(kind).build()
+            // Leaving the vehicle and standing still are watched too, so a short false "in a vehicle" guess is cancelled.
             val request = ActivityTransitionRequest(
                 listOf(
-                    ActivityTransition.Builder()
-                        .setActivityType(DetectedActivity.IN_VEHICLE)
-                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-                        .build(),
+                    transition(DetectedActivity.IN_VEHICLE, ActivityTransition.ACTIVITY_TRANSITION_ENTER),
+                    transition(DetectedActivity.IN_VEHICLE, ActivityTransition.ACTIVITY_TRANSITION_EXIT),
+                    transition(DetectedActivity.STILL, ActivityTransition.ACTIVITY_TRANSITION_ENTER),
                 ),
             )
             client.requestActivityTransitionUpdates(request, pending)
@@ -91,6 +93,7 @@ class AutoDetect @Inject constructor(
         const val ACTION_START_TRIP = "com.speedometer.app.START_TRIP"
         const val ACTION_TRANSITION = "com.speedometer.app.ACTIVITY_TRANSITION"
         const val ACTION_NOT_DRIVING = "com.speedometer.app.NOT_DRIVING"
+        const val ACTION_CONFIRM = "com.speedometer.app.CONFIRM_DRIVING"
         const val CHANNEL_ID = "auto_detect"
         const val NOTIFICATION_ID = 3
 
@@ -102,7 +105,7 @@ class AutoDetect @Inject constructor(
     }
 }
 
-/** Receives vehicle transitions and posts the "Looks like you started driving" notice. */
+/** Receives vehicle transitions and, once the phone has stayed in a vehicle for 90 s, posts the "Looks like you started driving" notice. */
 @AndroidEntryPoint
 class AutoDetectReceiver : BroadcastReceiver() {
     @Inject lateinit var trips: TripRepository
@@ -116,13 +119,48 @@ class AutoDetectReceiver : BroadcastReceiver() {
             }
             AutoDetect.ACTION_TRANSITION -> {
                 if (!ActivityTransitionResult.hasResult(intent)) return
-                val entered = ActivityTransitionResult.extractResult(intent)?.transitionEvents.orEmpty().any {
-                    it.activityType == DetectedActivity.IN_VEHICLE && it.transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER
+                // The newest event decides: entering a vehicle starts a wait, leaving it or standing still cancels it.
+                val last = ActivityTransitionResult.extractResult(intent)?.transitionEvents.orEmpty()
+                    .maxByOrNull { it.elapsedRealTimeNanos } ?: return
+                val entered = last.activityType == DetectedActivity.IN_VEHICLE &&
+                    last.transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER
+                if (entered) {
+                    // Activity recognition often guesses "vehicle" for a moment while the phone is still (on a lap, a
+                    // table, a toilet seat). The notice only comes if the phone is still in a vehicle a while later.
+                    val pending = prefs(context).getLong(KEY_PENDING_SINCE, 0L)
+                    if (pending == 0L || System.currentTimeMillis() - pending > PENDING_STALE_MS) {
+                        prefs(context).edit().putLong(KEY_PENDING_SINCE, System.currentTimeMillis()).apply()
+                        scheduleConfirm(context)
+                    }
+                } else {
+                    prefs(context).edit().remove(KEY_PENDING_SINCE).apply()
+                    cancelConfirm(context)
                 }
+            }
+            AutoDetect.ACTION_CONFIRM -> {
+                val since = prefs(context).getLong(KEY_PENDING_SINCE, 0L)
+                prefs(context).edit().remove(KEY_PENDING_SINCE).apply()
+                if (since == 0L || System.currentTimeMillis() - since < CONFIRM_MIN_MS) return
                 val recording = trips.state.value.phase.let { it == TripPhase.Recording || it == TripPhase.Paused }
-                if (entered && !recording && allowed(context)) post(AppLanguage.wrap(context))
+                if (!recording && allowed(context)) post(AppLanguage.wrap(context))
             }
         }
+    }
+
+    private fun confirmIntent(context: Context) = PendingIntent.getBroadcast(
+        context, 4, Intent(context, AutoDetectReceiver::class.java).setAction(AutoDetect.ACTION_CONFIRM),
+        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+    )
+
+    private fun scheduleConfirm(context: Context) {
+        val alarms = context.getSystemService(android.app.AlarmManager::class.java) ?: return
+        alarms.setAndAllowWhileIdle(
+            android.app.AlarmManager.ELAPSED_REALTIME, android.os.SystemClock.elapsedRealtime() + CONFIRM_DELAY_MS, confirmIntent(context),
+        )
+    }
+
+    private fun cancelConfirm(context: Context) {
+        context.getSystemService(android.app.AlarmManager::class.java)?.cancel(confirmIntent(context))
     }
 
     /**
@@ -173,3 +211,8 @@ private const val COOLDOWN_MS = 6 * 60 * 60 * 1000L
 private const val DISMISS_QUIET_MS = 12 * 60 * 60 * 1000L
 private const val KEY_LAST_NOTICE = "last_notice_ms"
 private const val KEY_QUIET_UNTIL = "quiet_until_ms"
+private const val KEY_PENDING_SINCE = "vehicle_pending_since_ms"
+/** How long the phone must stay "in a vehicle" before the notice shows. */
+private const val CONFIRM_DELAY_MS = 90 * 1000L
+private const val CONFIRM_MIN_MS = 80 * 1000L
+private const val PENDING_STALE_MS = 10 * 60 * 1000L

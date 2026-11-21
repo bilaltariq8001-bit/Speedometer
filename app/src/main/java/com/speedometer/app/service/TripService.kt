@@ -74,6 +74,7 @@ class TripService : Service() {
     private val ioScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private var lastLocation: Location? = null
+    private val motionGate = com.speedometer.app.core.trip.MotionGate()
 
     private var lastGpsMs = 0L
     private var lastAcceptedMs = 0L
@@ -148,7 +149,7 @@ class TripService : Service() {
             return
         }
         if (BuildConfig.DEBUG) {
-            android.util.Log.d("TripServiceDiag", "Accepted sample: source=${if (fromGps) "RAW" else "FUSED"} speed=${speedOf(loc)} accuracy=${if (loc.hasAccuracy()) loc.accuracy else null} calling trips.onSample()")
+            android.util.Log.d("TripServiceDiag", "Accepted sample: source=${if (fromGps) "RAW" else "FUSED"} speed=${if (loc.hasSpeed()) loc.speed else null} accuracy=${if (loc.hasAccuracy()) loc.accuracy else null} calling trips.onSample()")
             dbgAccepted++
         }
         if (fromGps) lastGpsMs = now
@@ -173,14 +174,25 @@ class TripService : Service() {
         }
     }
 
+    /**
+     * The speed of a fix, in m/s. A speed worked out from two positions is only used when both fixes are sharp and the
+     * move is larger than their error: indoors the position jumps by tens of metres, which used to read as 20 km/h.
+     * Then [motionGate] keeps a phone that stands still at 0 until it really moves.
+     */
     private fun speedOf(loc: Location): Float {
         val prev = lastLocation
         val seconds = if (prev != null) (loc.time - prev.time) / 1000f else 0f
-        val fromDistance = if (prev != null && seconds in MIN_DISTANCE_SPEED_S..MAX_DISTANCE_SPEED_S) prev.distanceTo(loc) / seconds else 0f
-        if (loc.hasSpeed()) {
-            return if (loc.speed < ZERO_SPEED_MS && fromDistance > MOVING_MS) fromDistance else loc.speed
-        }
-        return fromDistance
+        val sharp = prev != null && prev.hasAccuracy() && loc.hasAccuracy() &&
+            prev.accuracy <= SHARP_FIX_M && loc.accuracy <= SHARP_FIX_M
+        val moved = if (prev != null) prev.distanceTo(loc) else 0f
+        val fromDistance = if (sharp && seconds in MIN_DISTANCE_SPEED_S..MAX_DISTANCE_SPEED_S && moved > prev!!.accuracy + loc.accuracy) {
+            moved / seconds
+        } else 0f
+        val raw = if (loc.hasSpeed()) {
+            if (loc.speed < ZERO_SPEED_MS && fromDistance > MOVING_MS) fromDistance else loc.speed
+        } else fromDistance
+        val speedError = if (loc.hasSpeedAccuracy()) loc.speedAccuracyMetersPerSecond else null
+        return motionGate.filter(raw, speedError, if (loc.hasAccuracy()) loc.accuracy else null, loc.latitude, loc.longitude)
     }
 
     override fun attachBaseContext(newBase: Context) {
@@ -198,7 +210,7 @@ class TripService : Service() {
             ACTION_PAUSE -> { trips.pause(); refreshNotification() }
             ACTION_RESUME -> { trips.resume(); refreshNotification() }
             ACTION_STOP -> { stopTrip(); return START_NOT_STICKY }
-            ACTION_RESET -> { if (running) { trips.start(); lastFixElapsedMs = SystemClock.elapsedRealtime() } }
+            ACTION_RESET -> { if (running) { trips.start(); motionGate.reset(); lastLocation = null; lastFixElapsedMs = SystemClock.elapsedRealtime() } }
             ACTION_DISCARD -> { discardTrip(); return START_NOT_STICKY }
             else -> {
                 if (!running) {
@@ -214,6 +226,8 @@ class TripService : Service() {
         if (running) return
         running = true
         trips.start()
+        motionGate.reset()
+        lastLocation = null
         createChannel()
         runCatching {
             ServiceCompat.startForeground(this, NOTIFICATION_ID, buildNotification(),
@@ -431,7 +445,8 @@ class TripService : Service() {
         }
     }
 
-    private fun tripUnsaved() = trips.state.value.phase.let { it == TripPhase.Recording || it == TripPhase.Paused }
+    /** Recording, paused, or ended and waiting on Save or Discard: the trip is not in the database yet. */
+    private fun tripUnsaved() = trips.reviewing || trips.state.value.phase.let { it == TripPhase.Recording || it == TripPhase.Paused }
 
     private fun discardTrip() {
         userEnded = true
@@ -513,7 +528,9 @@ class TripService : Service() {
 
     private fun buildNotification(): Notification {
         val s = trips.state.value
-        val paused = s.phase == TripPhase.Paused
+        // While the ended trip waits on Save or Discard it reads as paused, with no buttons: the app's summary decides.
+        val reviewing = trips.reviewing
+        val paused = s.phase == TripPhase.Paused || reviewing
         val mph = settingsNow.mph
         val speed = if (mph) s.speedKmh * 0.621371f else s.speedKmh
         val distance = if (mph) s.distanceKm * 0.621371f else s.distanceKm
@@ -527,7 +544,7 @@ class TripService : Service() {
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
-        return NotificationCompat.Builder(this, CHANNEL_ID)
+        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_speed)
             .setColor(0xFFFFB020.toInt())
             .setColorized(false)
@@ -542,13 +559,16 @@ class TripService : Service() {
             .setOnlyAlertOnce(true)
             .setShowWhen(false)
             .setContentIntent(open)
-            .addAction(
-                if (paused) R.drawable.ic_stat_play else R.drawable.ic_stat_pause,
-                getString(if (paused) R.string.resume else R.string.pause),
-                action(if (paused) ACTION_RESUME else ACTION_PAUSE),
-            )
-            .addAction(R.drawable.ic_stat_stop, getString(R.string.end_trip), action(ACTION_STOP))
-            .build()
+        if (!reviewing) {
+            builder
+                .addAction(
+                    if (paused) R.drawable.ic_stat_play else R.drawable.ic_stat_pause,
+                    getString(if (paused) R.string.resume else R.string.pause),
+                    action(if (paused) ACTION_RESUME else ACTION_PAUSE),
+                )
+                .addAction(R.drawable.ic_stat_stop, getString(R.string.end_trip), action(ACTION_STOP))
+        }
+        return builder.build()
     }
 
     private fun action(name: String) = PendingIntent.getService(
@@ -568,6 +588,7 @@ class TripService : Service() {
         private const val WAKE_LOCK_MS = 2 * 60 * 1000L
         private const val ZERO_SPEED_MS = 1f
         private const val MOVING_MS = 5f
+        private const val SHARP_FIX_M = 15f
         private const val MIN_DISTANCE_SPEED_S = 0.5f
         private const val MAX_DISTANCE_SPEED_S = 6f
         private const val UNKNOWN_ACCURACY_M = 100f

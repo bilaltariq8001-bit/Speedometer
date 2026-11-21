@@ -117,6 +117,8 @@ class ResultsViewModel @Inject constructor(
             try {
                 val startedMs = System.currentTimeMillis()
                 val id = saved.save(ui.trip, live.startedAtMs, ui.title, RouteGaps.fill(live.routeForSave()), live.vehicle)
+                // Saved: Back can no longer continue this trip, and the trip service will not save it a second time.
+                live.closeReview()
                 // Keep the Saving screen up for a moment so it reads as a step instead of flashing.
                 val left = MIN_SAVING_MS - (System.currentTimeMillis() - startedMs)
                 if (left > 0) kotlinx.coroutines.delay(left)
@@ -160,6 +162,9 @@ class ResultsViewModel @Inject constructor(
         val ui = ui.value ?: return null
         return TripExport.toCsv(ui.title, live.startedAtMs, ui.trip, live.route())
     }
+
+    /** Back on the summary before saving: the trip carries on (Recording or Paused, as it was). */
+    fun continueTrip(): Boolean = if (_saveState.value == SaveState.Idle) live.reopen() else false
 
     fun discard(then: () -> Unit) {
         _saveState.value = SaveState.Idle

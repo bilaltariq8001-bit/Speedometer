@@ -83,10 +83,13 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
-/** Results, from design/Results.dc.html. Done saves the trip; a trip under 8 s can only be discarded. */
+/** Results, from design/Results.dc.html. Done saves the trip; a trip under 8 s can only be discarded. Back continues the trip. */
 @Composable
 fun ResultsScreen(
+    /** Back before saving: the trip has already been continued; this leaves the summary. */
     onClose: () -> Unit,
+    /** The trip was discarded. */
+    onDiscarded: () -> Unit,
     onSaved: () -> Unit,
     onSavedDone: () -> Unit,
     vm: ResultsViewModel = hiltViewModel(),
@@ -102,7 +105,7 @@ fun ResultsScreen(
         }
     }
     (saveState as? SaveState.Failed)?.let { failed ->
-        SaveErrorView(r, failed.storageFull, onRetry = vm::retry, onExport = { exporter.launch("${r.title}.csv") }, onDiscard = { vm.discard(onClose) })
+        SaveErrorView(r, failed.storageFull, onRetry = vm::retry, onExport = { exporter.launch("${r.title}.csv") }, onDiscard = { vm.discard(onDiscarded) })
         return
     }
     if (saveState is SaveState.Saving) {
@@ -114,6 +117,12 @@ fun ResultsScreen(
         androidx.activity.compose.BackHandler {
             vm.finishSaved()
             onSavedDone()
+        }
+    } else {
+        // Back before Save or Discard means "not done yet": the trip continues and its timer carries on.
+        androidx.activity.compose.BackHandler {
+            vm.continueTrip()
+            onClose()
         }
     }
     val t = r.trip
@@ -138,7 +147,7 @@ fun ResultsScreen(
             Column(Modifier.padding(start = 20.dp, end = 20.dp, bottom = 28.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(stringResource(R.string.trip_too_short), style = bodyStyle(14, color = TextSoft), textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth())
-                PrimaryButton(stringResource(R.string.discard), { vm.discard(onClose) })
+                PrimaryButton(stringResource(R.string.discard), { vm.discard(onDiscarded) })
             }
         } else {
             // Save on the left (wider), Discard on the right: same height, Discard outlined in red as the destructive choice.
@@ -165,7 +174,7 @@ fun ResultsScreen(
                 Text(stringResource(R.string.discard_trip_question), style = displayStyle(20, FontWeight.SemiBold))
                 Text(stringResource(R.string.discard_trip_body), style = bodyStyle(14, color = TextSoft))
                 PrimaryButton(stringResource(R.string.discard_keep), { showSaveDiscardDialog = false })
-                DiscardButton(Modifier.fillMaxWidth()) { showSaveDiscardDialog = false; vm.discard(onClose) }
+                DiscardButton(Modifier.fillMaxWidth()) { showSaveDiscardDialog = false; vm.discard(onDiscarded) }
             }
         }
     }

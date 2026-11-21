@@ -453,13 +453,13 @@ fun HomeScreen(
         if (homeTab == 2) {
             com.speedometer.app.feature.drive.ui.LiveMapScreen(
                 onBack = { homeTab = 0 },
-                onEnd = { TripService.stop(context); onEndTrip() },
+                onEnd = onEndTrip, // the service stops on Save or Discard
                 vm = driveVm,
             )
         } else {
             com.speedometer.app.feature.drive.ui.LiveDriveScreen(
                 initialDigital = homeTab == 1,
-                onEnd = { TripService.stop(context); onEndTrip() },
+                onEnd = onEndTrip, // the service stops on Save or Discard
                 onMap = { homeTab = 2 },
                 onGpsDetails = onGpsStatus,
                 onHud = onHud,

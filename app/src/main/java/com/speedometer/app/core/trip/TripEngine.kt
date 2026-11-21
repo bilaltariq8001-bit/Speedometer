@@ -118,6 +118,7 @@ class TripEngine {
     var limitIsUserSet: Boolean = false
 
     fun start() {
+        reopenPhase = null
         smoother.reset()
         approxIdleSec = 0
         lastTimeMs = null
@@ -151,9 +152,35 @@ class TripEngine {
     }
 
     fun finish() = _state.update {
+        // Ending from Recording or Paused opens the review (Save or Discard); going back from it continues the trip.
+        if (it.phase == TripPhase.Recording || it.phase == TripPhase.Paused) reopenPhase = it.phase
         // The saved trip gets the exact average, not the eased one.
         if (it.phase == TripPhase.Idle) it else it.copy(phase = TripPhase.Finished, speedKmh = 0f, guard = GuardLevel.Off, avgKmh = rawAvgKmh())
     }
+
+    /** The phase the trip had when it was ended, while it waits on Save or Discard; null once saved, discarded or restarted. */
+    @Volatile private var reopenPhase: TripPhase? = null
+
+    /** True while an ended trip waits on Save or Discard and can still be continued. */
+    val reviewing: Boolean get() = reopenPhase != null && _state.value.phase == TripPhase.Finished
+
+    /**
+     * Continues an ended trip that was neither saved nor discarded (Back on the trip summary): it returns to Recording
+     * or Paused, as it was, and the timer carries on from where it stopped. Returns false when there is nothing to continue.
+     */
+    fun reopen(): Boolean {
+        val back = reopenPhase ?: return false
+        if (_state.value.phase != TripPhase.Finished) return false
+        reopenPhase = null
+        lastTimeMs = null
+        smoother.reset()
+        lastSmoothKmh = 0f
+        _state.update { it.copy(phase = back, autoPaused = false, avgKmh = if (shownAvgKmh > 0f) shownAvgKmh else it.avgKmh) }
+        return true
+    }
+
+    /** The ended trip was saved: it can no longer be continued. */
+    fun closeReview() { reopenPhase = null }
 
     private fun rawAvgKmh(): Float = if (durationS > 0) ((distanceM / 1000.0) / (durationS / 3600.0)).toFloat() else 0f
 
@@ -166,6 +193,7 @@ class TripEngine {
     }
 
     fun reset() {
+        reopenPhase = null
         synchronized(routePoints) { routePoints.clear() }
         firstKnown = null
         lastKnown = null

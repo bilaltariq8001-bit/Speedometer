@@ -227,7 +227,13 @@ fun AppNavHost() {
             StartRequest.consume()
             val precise = ContextCompat.checkSelfPermission(startContext, Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED
-            if (s.onboardingDone && precise) {
+            if (s.onboardingDone && tripPhase.reviewing()) {
+                // The trip was ended and waits on Save or Discard: opening it from the notification shows its summary.
+                nav.navigate(Routes.Results) {
+                    popUpTo(Routes.Home) { inclusive = false }
+                    launchSingleTop = true
+                }
+            } else if (s.onboardingDone && precise) {
                 if (!tripPhase.tripActive()) TripService.start(startContext)
                 nav.navigate(Routes.live()) {
                     popUpTo(Routes.Home) { inclusive = false }
@@ -249,6 +255,9 @@ fun AppNavHost() {
                     analytics.event("trip_paused")
                 phase == com.speedometer.app.core.trip.TripPhase.Recording && previous == com.speedometer.app.core.trip.TripPhase.Paused ->
                     analytics.event("trip_resumed")
+                phase != com.speedometer.app.core.trip.TripPhase.Finished && phase != com.speedometer.app.core.trip.TripPhase.Idle &&
+                    previous == com.speedometer.app.core.trip.TripPhase.Finished ->
+                    analytics.event("trip_continued")
             }
             previous = phase
             val onTripScreen = nav.currentBackStackEntry?.destination?.route.let {
@@ -389,7 +398,7 @@ fun AppNavHost() {
                 initialDigital = initialDigital,
                 initialSettings = settings,
                 onEnd = {
-                    TripService.stop(context)
+                    // The trip service keeps running until Save or Discard, so Back on the summary can continue the trip.
                     nav.navigate(Routes.Results) { popUpTo(Routes.Home) }
                 },
                 onMap = { nav.navigate(Routes.LiveMap) },
@@ -404,17 +413,20 @@ fun AppNavHost() {
             LiveMapScreen(
                 onBack = { nav.popBackStack() },
                 onEnd = {
-                    TripService.stop(context)
+                    // The trip service keeps running until Save or Discard, so Back on the summary can continue the trip.
                     nav.navigate(Routes.Results) { popUpTo(Routes.Home) }
                 },
             )
         }
         framed(Routes.Results) {
+            val context = LocalContext.current
             val goHome = { nav.popBackStack(Routes.Home, inclusive = false); Unit }
+            // Back continues the trip (ResultsScreen reopens it first), so Home shows the live trip again.
             val back = rememberBackPressAd("results_back", leave = goHome)
             androidx.compose.runtime.LaunchedEffect(Unit) { activity?.let { adsVm.ads.warmUp(it, "trip_saved_click") } }
             ResultsScreen(
                 onClose = back,
+                onDiscarded = { TripService.stop(context); goHome() },
                 onSaved = {
                     val seconds = tripPhase.trip.value.durationSec
                     analytics.tripSaved(if (seconds < 60) "under_1m" else if (seconds < 300) "1_to_5m" else if (seconds < 1800) "5_to_30m" else "over_30m")
@@ -423,7 +435,7 @@ fun AppNavHost() {
                     // (no cooldown or click cap), waiting a moment for an ad if none is ready yet.
                     if (activity != null) adsVm.ads.showMustShowAd(activity, "trip_saved_click") { }
                 },
-                onSavedDone = { nav.popBackStack(Routes.Home, inclusive = false); Unit },
+                onSavedDone = { TripService.stop(context); nav.popBackStack(Routes.Home, inclusive = false); Unit },
             )
         }
         framed(Routes.History) {
